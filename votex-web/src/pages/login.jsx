@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import "../styles/Login.css";
+import "../styles/login.css";
 import logo from "../assets/votexmlogo.png";
 
 const Login = () => {

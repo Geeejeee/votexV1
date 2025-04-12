@@ -1,16 +1,44 @@
 .dashboard-container {
   display: flex;
   height: 100vh;
+  width: 100%;
   font-family: 'Segoe UI', sans-serif;
 }
 
-.sidebar {
-  width: 200px;
-  background-color: #002d72;
-  color: white;
+.dashboard-main {
+  flex: 1;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  overflow-y: auto;
+}
+
+.main-content {
+  display: flex;
+  flex-wrap: wrap; /* Wraps to next line on small screens */
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+
+.left-panel {
+  flex: 1 1 400px;
+  min-width: 300px;
+}
+
+.right-panel {
+  flex: 1 1 300px;
+  min-width: 300px;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #002366;
+  color: #fff;
 }
 
 .sidebar-logo {
@@ -42,12 +70,6 @@
   padding: 1rem;
   font-size: 0.8rem;
   color: #ccc;
-}
-
-.dashboard-main {
-  flex: 1;
-  background-color: #f9f9f9;
-  padding: 1rem 2rem;
 }
 
 .header {
@@ -88,12 +110,14 @@
 
 .card-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .card {
-  flex: 1;
+  flex: 1 1 200px;
+  min-width: 200px;
   color: white;
   padding: 2rem;
   border-radius: 6px;
@@ -130,6 +154,7 @@
 }
 
 .calendar-box {
+  width: 100%;
   background: white;
   padding: 1rem;
   border-radius: 6px;
@@ -174,4 +199,43 @@
 .react-calendar__navigation button {
   color: #002d72;
   font-weight: bold;
+}
+
+.votex-calendar {
+  border: none;
+  width: 100%;
+  max-width: 600px;
+  background-color: #fefefe;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.votex-calendar abbr {
+  text-decoration: none;
+  font-weight: 600;
+  color: #003366;
+}
+
+.react-calendar__tile--now {
+  background: #cce5ff !important;
+}
+
+.react-calendar__tile--active {
+  background: #3182f6 !important;
+  color: white !important;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .card {
+    font-size: 0.9rem;
+  }
+
+  .calendar-placeholder {
+    height: 200px;
+  }
 }
