@@ -1,0 +1,177 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #002d72;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar-logo {
+  width: 140px;
+  margin: 1rem 0;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  padding-left: 1rem;
+}
+
+.sidebar-nav a {
+  color: white;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background-color: #0044aa;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.dashboard-main {
+  flex: 1;
+  background-color: #f9f9f9;
+  padding: 1rem 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 1rem;
+}
+
+.header-icons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.welcome-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.welcome-card,
+.datetime-card {
+  background: #e7f1ff;
+  padding: 1rem;
+  border-radius: 6px;
+  flex: 1;
+  margin-right: 1rem;
+  text-align: center;
+  font-weight: bold;
+  color: #003366;
+}
+
+.datetime-card {
+  margin-right: 0;
+}
+
+.card-grid {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  flex: 1;
+  color: white;
+  padding: 2rem;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.card-blue {
+  background-color: #1e90ff;
+}
+
+.card-green {
+  background-color: #28a745;
+}
+
+.card-red {
+  background-color: #dc3545;
+}
+
+.icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calendar-box {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-placeholder {
+  height: 300px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.calendar-notice {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Calendar override styles */
+.react-calendar {
+  border: none;
+  border-radius: 6px;
+  width: 100%;
+  background-color: #f0f8ff;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 1rem;
+}
+
+.react-calendar__tile--now {
+  background: #3182f6 !important;
+  color: white;
+  border-radius: 6px;
+}
+
+.react-calendar__tile--active {
+  background: #1669d8 !important;
+  color: white;
+  border-radius: 6px;
+}
+
+.react-calendar__navigation button {
+  color: #002d72;
+  font-weight: bold;
+}
