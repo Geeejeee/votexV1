@@ -15,11 +15,8 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 90,
-    height: 40,
+    height: 90,
     resizeMode: "contain",
-  },
-  sun: {
-    fontSize: 24,
   },
   menu: {
     fontSize: 24,
@@ -27,7 +24,7 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 24,
     fontWeight: "bold",
-    marginTop: 20,
+    marginTop: 5,
     textAlign: "center",
     color: "#002F6C",
   },
@@ -35,7 +32,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 15,
-    marginTop: 20,
+    marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -61,6 +58,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 15,
     alignItems: "center",
+  },
+  candidateAvatar: {
+     color:"#fff",
+     position: "relative",
+     left: 8,
+     top: 7,
   },
   avatar: {
     width: 50,
@@ -94,16 +97,44 @@ const styles = StyleSheet.create({
   },
   voteNow: {
     backgroundColor: "#FFD700",
-    padding: 20,
+    padding: 1,
     borderRadius: 10,
     alignItems: "center",
     marginVertical: 20,
   },
   voteTextBtn: {
-    fontSize: 18,
+    fontSize: 30,
     fontWeight: "bold",
-    color: "#002F6C",
+    position: "relative",
+    top: -25,
+    left: 20,
+    marginLeft: 30,
+    color: "#fff",
+    textShadowColor: "#808080", // shadow color
+    textShadowOffset: { width: 1.5, height: 1 }, // X and Y offset
+    textShadowRadius: 8, // blur radius
   },
+  voteLogo: {
+     color:"#fff",
+     position: "relative",
+     right: 90,
+     top: 20,
+  },
+  viewProf: {
+    color:"#fff",
+    position: "relative",
+    top: -2,
+ },
+ viewCandidates: {
+    color:"#fff",
+    position: "relative",
+    top: -2,
+ },
+ viewResults: {
+    color:"#fff",
+    position: "relative",
+    top: -2,
+ },
   navButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -117,6 +148,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   navText: {
+    fontSize: 12,
     fontWeight: "bold",
     color: "#fff",
   },
@@ -124,7 +156,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#888",
     fontSize: 12,
-    marginBottom: 10,
+    marginBottom: 50,
   },
 });
 

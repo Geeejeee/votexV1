@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { Fingerprint, User, Users,ChartColumn} from "lucide-react-native";
 import logo from "../assets/votexmlogo.png";
 import styles from "../styles/homepage.js";
 
@@ -26,7 +27,6 @@ const HomeScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <Image source={logo} style={styles.logo} />
-        <Text style={styles.sun}>☀️</Text>
         <Text style={styles.menu}>☰</Text>
       </View>
 
@@ -46,7 +46,9 @@ const HomeScreen = () => {
       <View style={styles.candidateCard}>
         {candidates.map((c) => (
           <View key={c.id} style={styles.candidate}>
-            <View style={styles.avatar} />
+          <View style={styles.avatar}>
+            <User style={styles.candidateAvatar} size={35}/>
+          </View>
             <View style={styles.info}>
               <Text style={styles.candidateName}>{c.name}</Text>
               <Text style={styles.voteText}>{c.votes} Votes</Text>
@@ -63,19 +65,23 @@ const HomeScreen = () => {
 
       {/* Vote Now Button */}
       <TouchableOpacity style={styles.voteNow}>
-        <Text style={styles.voteTextBtn}>🟡 VOTE NOW!</Text>
+      <Fingerprint style={styles.voteLogo} size={50}/>
+        <Text style={styles.voteTextBtn}>VOTE NOW!</Text>
       </TouchableOpacity>
 
       {/* Navigation Buttons */}
       <View style={styles.navButtons}>
         <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#32CD32" }]}>
-          <Text style={styles.navText}>📊 Results</Text>
+        <ChartColumn style={styles.viewCandidates} size={25}/>
+          <Text style={styles.navText}>Results</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#002F6C" }]}>
-          <Text style={[styles.navText, { color: "#fff" }]}>👥 Candidates</Text>
+        <Users style={styles.viewCandidates} size={25}/>
+          <Text style={[styles.navText, { color: "#fff" }]}>Candidates</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#C0392B" }]}>
-          <Text style={styles.navText}>👤 View Profile</Text>
+           <User style={styles.viewProf} size={25}/>
+          <Text style={styles.navText}>View Profile</Text>
         </TouchableOpacity>
       </View>
 
