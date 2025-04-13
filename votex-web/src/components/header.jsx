@@ -1,15 +1,23 @@
 import React from "react";
-import "../styles/dashboard.css";
+import "../styles/header.css";
 
 const Header = () => {
   return (
-    <div className="header">
-      <div className="header-icons">
-        <i className="fas fa-bell"></i>
-        <i className="fas fa-user-circle"></i>
-        <span>Admin</span>
+    <header className="header">
+      <div className="header-left">
+        <span className="header-title">
+          <strong>VOTEX</strong> | WebApp Based Voting System for School Elections
+        </span>
       </div>
-    </div>
+
+      <div className="header-right">
+        <div className="user-info">
+          <div className="user-name">USER1</div>
+          <div className="user-role">Admin</div>
+        </div>
+        <div className="user-avatar">A</div>
+      </div>
+    </header>
   );
 };
 

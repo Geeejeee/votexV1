@@ -8,32 +8,77 @@
 .dashboard-main {
   flex: 1;
   width: 100%;
-  padding: 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  padding: 1rem 2rem;
   overflow-y: auto;
+}
+.dashboard-content {
+  flex: 1;
+  padding: 1rem 2rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.footer {
+  background-color: #03296e;
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.8rem;
 }
 
 .main-content {
   display: flex;
-  flex-wrap: wrap; /* Wraps to next line on small screens */
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 15rem;
   justify-content: space-between;
 }
 
+/* Hide sidebar if collapsed */
+.dashboard-container.sidebar-collapsed .sidebar {
+  display: none;
+}
+
+/* Make content stretch fully */
+.dashboard-container.sidebar-collapsed .dashboard-main {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 !important;
+}
+
+/* Optional: smooth transition */
+.sidebar,
+.dashboard-main {
+  transition: all 0.3s ease-in-out;
+}
+
+
 
 .left-panel {
-  flex: 1 1 400px;
-  min-width: 300px;
+  flex: 1 1 500px;
+  min-width: 350px;
+  padding: 1rem;
 }
 
 .right-panel {
-  flex: 1 1 300px;
-  min-width: 300px;
+  flex: 1 1 500px;
+  min-width: 350px;
+  max-width: 100%;
+  padding: 1rem;
 }
+
+/* Collapsed Sidebar */
+.sidebar-collapsed .sidebar {
+  display: none;
+}
+
+.sidebar-collapsed .dashboard-main {
+  width: 100%;
+  flex: 1 1 100%;
+}
+
 
 .sidebar {
   width: 250px;
@@ -90,6 +135,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
+  padding: 1 rem;
 }
 
 .welcome-card,
@@ -111,23 +157,51 @@
 .card-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .card {
-  flex: 1 1 200px;
-  min-width: 200px;
+  flex: 1 1 250px;
+  min-width: 180px;
+  max-width: 100%;
+  height: auto;
   color: white;
-  padding: 2rem;
-  border-radius: 6px;
+  padding: 2rem 1rem;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
-  font-size: 1rem;
+  font-size: clamp(1rem, 2vw, 1.2rem); /* responsive font size */
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+.card-icon {
+  font-size: clamp(3rem, 5vw, 5rem); /* responsive icon size */
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.card span {
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  color: white;
 }
 
 .card-blue {
@@ -155,11 +229,14 @@
 
 .calendar-box {
   width: 100%;
+  max-width: 100%;
   background: white;
   padding: 1rem;
   border-radius: 6px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
+
 
 .calendar-placeholder {
   height: 300px;
@@ -172,6 +249,7 @@
   margin-top: 1rem;
   font-size: 0.9rem;
   color: #666;
+  font-weight: bold;
 }
 
 /* Calendar override styles */
@@ -179,14 +257,16 @@
   border: none;
   border-radius: 6px;
   width: 100%;
-  background-color: #f0f8ff;
+  background-color: #000305;
   font-family: 'Segoe UI', sans-serif;
+  font-size: 1.1rem;
   padding: 1rem;
 }
 
 .react-calendar__tile--now {
   background: #3182f6 !important;
   color: white;
+  padding: 1rem 0.5rem;
   border-radius: 6px;
 }
 
@@ -204,10 +284,21 @@
 .votex-calendar {
   border: none;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px; /* Optional limit */
+  min-height: 300px; /* Makes it visually taller */
   background-color: #fefefe;
   border-radius: 6px;
-  padding: 1rem;
+  padding: 1.5rem; /* Increase padding for more spacing inside */
+  box-sizing: border-box;
+  font-size: 3rem; /* Optional: Bigger text inside */
+}
+
+.votex-calendar,
+.votex-calendar .react-calendar {
+  width: 100% !important;
+  min-height: 300px !important;
+  font-size: 1.2rem !important;
+  padding: 1.5rem !important;
 }
 
 .votex-calendar abbr {
@@ -237,5 +328,13 @@
 
   .calendar-placeholder {
     height: 200px;
+  }
+  .react-calendar__tile {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .calendar-box {
+    padding: 0.5rem;
   }
 }

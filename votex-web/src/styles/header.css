@@ -1,27 +1,58 @@
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #03296e;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .user-info {
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0d2e82;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo {
+  height: 32px;
+  width: auto;
+}
+
+.header-title {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: #ccc;
+}
+
+.user-avatar {
+  background-color: #3b5ca8;
+  color: white;
+  font-weight: bold;
+  padding: 0.4rem 0.7rem;
+  border-radius: 50%;
+  font-size: 1rem;
+}
