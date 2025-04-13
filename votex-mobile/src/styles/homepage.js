@@ -2,16 +2,30 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  fixedHeader: {
+    backgroundColor: "#002F6C",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 80, // adjust as needed
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 40,
+    paddingHorizontal: 16,
+    zIndex: 99,
+  },
+  scrollContent: {
+    paddingTop: 10,
+    paddingHorizontal: 20,
+  },
   container: {
     backgroundColor: "#fff",
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 120,
+    paddingBottom: 40,
     flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   logo: {
     width: 90,
@@ -20,13 +34,32 @@ const styles = StyleSheet.create({
   },
   menu: {
     fontSize: 24,
+    color: "#fff",
   },
   welcome: {
     fontSize: 24,
     fontWeight: "bold",
     marginTop: 5,
+    marginBottom: 5,
     textAlign: "center",
     color: "#002F6C",
+  },
+  collegeText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#002F6C",
+    marginBottom: 2,
+  },
+
+  electionTitle: {
+    fontSize: 14,
+    color: "#002F6C",
+    marginBottom: 2,
+  },
+
+  electionDate: {
+    fontSize: 14,
+    color: "#666",
   },
   electionCard: {
     backgroundColor: "#fff",
@@ -60,10 +93,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   candidateAvatar: {
-     color:"#fff",
-     position: "relative",
-     left: 8,
-     top: 7,
+    color: "#fff",
+    position: "relative",
+    left: 8,
+    top: 7,
   },
   avatar: {
     width: 50,
@@ -115,26 +148,26 @@ const styles = StyleSheet.create({
     textShadowRadius: 8, // blur radius
   },
   voteLogo: {
-     color:"#fff",
-     position: "relative",
-     right: 90,
-     top: 20,
+    color: "#fff",
+    position: "relative",
+    right: 90,
+    top: 20,
   },
   viewProf: {
-    color:"#fff",
+    color: "#fff",
     position: "relative",
     top: -2,
- },
- viewCandidates: {
-    color:"#fff",
+  },
+  viewCandidates: {
+    color: "#fff",
     position: "relative",
     top: -2,
- },
- viewResults: {
-    color:"#fff",
+  },
+  viewResults: {
+    color: "#fff",
     position: "relative",
     top: -2,
- },
+  },
   navButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -142,7 +175,8 @@ const styles = StyleSheet.create({
   },
   navBtn: {
     flex: 1,
-    padding: 15,
+    paddingTop: 20,
+    paddingBlock: 20,
     marginHorizontal: 5,
     borderRadius: 10,
     alignItems: "center",
@@ -152,11 +186,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
   },
+  footerContainer: {
+    backgroundColor: "#002F6C",
+    paddingVertical: 10,
+    paddingHorizontal: 0,
+    height: 40,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 99,
+  },
   footer: {
     textAlign: "center",
     color: "#888",
     fontSize: 12,
-    marginBottom: 50,
   },
 });
 

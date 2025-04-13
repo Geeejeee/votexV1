@@ -23,24 +23,29 @@ const HomeScreen = () => {
   ];
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Image source={logo} style={styles.logo} />
-        <Text style={styles.menu}>☰</Text>
+    
+    <View style={styles.container}>
+      <View style={styles.fixedHeader}>
+      <Image source={logo} style={styles.logo} />
+      <Text style={styles.menu}>☰</Text>
       </View>
 
+    <ScrollView contentContainerStyle={styles.scrollContent}>
       {/* Welcome */}
       <Text style={styles.welcome}>WELCOME, USER!</Text>
 
       {/* Election Info */}
       <View style={styles.electionCard}>
-        <Text style={styles.electionText}>
-          COLLEGE OF INFORMATION TECHNOLOGY AND COMPUTING{"\n"}
-          <Text style={{ fontWeight: "bold" }}>2025 ELECTIONS</Text> 01/01/25 10:00:00
-        </Text>
-        <Text style={styles.logoEmoji}>🎯</Text>
-      </View>
+  <View style={{ flex: 1 }}>
+    <Text style={styles.collegeText}>
+      COLLEGE OF INFORMATION TECHNOLOGY AND COMPUTING
+    </Text>
+    <Text style={styles.electionTitle}>2025 ELECTIONS</Text>
+    <Text style={styles.electionDate}>01/01/25 10:00:00</Text>
+  </View>
+  <Text style={styles.logoEmoji}>🎯</Text>
+</View>
+
 
       {/* Candidates */}
       <View style={styles.candidateCard}>
@@ -64,10 +69,11 @@ const HomeScreen = () => {
       </View>
 
       {/* Vote Now Button */}
-      <TouchableOpacity style={styles.voteNow}>
-      <Fingerprint style={styles.voteLogo} size={50}/>
+      <TouchableOpacity style={styles.voteNow} onPress={() => navigation.navigate("VoteNow")}>
+        <Fingerprint style={styles.voteLogo} size={50} />
         <Text style={styles.voteTextBtn}>VOTE NOW!</Text>
       </TouchableOpacity>
+
 
       {/* Navigation Buttons */}
       <View style={styles.navButtons}>
@@ -84,10 +90,14 @@ const HomeScreen = () => {
           <Text style={styles.navText}>View Profile</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Footer */}
-      <Text style={styles.footer}>2025 © Votex Solutions</Text>
     </ScrollView>
+
+    {/* Fixed Footer */}
+    <View style={styles.footerContainer}>
+      <Text style={styles.footer}>2025 © Votex Solutions</Text>
+    </View>
+    
+    </View>
   );
 };
 
