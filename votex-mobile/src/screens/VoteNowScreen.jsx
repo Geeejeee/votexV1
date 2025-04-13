@@ -1,12 +1,6 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  StyleSheet,
-} from "react-native";
+import React, { useContext } from "react";
+import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
+import { UserContext } from "../context/UserContext"; // adjust the path if necessary
 import { useNavigation } from "@react-navigation/native";
 import styles from "../styles/votenow"; // Create this style file next!
 import usgLogo from "../assets/usg-logo.png";
@@ -16,11 +10,7 @@ import votexmlogo from "../assets/votexmlogo.png";
 
 const VoteNowScreen = () => {
   const navigation = useNavigation();
-
-  const [showCollegeDropdown, setShowCollegeDropdown] = useState(false); // State to toggle college dropdown
-  const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false); // State to toggle department dropdown
-  const [selectedCollege, setSelectedCollege] = useState("CITC"); // State to store selected college
-  const [selectedDepartment, setSelectedDepartment] = useState("Information Technology"); // State to store selected department
+  const { userDetails } = useContext(UserContext); // Access the UserContext for selected college and department
 
   const elections = [
     {
@@ -40,27 +30,6 @@ const VoteNowScreen = () => {
     },
   ];
 
-  const departmentOptions = {
-    CITC: ["Information Technology", "Computer Science", "Technology Communication Management"],
-    CEA: ["Computer Engineering", "Civil Engineering", "Architecture"],
-    CSM: ["Biology", "Physics", "Mathematics"],
-    COT: ["Industrial Technology", "Automotive Technology", "Electronics Technology"],
-    CSTE: ["Teacher Education", "Science Education", "Educational Technology"],
-  }
-
-  const handleSelectCollege = (collegeName) => {
-    setSelectedCollege(collegeName);
-    setSelectedDepartment(departmentOptions[collegeName][0]); // reset to first department
-    setShowCollegeDropdown(false);
-    setShowDepartmentDropdown(false); // close dept dropdown too
-  };
-  
-
-  const handleSelectDepartment = (departmentName) => {
-    setSelectedDepartment(departmentName);
-    setShowDepartmentDropdown(false); // Close dropdown after selection
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.fixedHeader}>
@@ -70,77 +39,21 @@ const VoteNowScreen = () => {
 
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.header}>VOTE NOW !</Text>
+
+        {/* Displaying College and Department from UserContext */}
         <View style={styles.labelRow}>
           <View style={styles.labelGroup}>
             <Text style={styles.label}>COLLEGE:</Text>
-            {/* Clickable CITC Text */}
-            <TouchableOpacity onPress={() => setShowCollegeDropdown(!showCollegeDropdown)}>
-              <Text style={styles.value}>{selectedCollege}</Text>
-            </TouchableOpacity>
-            {/* College dropdown options */}
-            {showCollegeDropdown && (
-              <View style={styles.dropdown}>
-                <TouchableOpacity
-                  style={styles.dropdownOption}
-                  onPress={() => handleSelectCollege("CITC")}
-                >
-                  <Text style={styles.dropdownText}>CITC</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.dropdownOption}
-                  onPress={() => handleSelectCollege("CEA")}
-                >
-                  <Text style={styles.dropdownText}>CEA</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.dropdownOption}
-                  onPress={() => handleSelectCollege("CSM")}
-                >
-                  <Text style={styles.dropdownText}>CSM</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.dropdownOption}
-                  onPress={() => handleSelectCollege("COT")}
-                >
-                  <Text style={styles.dropdownText}>COT</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.dropdownOption}
-                  onPress={() => handleSelectCollege("CSTE")}
-                >
-                  <Text style={styles.dropdownText}>CSTE</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            <Text style={styles.value}>{userDetails?.college || "N/A"}</Text>
           </View>
+
           <View style={styles.labelGroup}>
             <Text style={styles.label}>DEPARTMENT:</Text>
-            {/* Clickable INFO TECH Text */}
-            <TouchableOpacity onPress={() => setShowDepartmentDropdown(!showDepartmentDropdown)}>
-              <Text style={styles.value}>{selectedDepartment}</Text>
-            </TouchableOpacity>
-            {/* Department dropdown options */}
-            {showDepartmentDropdown && (
-  <View style={styles.dropdown}>
-    {departmentOptions[selectedCollege]?.map((dept, index) => (
-      <TouchableOpacity
-        key={index}
-        style={styles.dropdownOption}
-        onPress={() => handleSelectDepartment(dept)}
-      >
-        <Text style={styles.dropdownText}>{dept}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-)}
-
+            <Text style={styles.value}>{userDetails?.department || "N/A"}</Text>
           </View>
         </View>
 
+        {/* Election Cards */}
         {elections.map((election) => (
           <TouchableOpacity key={election.id} style={styles.card}>
             <Text style={styles.cardTitle}>{election.title}</Text>
@@ -148,6 +61,7 @@ const VoteNowScreen = () => {
           </TouchableOpacity>
         ))}
 
+        {/* Home Button */}
         <TouchableOpacity style={styles.homeBtn} onPress={() => navigation.goBack()}>
           <Text style={styles.homeText}>HOME</Text>
         </TouchableOpacity>

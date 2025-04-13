@@ -17,13 +17,13 @@ export default StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 10, // optional extra space at bottom
+    paddingTop: 20,
+    paddingBottom: 60, // optional extra space at bottom
   },
   container: {
     backgroundColor: "#fff",
     paddingHorizontal: 20,
-    paddingTop: 70,
+    paddingTop: 60,
     paddingBottom: 40,
     flex: 1,
   },
@@ -39,25 +39,24 @@ export default StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: "bold",
+    marginTop: 20,
     marginBottom: 20,
     textAlign: "center",
   },
   labelRow: {
     flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 20,
     marginBottom: 20,
-    flexWrap: "wrap",
-    gap: 10, // optional, or use marginRight on labelGroup
   },
   labelGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 30,
+    flexDirection: "column",
+    flex: 1,
   },
   label: {
+    fontSize: 16,
+    color: "#333",
     fontWeight: "bold",
-    marginRight: 5,
   },
   value: {
     backgroundColor: "#E5E5E5",
