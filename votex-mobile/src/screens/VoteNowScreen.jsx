@@ -55,10 +55,17 @@ const VoteNowScreen = () => {
 
         {/* Election Cards */}
         {elections.map((election) => (
-          <TouchableOpacity key={election.id} style={styles.card}>
-            <Text style={styles.cardTitle}>{election.title}</Text>
-            <Image source={election.logo} style={styles.cardLogo} />
-          </TouchableOpacity>
+          <TouchableOpacity
+          key={election.id}
+          style={styles.card}
+          onPress={() => navigation.navigate("VoteElection", {
+            electionId: election.id,
+            electionTitle: election.title,
+          })}
+        >
+          <Text style={styles.cardTitle}>{election.title}</Text>
+          <Image source={election.logo} style={styles.cardLogo} />
+        </TouchableOpacity>
         ))}
 
         {/* Home Button */}
