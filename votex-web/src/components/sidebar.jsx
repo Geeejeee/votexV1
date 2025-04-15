@@ -30,7 +30,7 @@ const Sidebar = ( onToggle ) => {
           <LayoutDashboard size={18} className="nav-icon" />
           {isOpen && <span>Dashboard</span>}
         </a>
-        <a href="#">
+        <a href="/elections">
           <ClipboardList size={18} className="nav-icon" />
           {isOpen && <span>Elections</span>}
         </a>

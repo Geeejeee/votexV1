@@ -23,6 +23,23 @@
   box-sizing: border-box;
 }
 
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #333;
+  background-color: #F9F9F9;
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.home-icon {
+  color: #333;
+  text-decoration: none;
+  margin-right: 5px;
+}
+
 
 /* Voters List content spacing */
 .voters-list-container {
@@ -153,6 +170,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-left: -2.5rem;
   width: 100%;
 }
 .modal input {

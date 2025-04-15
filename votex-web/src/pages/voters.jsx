@@ -77,6 +77,12 @@ const VotersList = () => {
       <div className="dashboard-main">
         <Header />
         <div className="dashboard-content">
+          <nav className="breadcrumb">
+            <a href="/dashboard" className="home-icon">
+              <i className="fa fa-home"></i>
+            </a>
+            <span> › Voters List</span>
+          </nav>
           <div className="voters-list-container">
             <div className="voters-header">
               <h2>Voters List</h2>
