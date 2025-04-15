@@ -61,7 +61,6 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logo {

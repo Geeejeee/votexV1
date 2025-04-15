@@ -1,15 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/login';
-import Dashboard from './pages/dashboard'; // Your Dashboard component
-
+// App.jsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/dashboard";
+import Login from "./pages/login";
+import Voters from "./pages/voters";
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* Add other routes here */}
+        <Route path="/voters" element={<Voters />} />
       </Routes>
     </Router>
   );

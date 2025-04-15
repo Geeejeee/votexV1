@@ -1,20 +1,21 @@
 /* styles/footer.css */
 
 .dashboard-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #03296e;
-    color: white;
-    padding: 0.1rem 1.5rem;
-    font-size: 0.75rem;
-    margin-top: auto;
-  }
-  
-  .dashboard-footer select {
-    padding: 0.2rem 0.5rem;
-    margin-left: 0.5rem;
-    border-radius: 4px;
-    border: none;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #03296e;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  margin-top: auto;
+  z-index: 10;
+}
+
+.dashboard-footer select {
+  padding: 0.2rem 0.5rem;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  border: none;
+}
+

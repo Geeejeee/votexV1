@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import "../styles/sidebar.css";
 import { SquareChevronLeft, SquareChevronRight, LayoutDashboard, ClipboardList,Users, BarChart2, HelpCircle, } from "lucide-react";
 import logo from '../assets/votexmlogo.png';
 
-const Sidebar = () => {
+const Sidebar = ( onToggle ) => {
   const [isOpen, setIsOpen] = useState(true);
 
   const toggleSidebar = () => {
@@ -25,7 +26,7 @@ const Sidebar = () => {
       </button>
       
       <nav className="sidebar-nav">
-        <a href="#">
+        <a href="/dashboard">
           <LayoutDashboard size={18} className="nav-icon" />
           {isOpen && <span>Dashboard</span>}
         </a>
@@ -33,7 +34,7 @@ const Sidebar = () => {
           <ClipboardList size={18} className="nav-icon" />
           {isOpen && <span>Elections</span>}
         </a>
-        <a href="#">
+        <a href="/voters">
           <Users size={18} className="nav-icon" />
           {isOpen && <span>Voters</span>}
         </a>
