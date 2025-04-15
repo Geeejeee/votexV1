@@ -27,21 +27,21 @@ const VotersList = () => {
 
   useEffect(() => {
     let result = voters;
-  
+
     if (searchTerm) {
       result = result.filter(voter =>
         `${voter.firstName} ${voter.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-  
+
     if (collegeFilter) {
       result = result.filter(voter => voter.college === collegeFilter);
     }
-  
+
     if (deptFilter) {
       result = result.filter(voter => voter.department === deptFilter);
     }
-  
+
     setFilteredVoters(result);
   }, [searchTerm, collegeFilter, deptFilter, voters]);
 
@@ -150,10 +150,20 @@ const VotersList = () => {
                 <input name="email" placeholder="Email Address" value={newVoter.email} onChange={handleInputChange} />
                 {errors.email && <div className="error">{errors.email}</div>}
 
-                <input name="college" placeholder="College" value={newVoter.college} onChange={handleInputChange} />
+                <select name="college" value={newVoter.college} onChange={handleInputChange}>
+                  <option value="">Select College</option>
+                  <option value="CITC">CITC</option>
+                  <option value="CEA">CEA</option>
+                </select>
                 {errors.college && <div className="error">{errors.college}</div>}
 
-                <input name="department" placeholder="Department" value={newVoter.department} onChange={handleInputChange} />
+                <select name="department" value={newVoter.department} onChange={handleInputChange}>
+                  <option value="">Select Department</option>
+                  <option value="BSIT">BSIT</option>
+                  <option value="BSCS">BSCS</option>
+                  <option value="BSDS">BSDS</option>
+                  <option value="BSTCM">BSTCM</option>
+                </select>
                 {errors.department && <div className="error">{errors.department}</div>}
               </form>
               <div className="modal-actions">

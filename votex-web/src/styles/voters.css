@@ -156,6 +156,7 @@
   width: 100%;
 }
 .modal input {
+  color: #333;
   width: 100%;
   max-width: 415px;
   padding: 0.75rem 1rem;
@@ -169,6 +170,25 @@
 }
 
 .modal input:focus {
+  border-color: #0a4ebf;
+  outline: none;
+}
+
+.modal select {
+  color: #333;
+  width: 100%;
+  max-width: 450px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.8rem;
+  border: 2px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+  background-color: #ffffff;
+  text-align: left;
+}
+
+.modal select:focus {
   border-color: #0a4ebf;
   outline: none;
 }
