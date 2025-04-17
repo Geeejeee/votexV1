@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/sidebar';
 import Header from '../components/header';
 import Footer from '../components/footer';
@@ -49,6 +50,9 @@ const ElectionsDashboard = () => {
     // Add confirmation modal state
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [electionToDelete, setElectionToDelete] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editElection, setEditElection] = useState(null);
+    const [editFileName, setEditFileName] = useState('No file chosen');
 
     const validateForm = () => {
         let isValid = true;
@@ -191,6 +195,11 @@ const ElectionsDashboard = () => {
         setElectionToDelete(null);
     };
 
+    const navigate = useNavigate();
+    const handleViewElection = (id) => {
+        navigate(`/elections/${id}`);
+    };
+
     return (
         <div className={`dashboard-container ${!isSidebarOpen ? "sidebar-collapsed" : ""}`}>
             <Sidebar onToggle={setIsSidebarOpen} />
@@ -223,14 +232,18 @@ const ElectionsDashboard = () => {
                                             <h2>{election.title}</h2>
                                             <h3>{election.year}</h3>
                                             <div className="action-buttons">
-                                                <button className="view-btn">VIEW</button>
-                                                <button className="edit-btn">EDIT</button>
-                                                <button 
-                                                    className="delete-btn" 
-                                                    onClick={() => handleDeleteClick(election.id)}
+                                                <button className="view-btn" onClick={() => handleViewElection(election.id)}>VIEW</button>
+                                                <button
+                                                    className="edit-btn"
+                                                    onClick={() => {
+                                                        setEditElection(election);
+                                                        setEditFileName(typeof election.logo === 'string' ? election.logo.split('/').pop() : 'No file chosen');
+                                                        setShowEditModal(true);
+                                                    }}
                                                 >
-                                                    DELETE
+                                                    EDIT
                                                 </button>
+                                                <button className="delete-btn" onClick={() => handleDeleteClick(election.id)}> DELETE </button>
                                             </div>
                                         </div>
                                     </div>
@@ -318,6 +331,93 @@ const ElectionsDashboard = () => {
                     </div>
                 </div>
             )}
+
+            {showEditModal && editElection && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h2>EDIT ELECTION</h2>
+                            <button className="close-modal" onClick={() => setShowEditModal(false)}>×</button>
+                        </div>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+
+                                // Validation (optional)
+                                if (!editElection.title.trim() || !editElection.description.trim()) {
+                                    alert("Please fill out all fields.");
+                                    return;
+                                }
+
+                                // Update elections list
+                                const updatedElections = elections.map((el) =>
+                                    el.id === editElection.id
+                                        ? {
+                                            ...el,
+                                            title: editElection.title,
+                                            description: editElection.description,
+                                            logo:
+                                                editElection.logo instanceof File
+                                                    ? URL.createObjectURL(editElection.logo)
+                                                    : el.logo,
+                                        }
+                                        : el
+                                );
+
+                                setElections(updatedElections);
+                                setShowEditModal(false);
+                            }}
+                        >
+                            <div className="form-group">
+                                <label>ELECTION TITLE:</label>
+                                <input
+                                    type="text"
+                                    value={editElection.title}
+                                    onChange={(e) =>
+                                        setEditElection({ ...editElection, title: e.target.value })
+                                    }
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>ELECTION DESCRIPTION:</label>
+                                <textarea
+                                    value={editElection.description}
+                                    onChange={(e) =>
+                                        setEditElection({ ...editElection, description: e.target.value })
+                                    }
+                                ></textarea>
+                            </div>
+
+                            <div className="form-group">
+                                <label>ELECTION THUMBNAIL:</label>
+                                <div className="file-input-container">
+                                    <input
+                                        type="file"
+                                        id="edit-election-logo"
+                                        onChange={(e) => {
+                                            if (e.target.files[0]) {
+                                                setEditElection({
+                                                    ...editElection,
+                                                    logo: e.target.files[0],
+                                                });
+                                                setEditFileName(e.target.files[0].name);
+                                            }
+                                        }}
+                                        accept="image/*"
+                                    />
+                                    <span className="file-name">{editFileName}</span>
+                                </div>
+                            </div>
+
+                            <div className="form-submit">
+                                <button type="submit" className="submit-btn">SAVE CHANGES</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

@@ -1,0 +1,439 @@
+/* Election Candidates Page Styles */
+.ec-container {
+  padding: 0.5rem;
+}
+
+.ec-breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #333;
+  background-color: #F9F9F9;
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.ec-home-icon {
+  color: #333;
+  text-decoration: none;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.ec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.ec-org-info {
+  display: flex;
+  align-items: center;
+}
+
+.ec-org-logo {
+  margin-right: 1rem;
+}
+
+.ec-usg-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.ec-org-title h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #000;
+}
+
+.ec-org-title p {
+  font-size: 1rem;
+  margin: 0;
+  color: #000;
+}
+
+.ec-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.ec-btn-create, .ec-btn-delete, .ec-btn-view-voters, .ec-btn-primary, .ec-btn-danger, .ec-btn-submit {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.ec-btn-create, .ec-btn-primary, .ec-btn-view-voters, .ec-btn-submit {
+  background-color: #0A3780;
+  color: white;
+}
+
+.ec-btn-delete, .ec-btn-danger {
+  background-color: #c0392b;
+  color: white;
+}
+
+.ec-btn-view-voters {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+}
+
+.ec-position-section {
+  margin-bottom: 2rem;
+}
+
+.ec-position-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ec-position-header h2 {
+  color: #333;
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.ec-candidates-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ec-candidate-card {
+  width: 170px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ec-candidate-card:hover {
+  transform: scale(1.02);
+}
+
+.ec-candidate-photo {
+  background-color: #ffb400;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.ec-remove-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #e74c3c;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.ec-candidate-info {
+  background-color: #0A3780;
+  color: white;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.ec-candidate-info h3 {
+  font-size: 0.8rem;
+  margin: 0;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.ec-candidate-info p {
+  font-size: 0.7rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.ec-add-candidate-card {
+  width: 170px;
+  height: 202px; /* Matches total height of candidate card */
+  border: 2px dashed #ffb400;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ec-add-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #ffb400;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* Modal Styles */
+.ec-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.ec-modal {
+  background-color: white;
+  padding: 3rem;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+  color: #333;
+}
+
+/* New Add Candidate Modal Styles */
+.ec-add-candidate-modal {
+  padding-right: 2rem;
+  padding-left: 0.5rem;
+  width: 800px;
+  max-width: 95vw;
+  max-height: 90vh;
+  text-align: left;
+  border-radius: 8px;
+  overflow-y: auto;     
+  overflow-x: hidden;    
+  background-color: white;
+}
+
+.ec-add-candidate-header {
+  margin-left: -0.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  padding-right: 3rem;
+  background-color: #0A3780;
+  color: white;
+}
+
+.ec-add-candidate-header h2 {
+  margin: 0;
+  font-size: rem;
+  font-weight: bold;
+  color: white;
+  padding-left: 0.5rem;
+}
+
+.ec-add-candidate-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 0.5rem;
+}
+
+.ec-form-row {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0rem;
+}
+
+.ec-form-group {
+  flex: 1;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.ec-form-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  color: #333;
+}
+
+.ec-form-control {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #F5F5F5;
+  border: 1px solid #DDD;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.ec-form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.ec-form-submit {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 2rem 1.5rem;
+}
+
+.ec-btn-submit {
+  background-color: #0A3780;
+  color: white;
+  padding: 0.75rem 3rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 4px;
+}
+
+/* File input styling */
+.ec-file-input {
+  padding: 0.5rem;
+  background-color: #F5F5F5;
+  border: 1px solid #DDD;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.ec-file-input::-webkit-file-upload-button {
+  background-color: #0A3780;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Original modal styles */
+.ec-modal input,
+.ec-modal select {
+  width: 100%;
+  padding: 0.5rem; 
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  color: #333;
+}
+
+.ec-modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ec-modal-actions button {
+  padding: 0.5rem 2rem;
+  border: none;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ec-modal-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ec-modal-actions button:first-child {
+  background-color: #0A3780;
+  color: white;
+}
+
+.ec-modal-actions button.ec-btn-danger {
+  background-color: #c0392b;
+  color: white;
+}
+
+.ec-modal-actions button:last-child {
+  background-color: #ccc;
+}
+
+.ec-modal-overlay {
+  overflow-y: auto;
+  overflow-x: hidden;    /* ✅ Restrict horizontal scroll globally */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Transitions */
+.ec-modal-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ec-add-candidate-modal {
+    width: 95vw;
+    padding: 1rem;
+  }
+
+  .ec-add-candidate-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .ec-add-candidate-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .ec-form-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ec-form-group {
+    padding: 0;
+  }
+
+  .ec-form-submit {
+    padding: 1rem 0;
+  }
+
+  .ec-btn-submit {
+    width: 100%;
+  }
+}
