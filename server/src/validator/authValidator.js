@@ -16,9 +16,14 @@ const registerSchema = z.object({
   section: z.string().min(1, 'Section is required')
 });
 
-const loginSchema = z.object({
+const mobileLoginSchema = z.object({
   idNumber: z.string().min(1, 'ID Number is required'),
   password: z.string()
 });
 
-module.exports = { registerSchema, loginSchema };
+const webLoginSchema = z.object({
+  username: z.string().min(1, 'username is required'),
+  password: z.string()
+});
+
+module.exports = { registerSchema, webLoginSchema, mobileLoginSchema };

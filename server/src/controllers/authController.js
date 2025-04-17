@@ -1,7 +1,9 @@
 const { comparePassword } = require('../utils/authUtils');
 const jwt = require('jsonwebtoken');
-const { createUser, findUserByEmail, findUserByIdNumber } = require('../models/userModel');
+const { createUser, findUserByEmail, findUserByIdNumber, findAdminByUsername } = require('../models/userModel');
 const {signToken} = require('../utils/jwt');
+const {getAllColleges} = require('../models/collegeModel');
+const {getAllDepartments} = require('../models/departmentModel');
 
 const register = async (req, res) => {
   try {
@@ -54,7 +56,7 @@ const register = async (req, res) => {
 
 
 
-const login = async (req, res) => {
+const mobileLogin = async (req, res) => {
   try {
     const { idNumber, password } = req.body; // Get idNumber and password from request
 
@@ -84,7 +86,83 @@ const login = async (req, res) => {
   }
 };
 
+const webLogin = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Find the admin by username
+    const admin = await findAdminByUsername(username);
+
+    if (!admin) {
+      return res.status(401).json({ message: 'Invalid username' });
+    }
+
+    // Compare passwords
+    const isMatch = await comparePassword(password, admin.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid password' });
+    }
+
+    // Generate JWT token
+    const token = signToken({
+      userId: admin._id,
+      username: admin.username,
+      role: admin.role
+    });
+
+    // Send success response with token and user details
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: {
+        firstname: admin.firstname,
+        lastname: admin.lastname,
+        username: admin.username,
+        role: admin.role
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+const getColleges = async (req, res) => {
+  try {
+    const colleges = await getAllColleges();
+
+    // 🔥 Clean the response
+    const cleanedColleges = colleges.map(college => ({
+      id: college._id,
+      name: college.name
+    }));
+
+    res.status(200).json({ colleges: cleanedColleges});
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const getDepartments = async (req, res) => {
+  try {
+    const { collegeId } = req.params;
+
+    const departments = await getAllDepartments(collegeId);
+
+    const cleanedDepartments = departments.map(dept => ({
+      id: dept._id,
+      name: dept.name,
+      collegeName: dept.college?.name || 'Unknown College',
+    }));
+
+    res.status(200).json({ departments: cleanedDepartments });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
-  register, login
+  register, mobileLogin, webLogin, getColleges, getDepartments
 }

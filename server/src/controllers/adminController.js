@@ -3,51 +3,9 @@ const {createDepartment, deleteDepartment, findDepartmentById, getAllDepartments
 const {createElection, deleteElection, findElectionById} = require('../models/electionModel');
 const {createCandidate, deleteCandidate, findCandidatesByElection} = require('../models/candidateModel');
 const { getVotesByCandidate} = require('../models/voteModel');
-const {findAdminByUsername, findAllStudentsWithVoteStatus} = require('../models/userModel');
-const { comparePassword } = require('../utils/authUtils');
-const { signToken } = require('../utils/jwt'); // your custom jwt signer
+const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 
-exports.login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
 
-    // Find the admin by username
-    const admin = await findAdminByUsername(username);
-
-    if (!admin) {
-      return res.status(401).json({ message: 'Invalid username' });
-    }
-
-    // Compare passwords
-    const isMatch = await comparePassword(password, admin.password);
-
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid password' });
-    }
-
-    // Generate JWT token
-    const token = signToken({
-      userId: admin._id,
-      username: admin.username,
-      role: admin.role
-    });
-
-    // Send success response with token and user details
-    res.status(200).json({
-      message: 'Login successful',
-      token,
-      user: {
-        firstname: admin.firstname,
-        lastname: admin.lastname,
-        username: admin.username,
-        role: admin.role
-      }
-    });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 
 

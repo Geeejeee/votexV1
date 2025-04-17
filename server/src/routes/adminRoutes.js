@@ -3,10 +3,10 @@ const router = express.Router();
 const {login, createCollege, deleteCollege,getColleges,createDepartment, deleteDepartment,getDepartments,createElection, deleteElection,getElectionResults,addCandidate, deleteCandidate, getVotedStudents, getNonVotedStudents, getAllStudentsWithVoteStatus} = require('../controllers/adminController');
 const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
 const { validate } = require('../utils/validate');
-const { collegeSchema, departmentSchema, loginSchema } = require('../validator/adminValidation');
+const { collegeSchema, departmentSchema } = require('../validator/adminValidation');
 
 
-router.post('/login', validate(loginSchema), login);
+
 
 // College routes
 router.post('/college', verifyToken, requireAdmin, validate(collegeSchema), createCollege);
