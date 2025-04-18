@@ -5,6 +5,7 @@ const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
 const { validate } = require('../utils/validate');
 const { collegeSchema, departmentSchema } = require('../validator/adminValidation');
 const { registerSchema } = require('../validator/authValidator');
+const upload = require("../utils/upload")
 
 
 
@@ -20,7 +21,14 @@ router.delete('/department/:id', verifyToken, requireAdmin, deleteDepartment);
 router.get('/get-department/:collegeId',verifyToken, requireAdmin, getDepartments);
 
 // Election routes
-router.post('/elections', verifyToken, requireAdmin, createElection);
+router.post('/elections', verifyToken, requireAdmin, upload.single('logo'), (err, req, res, next) => {
+    if (err) {
+      console.error("Multer upload error:", err);
+      return res.status(500).json({ message: "File upload failed", error: err });
+    }
+    next();
+  }, createElection);
+  
 router.delete('/elections/:id', verifyToken, requireAdmin, deleteElection);
 router.get('/elections/:electionId/results', verifyToken, requireAdmin, getElectionResults);
 

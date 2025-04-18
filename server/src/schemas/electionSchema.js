@@ -1,31 +1,39 @@
 const mongoose = require('mongoose');
 
 const electionSchema = new mongoose.Schema({
-  name: { 
-    type: String, 
-    required: true 
+  title: {
+    type: String,
+    required: true,
+    trim: true
   },
-  position: { 
-    type: String, 
-    required: true 
+  description: {
+    type: String,
+    required: true,
+    trim: true
   },
-  college: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'College', 
+  logo: {
+    type: String, // This will typically be a URL to the uploaded image
     required: true
   },
-  department: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Department', 
-    required: true 
+  college: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'College',
+    required: true
+  },
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
+    required: true
   },
   status: {
     type: String,
     enum: ['upcoming', 'active', 'closed'],
-    default: 'upcoming',
+    default: 'upcoming'
   },
   startDate: { type: Date },
-  endDate: { type: Date },
+  endDate: { type: Date }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Election', electionSchema);

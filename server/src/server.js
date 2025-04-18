@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 
-app.use(cors({origin: "http://192.168.1.26:3000", credentials: true}));
+app.use(cors({origin: "http://192.168.127.58:3000", credentials: true}));
 app.use(morgan("dev"));
 
 app.use(express.json());

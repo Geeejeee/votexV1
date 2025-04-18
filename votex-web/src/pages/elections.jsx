@@ -4,6 +4,7 @@ import Sidebar from '../components/sidebar';
 import Header from '../components/header';
 import Footer from '../components/footer';
 import '../styles/elections.css';
+import axios from 'axios';
 
 // Import logo images
 import USGLogo from '../assets/USG.png';
@@ -11,6 +12,13 @@ import CITLogo from '../assets/CITC.png';
 import SITELogo from '../assets/SITE.png';
 
 const ElectionsDashboard = () => {
+    const [colleges, setColleges] = useState([]);
+const [departments, setDepartments] = useState([]);
+const [selectedCollege, setSelectedCollege] = useState('');
+const [selectedDepartment, setSelectedDepartment] = useState('');
+const [loadingDepartments, setLoadingDepartments] = useState(false);
+const token = localStorage.getItem('token'); 
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [elections, setElections] = useState([
@@ -37,15 +45,21 @@ const ElectionsDashboard = () => {
     const [newElection, setNewElection] = useState({
         title: '',
         description: '',
-        logo: null
+        logo: null,
+        startDate: '',
+        endDate: ''
     });
+    
 
     const [errors, setErrors] = useState({
         title: '',
         description: '',
         logo: '',
+        startDate: '',
+        endDate: '',
         general: ''
     });
+    
 
     // Add confirmation modal state
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -53,7 +67,63 @@ const ElectionsDashboard = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [editElection, setEditElection] = useState(null);
     const [editFileName, setEditFileName] = useState('No file chosen');
+    
+    useEffect(() => {
+        const fetchColleges = async () => {
+          try {
+            const res = await axios.get("/api/admin/get-college",  {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            });
+            
+            if (Array.isArray(res.data.colleges)) {
+              setColleges(res.data.colleges);
+              console.log("Fetched colleges:", res.data.colleges);
+            } else {
+              console.error("Unexpected response from colleges:", res.data);
+              setColleges([]);
+            }
+          } catch (err) {
+            console.error("Error fetching colleges:", err);
+            alert("Failed to load colleges. Please try again.");
+            setColleges([]);
+          }
+        };
+      
+        fetchColleges();
+      }, []);
 
+      const fetchDepartments = async (collegeId) => {
+        console.log("Fetching departments for college:", collegeId);
+        if (!collegeId) {
+            setDepartments([]); // Clear departments if no college is selected
+            return;
+        }
+        setLoadingDepartments(true);
+        try {
+            const res = await axios.get(`/api/admin/get-department/${collegeId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log("Departments fetched:", res.data); // Log to inspect the structure of the response
+    
+            if (Array.isArray(res.data.departments)) {
+                setDepartments(res.data.departments);
+            } else {
+                console.error("Unexpected response from departments:", res.data);
+                setDepartments([]);
+            }
+        } catch (err) {
+            console.error("Error fetching departments:", err);
+            setDepartments([]);
+        }
+        setLoadingDepartments(false);
+    };
+    
+    
+    
     const validateForm = () => {
         let isValid = true;
         const newErrors = {
@@ -80,7 +150,19 @@ const ElectionsDashboard = () => {
             newErrors.logo = 'Election thumbnail is required';
             isValid = false;
         }
-
+        if (!newElection.startDate) {
+            newErrors.startDate = 'Start date is required';
+            isValid = false;
+        }
+        
+        if (!newElection.endDate) {
+            newErrors.endDate = 'End date is required';
+            isValid = false;
+        } else if (newElection.startDate && newElection.endDate < newElection.startDate) {
+            newErrors.endDate = 'End date must be after start date';
+            isValid = false;
+        }
+        
         // Check if election with same title already exists
         const electionExists = elections.some(
             election => election.title.toLowerCase() === newElection.title.toLowerCase()
@@ -131,33 +213,37 @@ const ElectionsDashboard = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Validate form before submission
-        if (!validateForm()) {
-            return;
+        if (!validateForm()) return;
+      
+        const formData = new FormData();
+        formData.append('title', newElection.title);
+        formData.append('description', newElection.description);
+        formData.append('collegeId', selectedCollege);
+        formData.append('departmentId', selectedDepartment);
+        formData.append('startDate', newElection.startDate);
+        formData.append('endDate', newElection.endDate);
+        formData.append('logo', newElection.logo);  // Append the file here
+      
+        try {
+          const response = await axios.post('/api/admin/elections', formData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+      
+          // Handle the success response
+          setElections([...elections, response.data.election]);
+      
+          closeModal();
+        } catch (error) {
+          setErrors({ ...errors, general: error.message });
         }
-
-        // Create a new election object
-        const newElectionObj = {
-            id: elections.length + 1,
-            title: newElection.title,
-            year: '2025 ELECTIONS',
-            logo: newElection.logo ? URL.createObjectURL(newElection.logo) : '../assets/thumbnark.png'
-        };
-
-        // Add to elections array
-        setElections([...elections, newElectionObj]);
-
-        // Reset form and close modal
-        setNewElection({
-            title: '',
-            description: '',
-            logo: null
-        });
-        setShowModal(false);
-    };
+      };
+      
+    
 
     const closeModal = () => {
         setShowModal(false);
@@ -290,6 +376,69 @@ const ElectionsDashboard = () => {
                                 ></textarea>
                                 {errors.description && <div className="error-message">{errors.description}</div>}
                             </div>
+                            <div className="form-group">
+    <label>COLLEGE:</label>
+    <select
+        name="college"
+        value={selectedCollege}
+        onChange={(e) => {
+            const selectedCollegeId = e.target.value;
+            setSelectedCollege(selectedCollegeId);
+            setSelectedDepartment('');
+            fetchDepartments(selectedCollegeId);
+        }}
+    >
+        <option value="">Select College</option>
+        {colleges.map((college) => (
+            <option key={college.id} value={college.id}>
+                {college.name}
+            </option>
+        ))}
+    </select>
+    {errors.college && <div className="error-message">{errors.college}</div>}
+</div>
+
+<div className="form-group">
+    <label>DEPARTMENT:</label>
+    <select
+        name="department"
+        value={selectedDepartment}
+        onChange={(e) => setSelectedDepartment(e.target.value)}
+        disabled={!departments.length}
+    >
+        <option value="">Select Department</option>
+        {departments.map(dept => (
+            <option key={dept.id || dept.id} value={dept._id || dept.id}>
+                {dept.name}
+            </option>
+        ))}
+    </select>
+    {errors.department && <div className="error-message">{errors.department}</div>}
+</div>
+
+<div className="form-group">
+    <label>START DATE:</label>
+    <input
+        type="date"
+        name="startDate"
+        value={newElection.startDate}
+        onChange={handleInputChange}
+        className={errors.startDate ? 'input-error' : ''}
+    />
+    {errors.startDate && <div className="error-message">{errors.startDate}</div>}
+</div>
+
+<div className="form-group">
+    <label>END DATE:</label>
+    <input
+        type="date"
+        name="endDate"
+        value={newElection.endDate}
+        onChange={handleInputChange}
+        className={errors.endDate ? 'input-error' : ''}
+    />
+    {errors.endDate && <div className="error-message">{errors.endDate}</div>}
+</div>
 
                             <div className="form-group">
                                 <label>ELECTION THUMBNAIL:</label>
