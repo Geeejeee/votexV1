@@ -15,7 +15,7 @@ import { RegisterSchema } from "../utils/validationSchema";
 import styles from "../styles/register.js";
 import logo from "../assets/votexmlogo.png";
 import axios from "axios";
-
+import {API_BASE_URL} from '@env'
 
 const RegisterScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +27,7 @@ const RegisterScreen = ({ navigation }) => {
     useEffect(() => {
         const fetchColleges = async () => {
             try {
-                const res = await axios.get("http://192.168.117.58:5000/api/auth/get-college");
+                const res = await axios.get(`${API_BASE_URL}/api/auth/get-college`);
                 
                 if (Array.isArray(res.data.colleges)) {
                     setColleges(res.data.colleges);
@@ -50,7 +50,7 @@ const RegisterScreen = ({ navigation }) => {
     const fetchDepartments = async (collegeId) => {
         setLoadingDepartmentdepartments(true);
         try {
-            const res = await axios.get(`http://192.168.117.58:5000/api/auth/get-department/${collegeId}`);
+            const res = await axios.get(`${API_BASE_URL}/api/auth/get-department/${collegeId}`);
             console.log("Departments fetched:", res.data); 
             if (Array.isArray(res.data.departments)) {
                 setDepartments(res.data.departments);
@@ -104,7 +104,7 @@ const RegisterScreen = ({ navigation }) => {
 
                     console.log("Form values on submit:", values);
                     try {
-                        const res = await axios.post("http://192.168.117.58:5000/api/auth/register", values);
+                        const res = await axios.post(`${API_BASE_URL}/api/auth/register`, values);
                         alert("Registration successful");
                         navigation.navigate("Login");
                     } catch (error) {
