@@ -4,8 +4,68 @@ const {createElection, deleteElection, findElectionById} = require('../models/el
 const {createCandidate, deleteCandidate, findCandidatesByElection} = require('../models/candidateModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
+const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
 
+exports.addVoter = async (req, res) => {
+  try {
+    const {
+      idNumber,
+      firstname,
+      lastname,
+      email,
+      password,
+      college,
+      department,
+      yearLevel,
+      section
+    } = req.body;
 
+    // Ensure all fields are provided
+    if (!idNumber || !firstname || !lastname || !email || !password || !college || !department || !yearLevel || !section) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Check if email or ID number already exists
+    const existingUserByEmail = await findUserByEmail(email);
+    if (existingUserByEmail) {
+      return res.status(409).json({ message: 'Email already exists' });
+    }
+
+    const existingUserById = await findUserByIdNumber(idNumber);
+    if (existingUserById) {
+      return res.status(409).json({ message: 'ID Number already exists' });
+    }
+
+   
+
+    // Create the voter
+    const newVoter = await createUser({
+      idNumber,
+      firstname,
+      lastname,
+      email,
+      password,
+      college,
+      department,
+      yearLevel,
+      section,
+      role: 'student'
+    });
+
+    res.status(201).json({
+      message: 'Voter added successfully',
+      voter: {
+        firstname: newVoter.firstname,
+        lastname: newVoter.lastname,
+        email: newVoter.email,
+        idNumber: newVoter.idNumber
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 
 
@@ -200,7 +260,8 @@ exports.deleteCandidate = async (req, res) => {
   
       const formatted = students.map(student => ({
         idNumber: student.idNumber,
-        name: `${student.firstname} ${student.lastname}`,
+        firstname: student.firstname,
+        lastname: student.lastname,
         email: student.email,
         college: student.college?.name || "Unknown",
         department: student.department?.name || "Unknown",

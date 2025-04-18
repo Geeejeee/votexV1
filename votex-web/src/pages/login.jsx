@@ -26,7 +26,7 @@ const Login = () => {
 
     try {
       // Send login data to backend
-      const response = await axios.post("/api/admin/login", form);
+      const response = await axios.post("/api/auth/web-login", form);
 
       console.log("Response data:", response.data); // Log response from backend
 

@@ -1,7 +1,7 @@
 const { z } = require('zod');
 
 const registerSchema = z.object({
-  idNumber: z.string().min(1, 'ID Number is required'),
+  idNumber: z.string().regex(/^\d{10}$/, 'ID Number must be in proper format ex: 202230xxxx'),
   firstname: z.string().min(1, 'First name is required'),
   lastname: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email format').refine((val) => val.endsWith('@gmail.com'), {
