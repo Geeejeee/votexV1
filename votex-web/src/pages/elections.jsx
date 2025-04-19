@@ -349,12 +349,28 @@ const token = localStorage.getItem('token');
     };
 
     // Function to confirm and execute deletion
-    const confirmDelete = () => {
-        const updatedElections = elections.filter(election => election.id !== electionToDelete);
-        setElections(updatedElections);
-        setShowConfirmModal(false);
-        setElectionToDelete(null);
+    const confirmDelete = async () => {
+        try {
+            await axios.delete(`/api/admin/delete-elections/${electionToDelete}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            const updatedElections = elections.filter(
+                (election) => election._id !== electionToDelete
+            );
+    
+            setElections(updatedElections);
+            setShowConfirmModal(false);
+            setElectionToDelete(null);
+            alert("Election deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting election:", error);
+            alert("Failed to delete election.");
+        }
     };
+    
 
     // Function to cancel deletion
     const cancelDelete = () => {
