@@ -30,3 +30,10 @@ exports.deleteElection = async (id) => {
 exports.findElectionById = async (id) => {
   return await Election.findById(id);
 };
+
+exports.getAllElections = async () => {
+  return await Election.find()
+            .populate('college', 'name')
+            .populate('department', 'name')
+            .sort({ createdAt: -1 });
+};

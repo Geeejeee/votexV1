@@ -6,10 +6,7 @@ import Footer from '../components/footer';
 import '../styles/elections.css';
 import axios from 'axios';
 
-// Import logo images
-import USGLogo from '../assets/USG.png';
-import CITLogo from '../assets/CITC.png';
-import SITELogo from '../assets/SITE.png';
+
 
 const ElectionsDashboard = () => {
     const [colleges, setColleges] = useState([]);
@@ -21,26 +18,7 @@ const token = localStorage.getItem('token');
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [elections, setElections] = useState([
-        {
-            id: 1,
-            title: 'UNIVERSITY STUDENT GOVERNMENT',
-            year: '2025 ELECTIONS',
-            logo: USGLogo
-        },
-        {
-            id: 2,
-            title: 'COLLEGE OF INFORMATION TECHNOLOGY AND COMPUTING',
-            year: '2025 ELECTIONS',
-            logo: CITLogo
-        },
-        {
-            id: 3,
-            title: 'SOCIETY OF INFORMATION TECHNOLOGY ENTHUSIASTS',
-            year: '2025 ELECTIONS',
-            logo: SITELogo
-        }
-    ]);
+    const [elections, setElections] = useState([]);
 
     const [newElection, setNewElection] = useState({
         title: '',
@@ -67,6 +45,31 @@ const token = localStorage.getItem('token');
     const [showEditModal, setShowEditModal] = useState(false);
     const [editElection, setEditElection] = useState(null);
     const [editFileName, setEditFileName] = useState('No file chosen');
+    
+    useEffect(() => {
+        const fetchElections = async () => {
+            try {
+                const res = await axios.get('/api/admin/get-elections', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (Array.isArray(res.data.elections)) {
+                    setElections(res.data.elections);
+                    console.log("Fetched elections:", res.data.elections);
+                } else {
+                    console.error("Unexpected elections response:", res.data);
+                    setElections([]);
+                }
+            } catch (err) {
+                console.error("Error fetching elections:", err);
+                alert("Failed to load elections.");
+            }
+        };
+    
+        fetchElections();
+    }, []);
+
     
     useEffect(() => {
         const fetchColleges = async () => {
@@ -233,10 +236,10 @@ const token = localStorage.getItem('token');
               'Content-Type': 'multipart/form-data',
             },
           });
-      
+          
           // Handle the success response
           setElections([...elections, response.data.election]);
-      
+          alert('Election created successfully!');
           closeModal();
         } catch (error) {
           setErrors({ ...errors, general: error.message });
@@ -308,34 +311,35 @@ const token = localStorage.getItem('token');
                         </div>
 
                         <div className="elections-grid">
-                            {elections.map((election) => (
-                                <div className="election-card" key={election.id}>
-                                    <div className="card-content">
-                                        <div className="election-logo">
-                                            <img src={election.logo} alt={`${election.title} Logo`} />
-                                        </div>
-                                        <div className="election-info">
-                                            <h2>{election.title}</h2>
-                                            <h3>{election.year}</h3>
-                                            <div className="action-buttons">
-                                                <button className="view-btn" onClick={() => handleViewElection(election.id)}>VIEW</button>
-                                                <button
-                                                    className="edit-btn"
-                                                    onClick={() => {
-                                                        setEditElection(election);
-                                                        setEditFileName(typeof election.logo === 'string' ? election.logo.split('/').pop() : 'No file chosen');
-                                                        setShowEditModal(true);
-                                                    }}
-                                                >
-                                                    EDIT
-                                                </button>
-                                                <button className="delete-btn" onClick={() => handleDeleteClick(election.id)}> DELETE </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+    {elections.map((election) => (
+        <div className="election-card" key={election._id || election.id}>
+            <div className="card-content">
+                <div className="election-logo">
+                    <img src={election.logo} alt={`${election.title} Logo`} />
+                </div>
+                <div className="election-info">
+  <h2>{election.title}</h2>
+  <p className="election-description">{election.description}</p>
+  <p className="election-dates">
+    {new Date(election.startDate).toLocaleDateString()} -{' '}
+    {new Date(election.endDate).toLocaleDateString()}
+  </p>
+  <div className="action-buttons">
+    <button className="view-btn" onClick={() => handleViewElection(election._id)}>VIEW</button>
+    <button className="edit-btn" onClick={() => {
+      setEditElection(election);
+      setEditFileName(typeof election.logo === 'string' ? election.logo.split('/').pop() : 'No file chosen');
+      setShowEditModal(true);
+    }}>EDIT</button>
+    <button className="delete-btn" onClick={() => handleDeleteClick(election._id)}>DELETE</button>
+  </div>
+</div>
+
+            </div>
+        </div>
+    ))}
+</div>
+
                     </div>
                 </div>
                 <div className="footer">

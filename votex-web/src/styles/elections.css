@@ -111,11 +111,16 @@
     color: #0f3c7d;
   }
   
-  .election-info h3 {
-    font-size: 14px;
-    margin: 0 0 15px 0;
-    color: #0f3c7d;
-
+  .election-description {
+    color: #000000;
+    font-size: 16px;
+    margin: 0 0 5px 0;
+  }
+  
+  .election-dates {
+    color: #000000;
+    font-size: 16px;
+    margin: 0 0 5px 0;
   }
   
   .action-buttons {

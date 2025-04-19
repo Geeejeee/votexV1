@@ -1,6 +1,6 @@
 const {createCollege, deleteCollege, findCollegeById, getAllColleges} = require('../models/collegeModel');
 const {createDepartment, deleteDepartment, findDepartmentById, getAllDepartments} = require('../models/departmentModel');
-const {createElection, deleteElection, findElectionById} = require('../models/electionModel');
+const {createElection, deleteElection, findElectionById, getAllElections} = require('../models/electionModel');
 const {createCandidate, deleteCandidate, findCandidatesByElection} = require('../models/candidateModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
@@ -163,16 +163,10 @@ exports.createElection = async (req, res) => {
     const { title, description, collegeId, departmentId, startDate, endDate } = req.body;
     const logo = req.file;
 
-    console.log("Incoming body:", req.body);
-    console.log("Incoming file:", req.file);
-
     if (!logo) {
       console.error("❌ No logo found in request.");
       return res.status(400).json({ message: "Logo is required" });
     }
-
-    // Check the logo path and contents before uploading
-    console.log("📂 Logo path:", logo?.path);
 
     // Upload the logo to Cloudinary
     const logoUploadResult = await cloudinary.uploader.upload(logo.path);
@@ -190,8 +184,7 @@ exports.createElection = async (req, res) => {
       parsedStartDate,
       parsedEndDate
     );
-
-    console.log('New Election:', newElection);
+    
     res.status(201).json({ message: "Election created successfully", election: newElection });
   } catch (error) {
     console.error('❌ Error creating election:', error.message);
@@ -217,6 +210,17 @@ exports.createElection = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+
+  exports.getElections = async (req, res) => {
+    try {
+        const elections = await getAllElections();
+        res.status(200).json({ elections });
+    } catch (err) {
+        console.error("Error fetching elections:", err);
+        res.status(500).json({ message: 'Server error while fetching elections.' });
+    }
+};
+
   
 // Add Candidate
 exports.addCandidate = async (req, res) => {
