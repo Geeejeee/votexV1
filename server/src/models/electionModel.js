@@ -1,9 +1,9 @@
 const Election = require("../schemas/electionSchema");
 
+// CREATE
 exports.createElection = async (title, description, logo, collegeId, departmentId, startDate, endDate) => {
-  // Case-insensitive check for duplicate title within same college & department
   const existingElection = await Election.findOne({
-    title: { $regex: new RegExp(`^${title}$`, 'i') }, // case-insensitive exact match
+    title: { $regex: new RegExp(`^${title}$`, 'i') },
     college: collegeId,
     department: departmentId
   });
@@ -23,17 +23,45 @@ exports.createElection = async (title, description, logo, collegeId, departmentI
   });
 };
 
+// UPDATE
+exports.updateElection = async (electionId, updatedData) => {
+  const updateFields = {
+    title: updatedData.title,
+    description: updatedData.description,
+    startDate: updatedData.startDate,
+    endDate: updatedData.endDate,
+    college: updatedData.collegeId,
+    department: updatedData.departmentId,
+  };
+
+  if (updatedData.logo) {
+    updateFields.logo = updatedData.logo;
+  }
+
+  const updatedElection = await Election.findByIdAndUpdate(
+    electionId,
+    updateFields,
+    { new: true }
+  );
+
+  return updatedElection;
+};
+
+
+// DELETE
 exports.deleteElection = async (id) => {
   return await Election.findByIdAndDelete(id);
 };
 
+// FIND BY ID
 exports.findElectionById = async (id) => {
   return await Election.findById(id);
 };
 
+// GET ALL
 exports.getAllElections = async () => {
   return await Election.find()
-            .populate('college', 'name')
-            .populate('department', 'name')
-            .sort({ createdAt: -1 });
+    .populate('college', 'name')
+    .populate('department', 'name')
+    .sort({ createdAt: -1 });
 };

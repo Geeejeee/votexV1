@@ -246,6 +246,84 @@ const token = localStorage.getItem('token');
         }
       };
       
+      const handleEditClick = (election) => {
+        // Set election data
+        setEditElection({
+            ...election,
+            _id: election._id,
+            collegeId: election.collegeId,
+            departmentId: election.departmentId,
+            logo: `${election.logo}?t=${new Date().getTime()}`
+        });
+    
+        // Set selected college
+        setSelectedCollege(election.collegeId);
+    
+        // Fetch departments for the selected college
+        fetchDepartments(election.collegeId);
+    
+        // Set selected department only after fetching the departments
+        setTimeout(() => {
+            setSelectedDepartment(election.departmentId);
+        }, 0);
+    
+        // Set file name for logo
+        setEditFileName(typeof election.logo === 'string' ? election.logo.split('/').pop() : 'No file chosen');
+    
+        // Open the modal
+        setShowEditModal(true);
+    };
+    
+    
+    
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+    
+        if (!editElection.title.trim() || !editElection.description.trim()) {
+            alert("Please fill out all fields.");
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append('title', editElection.title);
+        formData.append('description', editElection.description);
+        formData.append('collegeId', selectedCollege);
+        formData.append('departmentId', selectedDepartment);
+        formData.append('startDate', editElection.startDate);
+        formData.append('endDate', editElection.endDate);
+    
+        if (editElection.logo instanceof File) {
+            formData.append('logo', editElection.logo);
+        }
+    
+        try {
+            const response = await axios.put(`/api/admin/update-election/${editElection._id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    
+            // Update the elections list with the new logo and data
+            const updatedElection = {
+                ...response.data.election,
+                logo: `${response.data.election.logo}?t=${new Date().getTime()}`, // Force reloading the logo
+            };
+    
+            // Update the elections state with the new logo
+            const updatedElections = elections.map((el) =>
+                el._id === updatedElection._id ? updatedElection : el
+            );
+    
+            setElections(updatedElections);  // This updates the UI with the new logo instantly
+            alert('Election updated successfully!');
+            setShowEditModal(false); // Close the modal after success
+        } catch (error) {
+            console.error('Error updating election:', error);
+            alert('Failed to update election.');
+        }
+    };
+    
     
 
     const closeModal = () => {
@@ -315,30 +393,27 @@ const token = localStorage.getItem('token');
         <div className="election-card" key={election._id || election.id}>
             <div className="card-content">
                 <div className="election-logo">
+                    {/* This will now dynamically update the logo */}
                     <img src={election.logo} alt={`${election.title} Logo`} />
                 </div>
                 <div className="election-info">
-  <h2>{election.title}</h2>
-  <p className="election-description">{election.description}</p>
-  <p className="election-dates">
-    {new Date(election.startDate).toLocaleDateString()} -{' '}
-    {new Date(election.endDate).toLocaleDateString()}
-  </p>
-  <div className="action-buttons">
-    <button className="view-btn" onClick={() => handleViewElection(election._id)}>VIEW</button>
-    <button className="edit-btn" onClick={() => {
-      setEditElection(election);
-      setEditFileName(typeof election.logo === 'string' ? election.logo.split('/').pop() : 'No file chosen');
-      setShowEditModal(true);
-    }}>EDIT</button>
-    <button className="delete-btn" onClick={() => handleDeleteClick(election._id)}>DELETE</button>
-  </div>
-</div>
-
+                    <h2>{election.title}</h2>
+                    <p className="election-description">{election.description}</p>
+                    <p className="election-dates">
+                        {new Date(election.startDate).toLocaleDateString()} -{' '}
+                        {new Date(election.endDate).toLocaleDateString()}
+                    </p>
+                    <div className="action-buttons">
+                        <button className="view-btn" onClick={() => handleViewElection(election._id)}>VIEW</button>
+                        <button className="edit-btn" onClick={() => handleEditClick(election)}>EDIT</button>
+                        <button className="delete-btn" onClick={() => handleDeleteClick(election._id)}>DELETE</button>
+                    </div>
+                </div>
             </div>
         </div>
     ))}
 </div>
+
 
                     </div>
                 </div>
@@ -485,91 +560,121 @@ const token = localStorage.getItem('token');
                 </div>
             )}
 
-            {showEditModal && editElection && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h2>EDIT ELECTION</h2>
-                            <button className="close-modal" onClick={() => setShowEditModal(false)}>×</button>
-                        </div>
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
+{showEditModal && editElection && (
+    <div className="modal-overlay">
+        <div className="modal-content">
+            <div className="modal-header">
+                <h2>EDIT ELECTION</h2>
+                <button className="close-modal" onClick={() => setShowEditModal(false)}>×</button>
+            </div>
+            <form onSubmit={handleEditSubmit}>
+                <div className="form-group">
+                    <label>ELECTION TITLE:</label>
+                    <input
+                        type="text"
+                        value={editElection.title}
+                        onChange={(e) =>
+                            setEditElection({ ...editElection, title: e.target.value })
+                        }
+                    />
+                </div>
 
-                                // Validation (optional)
-                                if (!editElection.title.trim() || !editElection.description.trim()) {
-                                    alert("Please fill out all fields.");
-                                    return;
+                <div className="form-group">
+                    <label>ELECTION DESCRIPTION:</label>
+                    <textarea
+                        value={editElection.description}
+                        onChange={(e) =>
+                            setEditElection({ ...editElection, description: e.target.value })
+                        }
+                    ></textarea>
+                </div>
+
+                <div className="form-group">
+    <label>COLLEGE:</label>
+    <select
+        value={selectedCollege}
+        onChange={(e) => {
+            const selectedCollegeId = e.target.value;
+            setSelectedCollege(selectedCollegeId);
+            setSelectedDepartment(''); // Reset department when college changes
+            fetchDepartments(selectedCollegeId); // Fetch new departments
+        }}
+    >
+        <option value="">Select College</option>
+        {colleges.map((college) => (
+            <option key={college.id} value={college.id}>
+                {college.name}
+            </option>
+        ))}
+    </select>
+</div>
+
+<div className="form-group">
+    <label>DEPARTMENT:</label>
+    <select
+        value={selectedDepartment}
+        onChange={(e) => setSelectedDepartment(e.target.value)}
+        disabled={!departments.length}
+    >
+        <option value="">Select Department</option>
+        {departments.map(dept => (
+            <option key={dept.id} value={dept.id}>
+                {dept.name}
+            </option>
+        ))}
+    </select>
+</div>
+
+
+                <div className="form-group">
+                    <label>START DATE:</label>
+                    <input
+                        type="date"
+                        value={editElection.startDate?.slice(0, 10)}
+                        onChange={(e) =>
+                            setEditElection({ ...editElection, startDate: e.target.value })
+                        }
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>END DATE:</label>
+                    <input
+                        type="date"
+                        value={editElection.endDate?.slice(0, 10)}
+                        onChange={(e) =>
+                            setEditElection({ ...editElection, endDate: e.target.value })
+                        }
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>ELECTION THUMBNAIL:</label>
+                    <div className="file-input-container">
+                        <input
+                            type="file"
+                            onChange={(e) => {
+                                if (e.target.files[0]) {
+                                    setEditElection({
+                                        ...editElection,
+                                        logo: e.target.files[0],
+                                    });
+                                    setEditFileName(e.target.files[0].name);
                                 }
-
-                                // Update elections list
-                                const updatedElections = elections.map((el) =>
-                                    el.id === editElection.id
-                                        ? {
-                                            ...el,
-                                            title: editElection.title,
-                                            description: editElection.description,
-                                            logo:
-                                                editElection.logo instanceof File
-                                                    ? URL.createObjectURL(editElection.logo)
-                                                    : el.logo,
-                                        }
-                                        : el
-                                );
-
-                                setElections(updatedElections);
-                                setShowEditModal(false);
                             }}
-                        >
-                            <div className="form-group">
-                                <label>ELECTION TITLE:</label>
-                                <input
-                                    type="text"
-                                    value={editElection.title}
-                                    onChange={(e) =>
-                                        setEditElection({ ...editElection, title: e.target.value })
-                                    }
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>ELECTION DESCRIPTION:</label>
-                                <textarea
-                                    value={editElection.description}
-                                    onChange={(e) =>
-                                        setEditElection({ ...editElection, description: e.target.value })
-                                    }
-                                ></textarea>
-                            </div>
-
-                            <div className="form-group">
-                                <label>ELECTION THUMBNAIL:</label>
-                                <div className="file-input-container">
-                                    <input
-                                        type="file"
-                                        id="edit-election-logo"
-                                        onChange={(e) => {
-                                            if (e.target.files[0]) {
-                                                setEditElection({
-                                                    ...editElection,
-                                                    logo: e.target.files[0],
-                                                });
-                                                setEditFileName(e.target.files[0].name);
-                                            }
-                                        }}
-                                        accept="image/*"
-                                    />
-                                    <span className="file-name">{editFileName}</span>
-                                </div>
-                            </div>
-
-                            <div className="form-submit">
-                                <button type="submit" className="submit-btn">SAVE CHANGES</button>
-                            </div>
-                        </form>
+                            accept="image/*"
+                        />
+                        <span className="file-name">{editFileName}</span>
                     </div>
                 </div>
-            )}
+
+                <div className="form-submit">
+                    <button type="submit" className="submit-btn">UPDATE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+)}
 
         </div>
     );

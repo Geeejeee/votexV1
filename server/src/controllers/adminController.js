@@ -1,6 +1,6 @@
 const {createCollege, deleteCollege, findCollegeById, getAllColleges} = require('../models/collegeModel');
 const {createDepartment, deleteDepartment, findDepartmentById, getAllDepartments} = require('../models/departmentModel');
-const {createElection, deleteElection, findElectionById, getAllElections} = require('../models/electionModel');
+const {createElection, deleteElection, findElectionById, getAllElections, updateElection} = require('../models/electionModel');
 const {createCandidate, deleteCandidate, findCandidatesByElection} = require('../models/candidateModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
@@ -68,6 +68,8 @@ exports.addVoter = async (req, res) => {
   }
 };
 
+
+// Update Election
 
 
 exports.createCollege = async (req, res) => {
@@ -155,11 +157,46 @@ exports.getDepartments = async (req, res) => {
 };
 
 
+exports.updateElection = async (req, res) => {
+  try {
+    const { electionId } = req.params;
+    const { title, description, startDate, endDate, collegeId, departmentId } = req.body;
+
+    const updatedElectionData = {
+      title,
+      description,
+      startDate,
+      endDate,
+      collegeId,
+      departmentId,
+    };
+
+    // Handle logo upload using multer
+    if (req.file) {
+      const uploadedLogo = await cloudinary.uploader.upload(req.file.path);
+      updatedElectionData.logo = uploadedLogo.secure_url;
+    }
+
+    const updatedElection = await updateElection(electionId, updatedElectionData);
+
+    if (!updatedElection) {
+      return res.status(404).json({ message: 'Election not found' });
+    }
+
+    return res.status(200).json({
+      message: 'Election updated successfully',
+      election: updatedElection,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
 // Create Election
 exports.createElection = async (req, res) => {
   try {
-    console.log("✅ createElection triggered");
     const { title, description, collegeId, departmentId, startDate, endDate } = req.body;
     const logo = req.file;
 
@@ -170,7 +207,6 @@ exports.createElection = async (req, res) => {
 
     // Upload the logo to Cloudinary
     const logoUploadResult = await cloudinary.uploader.upload(logo.path);
-    console.log('Logo Upload Result:', logoUploadResult);
 
     const parsedStartDate = new Date(startDate);
     const parsedEndDate = new Date(endDate);

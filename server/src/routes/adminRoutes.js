@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {addVoter, createCollege, deleteCollege,getColleges,createDepartment, deleteDepartment,getDepartments,createElection, deleteElection,getElectionResults,getElections,addCandidate, deleteCandidate, getVotedStudents, getNonVotedStudents, getAllStudentsWithVoteStatus} = require('../controllers/adminController');
+const {addVoter, createCollege, deleteCollege,getColleges,createDepartment, deleteDepartment,getDepartments,createElection, deleteElection,getElectionResults,getElections,updateElection,addCandidate, deleteCandidate, getVotedStudents, getNonVotedStudents, getAllStudentsWithVoteStatus} = require('../controllers/adminController');
 const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
 const { validate } = require('../utils/validate');
 const { collegeSchema, departmentSchema } = require('../validator/adminValidation');
@@ -21,17 +21,13 @@ router.delete('/department/:id', verifyToken, requireAdmin, deleteDepartment);
 router.get('/get-department/:collegeId',verifyToken, requireAdmin, getDepartments);
 
 // Election routes
-router.post('/elections', verifyToken, requireAdmin, upload.single('logo'), (err, req, res, next) => {
-    if (err) {
-      console.error("Multer upload error:", err);
-      return res.status(500).json({ message: "File upload failed", error: err });
-    }
-    next();
-  }, createElection);
+router.post('/elections', verifyToken, requireAdmin, upload.single('logo'), createElection);
   
 router.delete('/elections/:id', verifyToken, requireAdmin, deleteElection);
 router.get('/elections/:electionId/results', verifyToken, requireAdmin, getElectionResults);
 router.get('/get-elections', verifyToken, requireAdmin, getElections);
+router.put('/update-election/:electionId', verifyToken, requireAdmin, upload.single('logo'),updateElection);
+
 
 // Candidate routes
 router.post('/candidates', verifyToken, requireAdmin, addCandidate);
