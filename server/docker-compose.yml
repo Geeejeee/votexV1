@@ -1,0 +1,21 @@
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URL=mongodb+srv://admin:tD5TRlkYtGKrbrKg@cluster0.afydv.mongodb.net/voting_system?retryWrites=true&w=majority&appName=Cluster0
+      - PORT=5000
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
