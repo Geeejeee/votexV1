@@ -1,16 +1,16 @@
-const { findUserByEmail, updateUserVote } = require('../models/userModel');
+const {  findUserByIdNumber, updateUserVote } = require('../models/userModel');
 const {castVote, getVoteStatus} = require('../models/voteModel');
-const emitLiveResults = require('../utils/emitLiveResults');
+
 
 // Cast a Vote
-exports.vote = async (req, res, next) => {
+const vote = async (req, res, next) => {
   try {
-    const userId = req.user.userId; // from JWT middleware
-    const userEmail = req.user.email;
+    const userId = req.user.userId; 
+    const idNumber = req.user.idNumber;
 
     const { candidateId } = req.body;
 
-    const user = await findUserByEmail(userEmail);
+    const user = await findUserByIdNumber(idNumber);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     if (user.hasVoted) {
@@ -20,9 +20,6 @@ exports.vote = async (req, res, next) => {
     await castVote(userId, candidateId);
     await updateUserVote(userId);
 
-    const updatedStatus = await getVoteStatus();
-    emitLiveResults({ totalVotes: updatedStatus.length, votes: updatedStatus });
-
     res.status(200).json({ message: 'Vote submitted successfully' });
 
   } catch (err) {
@@ -31,7 +28,7 @@ exports.vote = async (req, res, next) => {
 };
 
 
-exports.getVoteStatus = async (req, res, next) => {
+const getVote = async (req, res, next) => {
   try {
     const status = await getVoteStatus();
     res.status(200).json({ totalVotes: status.length, votes: status });
@@ -40,3 +37,5 @@ exports.getVoteStatus = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = {vote, getVote}

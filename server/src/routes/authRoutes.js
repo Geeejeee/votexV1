@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const {validate} = require('../utils/validate');
+const validate = require('../utils/validate');
 const { registerSchema, mobileLoginSchema, webLoginSchema } = require('../validator/authValidator');
 const loginLimiter = require('../utils/rateLimiter');
 

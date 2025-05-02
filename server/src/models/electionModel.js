@@ -1,7 +1,7 @@
 const Election = require("../schemas/electionSchema");
 
 // CREATE
-exports.createElection = async (title, description, logo, collegeId, departmentId, startDate, endDate) => {
+const createElections = async (title, description, logo, collegeId, departmentId, startDate, endDate) => {
   const existingElection = await Election.findOne({
     title: { $regex: new RegExp(`^${title}$`, 'i') },
     college: collegeId,
@@ -24,7 +24,7 @@ exports.createElection = async (title, description, logo, collegeId, departmentI
 };
 
 // UPDATE
-exports.updateElection = async (electionId, updatedData) => {
+const updateElections = async (electionId, updatedData) => {
   const updateFields = {
     title: updatedData.title,
     description: updatedData.description,
@@ -49,19 +49,21 @@ exports.updateElection = async (electionId, updatedData) => {
 
 
 // DELETE
-exports.deleteElection = async (id) => {
+const deleteElections = async (id) => {
   return await Election.findByIdAndDelete(id);
 };
 
 // FIND BY ID
-exports.findElectionById = async (id) => {
+const findElectionById = async (id) => {
   return await Election.findById(id);
 };
 
 // GET ALL
-exports.getAllElections = async () => {
+const getAllElections = async () => {
   return await Election.find()
     .populate('college', 'name')
     .populate('department', 'name')
     .sort({ createdAt: -1 });
 };
+
+module.exports = {createElections, updateElections, deleteElections, findElectionById, getAllElections}

@@ -1,8 +1,7 @@
 const User = require("../schemas/userSchema");
 const { hashPassword } = require("../utils/authUtils");
 
-module.exports = {
-  createUser: async ({
+ const createUser = async (
     idNumber,
     firstname,
     lastname,
@@ -13,7 +12,7 @@ module.exports = {
     yearLevel,
     section,
     role
-  }) => {
+  ) => {
     const hashed = await hashPassword(password);
 
     const payload = {
@@ -30,29 +29,37 @@ module.exports = {
     };
 
     return await User.create(payload);
-  },
+  };
 
-  findUserByEmail: async (email) => {
+  const findUserByEmail = async (email) => {
     return await User.findOne({ email });
-  },
+  };
 
-  updateUserVote: async (userId) => {
+  const updateUserVote = async (userId) => {
     return await User.findByIdAndUpdate(userId, { hasVoted: true }, { new: true });
-  },
+  };
 
-  findUserByIdNumber: async (idNumber) => {
+  const findUserByIdNumber = async (idNumber) => {
     return await User.findOne({ idNumber });
-  },
+  };
 
-  findAdminByUsername: async (username) => {
+  const findAdminByUsername = async (username) => {
     return await User.findOne({ username });
-  },
+  };
 
   // ✅ New method to get all students with vote status and full info
-  findAllStudentsWithVoteStatus: async () => {
+  const findAllStudentsWithVoteStatus = async () => {
     return await User.find({ role: "student" })
       .populate("college", "name")
       .populate("department", "name")
       .sort({ createdAt: -1 });
-  }
+  };
+
+module.exports = {
+  createUser,
+  findUserByEmail,
+  updateUserVote,
+  findUserByIdNumber,
+  findAdminByUsername,
+  findAllStudentsWithVoteStatus,
 };

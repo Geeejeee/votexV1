@@ -64,7 +64,7 @@ const register = async (req, res) => {
 const mobileLogin = async (req, res) => {
   try {
     const { idNumber, password } = req.body; // Get idNumber and password from request
-
+    console.log(idNumber, password);
     const user = await findUserByIdNumber(idNumber); // Find user by idNumber
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 

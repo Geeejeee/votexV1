@@ -2,37 +2,37 @@ const Vote = require("../schemas/voteSchema");
 const User = require("../schemas/userSchema");
 const Candidate = require("../schemas/candidateSchema");
 
-exports.createVote = async (data) => {
+const createVote = async (data) => {
   return await Vote.create(data);
 };
 
-exports.getAllVotes = async () => {
+const getAllVotes = async () => {
   return await Vote.find().populate('voter').populate('candidate');
 };
 
-exports.getVotesByCandidate = async () => {
+const getVotesByCandidate = async () => {
   return await Vote.find({}).populate('candidate');
 };
 
-exports.getVotedStudentIds = async () => {
+const getVotedStudentIds = async () => {
   const votes = await Vote.find({}, 'voter');
   return votes.map(vote => vote.voter.toString());
 };
 
-exports.getVotedStudents = async () => {
+const getVotedStudents = async () => {
   const votes = await Vote.find().populate('voter');
   return votes.map(vote => vote.voter); // returns full student objects
 };
 
-exports.getNonVotedStudents = async () => {
-  const votedIds = await exports.getVotedStudentIds();
+const getNonVotedStudents = async () => {
+  const votedIds = await getVotedStudentIds();
   const allStudents = await User.find({ role: 'student' });
 
   const nonVoters = allStudents.filter(student => !votedIds.includes(student._id.toString()));
   return nonVoters;
 };
 
-exports.castVote = async (userId, candidateId) => {
+const castVote = async (userId, candidateId) => {
   const candidate = await Candidate.findById(candidateId);
   if (!candidate) throw new Error('Candidate not found');
 
@@ -45,8 +45,18 @@ exports.castVote = async (userId, candidateId) => {
   return await vote.save();
 };
 
-exports.getVoteStatus = async () => {
+const getVoteStatus = async () => {
   return await Vote.find()
     .populate('candidate', 'firstName lastName position')
     .populate('voter', 'name email');
+};
+
+module.exports = {
+  createVote,
+  getAllVotes,
+  getVotesByCandidate,
+  getVotedStudents,
+  getNonVotedStudents,
+  castVote,
+  getVoteStatus,
 };

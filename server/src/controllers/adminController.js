@@ -1,13 +1,13 @@
-const {createCollege, deleteCollege, findCollegeById, getAllColleges} = require('../models/collegeModel');
-const {createDepartment, deleteDepartment, findDepartmentById, getAllDepartments} = require('../models/departmentModel');
-const {createElection, deleteElection, findElectionById, getAllElections, updateElection} = require('../models/electionModel');
-const {createCandidate, deleteCandidate, findCandidatesByElection} = require('../models/candidateModel');
+const {createColleges, deleteColleges, findCollegeById, getAllColleges} = require('../models/collegeModel');
+const {createDepartments, deleteDepartments, findDepartmentById, getAllDepartments} = require('../models/departmentModel');
+const {createElections, deleteElections, findElectionById, getAllElections, updateElections} = require('../models/electionModel');
+const {createCandidate, deleteCandidates, findCandidatesByElection} = require('../models/candidateModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
 const cloudinary = require('../utils/cloudinary');
 
-exports.addVoter = async (req, res) => {
+const addVoter = async (req, res) => {
   try {
     const {
       idNumber,
@@ -72,19 +72,19 @@ exports.addVoter = async (req, res) => {
 // Update Election
 
 
-exports.createCollege = async (req, res) => {
+const createCollege = async (req, res) => {
   try {
     const { name } = req.body;
-    const college = await createCollege(name);
+    const college = await createColleges(name);
     res.status(201).json({ message: 'College created', college });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-exports.deleteCollege = async (req, res) => {
+const deleteCollege = async (req, res) => {
   try {
-    const deleted = await deleteCollege(req.params.id);
+    const deleted = await deleteColleges(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'College not found' });
     res.status(200).json({ message: 'College deleted' });
   } catch (err) {
@@ -93,7 +93,7 @@ exports.deleteCollege = async (req, res) => {
 };
 
 
-exports.getColleges = async (req, res) => {
+const getColleges = async (req, res) => {
   try {
     const colleges = await getAllColleges();
 
@@ -111,11 +111,11 @@ exports.getColleges = async (req, res) => {
 
 
 //create department
-exports.createDepartment = async (req, res) => {
+const createDepartment = async (req, res) => {
   try {
     const { name, collegeId } = req.body;
 
-    const department = await createDepartment(name, collegeId);
+    const department = await createDepartments(name, collegeId);
 
     res.status(201).json({ message: 'Department created', department });
   } catch (err) {
@@ -125,10 +125,10 @@ exports.createDepartment = async (req, res) => {
 
 
 //delete department
-exports.deleteDepartment = async (req, res) => {
+const deleteDepartment = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await deleteDepartment(id);
+    const deleted = await deleteDepartments(id);
     if (!deleted) return res.status(404).json({ message: 'Department not found' });
     res.status(200).json({ message: 'Department deleted' });
   } catch (err) {
@@ -138,7 +138,7 @@ exports.deleteDepartment = async (req, res) => {
 
 
 // controllers/departmentController.js
-exports.getDepartments = async (req, res) => {
+const getDepartments = async (req, res) => {
   try {
     const { collegeId } = req.params;
 
@@ -157,7 +157,7 @@ exports.getDepartments = async (req, res) => {
 };
 
 
-exports.updateElection = async (req, res) => {
+const updateElection = async (req, res) => {
   try {
     const { electionId } = req.params;
     const { title, description, startDate, endDate, collegeId, departmentId } = req.body;
@@ -177,7 +177,7 @@ exports.updateElection = async (req, res) => {
       updatedElectionData.logo = uploadedLogo.secure_url;
     }
 
-    const updatedElection = await updateElection(electionId, updatedElectionData);
+    const updatedElection = await updateElections(electionId, updatedElectionData);
 
     if (!updatedElection) {
       return res.status(404).json({ message: 'Election not found' });
@@ -195,7 +195,7 @@ exports.updateElection = async (req, res) => {
 
 
 // Create Election
-exports.createElection = async (req, res) => {
+const createElection = async (req, res) => {
   try {
     const { title, description, collegeId, departmentId, startDate, endDate } = req.body;
     const logo = req.file;
@@ -211,7 +211,7 @@ exports.createElection = async (req, res) => {
     const parsedStartDate = new Date(startDate);
     const parsedEndDate = new Date(endDate);
 
-    const newElection = await createElection(
+    const newElection = await createElections(
       title,
       description,
       logoUploadResult.secure_url, // Cloudinary URL of the uploaded logo
@@ -232,11 +232,11 @@ exports.createElection = async (req, res) => {
 
 
   // Delete Election
-  exports.deleteElection = async (req, res) => {
+  const deleteElection = async (req, res) => {
     try {
       const { id } = req.params;
   
-      const deletedElection = await deleteElection(id);
+      const deletedElection = await deleteElections(id);
       if (!deletedElection) {
         return res.status(404).json({ message: 'Election not found' });
       }
@@ -247,7 +247,7 @@ exports.createElection = async (req, res) => {
     }
   };
 
-  exports.getElections = async (req, res) => {
+  const getElections = async (req, res) => {
     try {
         const elections = await getAllElections();
         res.status(200).json({ elections });
@@ -259,7 +259,7 @@ exports.createElection = async (req, res) => {
 
   
 // Add Candidate
-exports.addCandidate = async (req, res) => {
+const addCandidate = async (req, res) => {
   try {
     const { firstName, lastName, position, electionId } = req.body;
 
@@ -286,9 +286,9 @@ exports.addCandidate = async (req, res) => {
 
 
 // Delete Candidate
-exports.deleteCandidate = async (req, res) => {
+const deleteCandidate = async (req, res) => {
   try {
-    const candidate = await deleteCandidate(req.params.id);
+    const candidate = await deleteCandidates(req.params.id);
     if (!candidate) return res.status(404).json({ message: 'Candidate not found' });
 
     res.status(200).json({ message: 'Candidate deleted' });
@@ -298,7 +298,7 @@ exports.deleteCandidate = async (req, res) => {
 };
 
 
-  exports.getElectionResults = async (req, res) => {
+  const getElectionResults = async (req, res) => {
     try {
       const electionId = req.params.electionId;
   
@@ -329,7 +329,7 @@ exports.deleteCandidate = async (req, res) => {
     }
   };
   
-  exports.getAllStudentsWithVoteStatus = async (req, res) => {
+  const getAllStudentsWithVoteStatus = async (req, res) => {
     try {
       const students = await findAllStudentsWithVoteStatus();
   
@@ -349,3 +349,8 @@ exports.deleteCandidate = async (req, res) => {
       res.status(500).json({ message: err.message });
     }
   };
+
+  module.exports = {
+    addVoter, createCollege, deleteCollege, getColleges,
+    createDepartment, deleteDepartment, getDepartments, updateElection, deleteElection, getElections,
+    createElection, addCandidate, deleteCandidate, getElectionResults, getAllStudentsWithVoteStatus }

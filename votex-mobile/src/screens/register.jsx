@@ -27,7 +27,7 @@ const RegisterScreen = ({ navigation }) => {
     useEffect(() => {
         const fetchColleges = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/auth/get-college`);
+                const res = await axios.get(`http://192.168.182.58:5000/api/auth/get-college`);
                 
                 if (Array.isArray(res.data.colleges)) {
                     setColleges(res.data.colleges);

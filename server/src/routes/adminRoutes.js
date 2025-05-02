@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {addVoter, createCollege, deleteCollege,getColleges,createDepartment, deleteDepartment,getDepartments,createElection, deleteElection,getElectionResults,getElections,updateElection,addCandidate, deleteCandidate, getVotedStudents, getNonVotedStudents, getAllStudentsWithVoteStatus} = require('../controllers/adminController');
 const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
-const { validate } = require('../utils/validate');
+const validate = require('../utils/validate');
 const { collegeSchema, departmentSchema } = require('../validator/adminValidation');
 const { registerSchema } = require('../validator/authValidator');
 const upload = require("../utils/upload")
@@ -35,4 +35,5 @@ router.delete('/candidates/:id', verifyToken, requireAdmin, deleteCandidate);
 
 
 router.get('/get-all-students-with-vote-status', verifyToken, requireAdmin, getAllStudentsWithVoteStatus);
+
 module.exports = router;

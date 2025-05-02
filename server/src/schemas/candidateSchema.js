@@ -20,9 +20,9 @@ const candidateSchema = new mongoose.Schema({
     required: true,
   },
   position: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    enum: ['President', 'Vice President', 'Secretary', 'Treasurer', 'Class Representative'], 
+    ref: 'Position', 
   },
   createdAt: {
     type: Date,

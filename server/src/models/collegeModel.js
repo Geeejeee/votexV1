@@ -1,17 +1,19 @@
 const College = require("../schemas/collegeSchema");
 
-exports.createCollege = async (name) => {
+const createColleges = async (name) => {
   return await College.create({ name });
 };
 
-exports.deleteCollege = async (id) => {
+const deleteColleges = async (id) => {
   return await College.findByIdAndDelete(id);
 };
 
-exports.findCollegeById = async (id) => {
+const findCollegeById = async (id) => {
   return await College.findById(id);
 };
 
-exports.getAllColleges = async () => {
+const getAllColleges = async () => {
   return await College.find();
 };
+
+module.exports = {createColleges, deleteColleges, findCollegeById, getAllColleges}
