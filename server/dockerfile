@@ -5,20 +5,16 @@ FROM node:lts-slim
 WORKDIR /app
 
 # 3. Copy package.json and package-lock.json
-COPY package*.json ./ 
+COPY package*.json ./
 
+# 4. Install dependencies and PM2 globally
+RUN npm install && npm install -g pm2
 
-# 4. Install dependencies
-RUN npm install
-
-# 5. Install nodemon globally (if needed)
-RUN npm install -g nodemon
-
-# 6. Copy the whole project
+# 5. Copy the rest of your code
 COPY . .
 
-# 7. Expose the port your app runs on
+# 6. Expose your app's port
 EXPOSE 5000
 
-# 8. Run in dev mode
-CMD ["npm", "run", "dev"]
+# 7. Start app with PM2
+CMD ["pm2-runtime","src/server.js"]
