@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom"; // Import Link component
 import DashboardLayout from "../layouts/DashboardLayout";
 import Calendar from "react-calendar";
-import { BarChart3, Users, User } from "lucide-react";
+import { BarChart3, Users, User, Barcode } from "lucide-react";
 import 'react-calendar/dist/Calendar.css';
 import AnnouncementCarousel from "../components/AnnouncementCarousel.tsx"; // adjust path as needed
 
@@ -23,10 +23,10 @@ const Dashboard = () => {
       <div className="main-content">
         <div className="left-panel">
           <div className="card-grid">
-            <button className="card card-blue">
+            <Link to="/resultsdb" className="card card-blue">
               <BarChart3 className="card-icon" />
               Election Results
-            </button>
+            </Link>
             <Link to="/elections" className="card card-green">
               <Users className="card-icon" />
               List of Elections

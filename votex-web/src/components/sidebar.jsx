@@ -38,7 +38,7 @@ const Sidebar = ( onToggle ) => {
           <Users size={18} className="nav-icon" />
           {isOpen && <span>Voters</span>}
         </a>
-        <a href="#">
+        <a href="/resultsdb">
           <BarChart2 size={18} className="nav-icon" />
           {isOpen && <span>Results</span>}
         </a>

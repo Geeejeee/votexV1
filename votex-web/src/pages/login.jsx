@@ -1,30 +1,60 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import Axios
 import "../styles/login.css";
 import logo from "../assets/votexmlogo.png";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", password: "" });
-  const navigate = useNavigate(); // Initialize navigate hook
+  const [error, setError] = useState(""); // Error state to display error message
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
+    console.log("Input changed:", e.target.name, e.target.value);  // Log each input change
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
-    
-    // Example login validation logic:
-    if (form.username === "admin" && form.password === "admin123") {
-      // Redirect to the dashboard on successful login
-      navigate("/dashboard"); // Navigate to the dashboard
-    } else {
-      // Handle failed login (e.g., show an error message)
-      alert("Invalid username or password.");
+    console.log("Button pressed"); // Confirm that submit is triggered
+    setError(""); // Clear previous errors
+
+    // Log form data before sending the request
+    console.log("Form data before submit:", form);
+
+    try {
+      // Send login data to backend
+      const response = await axios.post("/api/auth/web-login", form);
+
+      console.log("Response data:", response.data); // Log response from backend
+
+      // If login is successful
+      if (response.status === 200) {
+        const { token, user } = response.data;
+
+        // Save the JWT token in localStorage
+        localStorage.setItem('token', token);
+        console.log("Token saved:", token);
+
+        // Optionally, save user data in localStorage as well
+        localStorage.setItem('user', JSON.stringify(user));
+
+        alert("Login successful!");
+        navigate("/dashboard"); // Redirect to dashboard
+      } else {
+        // If the response status is not 200, it's a failed login attempt
+        setError("Invalid username or password. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error during login:", err);  // Log error details
+      // Handle error response
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message); // Display error message from backend
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -36,6 +66,9 @@ const Login = () => {
       <div className="login-right">
         <h2>LOGIN</h2>
         <p>Welcome back! Please login to your account.</p>
+
+        {error && <div className="error-message">{error}</div>} {/* Display error message if exists */}
+
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-wrapper">
             <User className="input-icon" size={18} />
