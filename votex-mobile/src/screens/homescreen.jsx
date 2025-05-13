@@ -85,7 +85,7 @@ const HomeScreen = () => {
         <Users style={styles.viewCandidates} size={25}/>
           <Text style={[styles.navText, { color: "#fff" }]}>Candidates</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#C0392B" }]}>
+        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#C0392B" }]} onPress={() => navigation.navigate("Profile")}>
            <User style={styles.viewProf} size={25}/>
           <Text style={styles.navText}>View Profile</Text>
         </TouchableOpacity>
