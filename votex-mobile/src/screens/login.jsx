@@ -18,7 +18,7 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async (values) => {
         try {
-            const response = await fetch(`http://192.168.1.26:5000/api/auth/mobile-login`, {
+            const response = await fetch(`${API_BASE_URL}/api/auth/mobile-login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
