@@ -3,7 +3,6 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   fixedHeader: {
     backgroundColor: "#002F6C",
-    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -18,8 +17,8 @@ export default StyleSheet.create({
 
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 150,
-    paddingBottom: 60, // optional extra space at bottom
+    paddingTop: 40,
+    paddingBottom: 100, // optional extra space at bottom
   },
 
   logo: {
@@ -102,25 +101,47 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: 24,
+    minHeight: 140,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 16,
     borderWidth: 2,
     borderColor: "#002F6C",
-    marginBottom: 20,
+    marginBottom: 60,
+    width: "100%",
     height: "15%",
+    marginVertical: 10,
+    elevation: 6,
   },
 
-  electionTitle: {
+  titleContainer: {
+    flexDirection: "column", // stack text vertically
+    justifyContent: "center",
+    alignItems: "flex-start", // or 'center' if you want text centered
+  },
+
+  electionTitleTop: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#002F6C",
+    textAlign: "left",
+    color: "#000",
+    paddingTop: 20,
+    marginBottom: 20,
+  },
+
+  electionTitleBottom: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#000",
+    marginBottom: 8,
   },
 
   electionLogo: {
     width: 80,
     height: 80,
     resizeMode: "contain",
+    marginLeft: -60,
   },
 
   footerText: {

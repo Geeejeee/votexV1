@@ -77,14 +77,16 @@ const HomeScreen = () => {
 
       {/* Navigation Buttons */}
       <View style={styles.navButtons}>
-        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#32CD32" }]}>
+        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#32CD32" }]} onPress={() => navigation.navigate("Candidates")}>
         <ChartColumn style={styles.viewCandidates} size={25}/>
           <Text style={styles.navText}>Results</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#002F6C" }]}>
+
+        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#002F6C" }]} onPress={() => navigation.navigate("Candidates")}>
         <Users style={styles.viewCandidates} size={25}/>
           <Text style={[styles.navText, { color: "#fff" }]}>Candidates</Text>
         </TouchableOpacity>
+
         <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#C0392B" }]} onPress={() => navigation.navigate("Profile")}>
            <User style={styles.viewProf} size={25}/>
           <Text style={styles.navText}>View Profile</Text>

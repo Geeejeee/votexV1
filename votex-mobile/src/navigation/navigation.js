@@ -6,6 +6,7 @@ import HomeScreen from "../screens/homescreen.jsx";
 import VoteNowScreen from "../screens/VoteNowScreen.jsx";
 import VoteElectionScreen from "../screens/VoteElectionScreen.jsx";
 import ProfileScreen from "../screens/ProfileScreen.jsx";
+import CandidateProfileModal from "../screens/CandidateProfile.jsx";
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
@@ -19,6 +20,7 @@ const Navigation = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="VoteNow" component={VoteNowScreen} />
       <Stack.Screen name="VoteElection" component={VoteElectionScreen} />
+      <Stack.Screen name="Candidates" component={CandidateProfileModal} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );

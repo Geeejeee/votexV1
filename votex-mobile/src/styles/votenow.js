@@ -25,7 +25,6 @@ export default StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 40,
-    flex: 1,
   },
   logo: {
     width: 90,
