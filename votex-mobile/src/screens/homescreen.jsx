@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { Fingerprint, User, Users,ChartColumn} from "lucide-react-native";
+import { Feather } from "@expo/vector-icons";
 import logo from "../assets/votexmlogo.png";
 import styles from "../styles/homepage.js";
 
@@ -47,7 +47,7 @@ const HomeScreen = () => {
         {candidates.map((c) => (
           <View key={c.id} style={styles.candidate}>
           <View style={styles.avatar}>
-            <User style={styles.candidateAvatar} size={35}/>
+            <Feather name="user" size={35} style={styles.candidateAvatar} />
           </View>
             <View style={styles.info}>
               <Text style={styles.candidateName}>{c.name}</Text>
@@ -65,22 +65,22 @@ const HomeScreen = () => {
 
       {/* Vote Now Button */}
       <TouchableOpacity style={styles.voteNow}>
-      <Fingerprint style={styles.voteLogo} size={50}/>
+      <Feather name="fingerprint" size={50} style={styles.voteLogo} />
         <Text style={styles.voteTextBtn}>VOTE NOW!</Text>
       </TouchableOpacity>
 
       {/* Navigation Buttons */}
       <View style={styles.navButtons}>
         <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#32CD32" }]}>
-        <ChartColumn style={styles.viewCandidates} size={25}/>
+        <Feather name="bar-chart" size={25} style={styles.viewCandidates} />
           <Text style={styles.navText}>Results</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#002F6C" }]}>
-        <Users style={styles.viewCandidates} size={25}/>
+        <Feather name="users" size={25} style={styles.viewCandidates} />
           <Text style={[styles.navText, { color: "#fff" }]}>Candidates</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#C0392B" }]}>
-           <User style={styles.viewProf} size={25}/>
+           <Feather name="user" size={25} style={styles.viewProf} />
           <Text style={styles.navText}>View Profile</Text>
         </TouchableOpacity>
       </View>

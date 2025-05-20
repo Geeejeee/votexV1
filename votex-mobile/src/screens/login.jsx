@@ -1,13 +1,14 @@
 // src/screens/LoginScreen.js
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
-import { Eye, EyeOff } from "lucide-react-native";
+import { Feather } from '@expo/vector-icons';
 import { Formik } from "formik";
 import * as Yup from "yup";
 import styles from "../styles/login.js";
 import logo from "../assets/votexmlogo.png";
-import {API_BASE_URL} from '@env'
+import Constants from "expo-constants";
 
+const API_BASE_URL = Constants.manifest.extra.API_BASE_URL;
 const LoginScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -18,7 +19,7 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async (values) => {
         try {
-            const response = await fetch(`http://192.168.1.26:5000/api/auth/mobile-login`, {
+            const response = await fetch(`${API_BASE_URL}/api/auth/mobile-login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -81,7 +82,7 @@ const LoginScreen = ({ navigation }) => {
                                 value={values.password}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                                {showPassword ? <EyeOff size={20} color="#444" /> : <Eye size={20} color="#444" />}
+                                <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#444" />
                             </TouchableOpacity>
                         </View>
                         {touched.password && errors.password && (

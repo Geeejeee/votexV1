@@ -1,4 +1,6 @@
-const {createPosition, getAllPositions, findPositionById, deletePosition} = require('../models/positionModel') // Assuming your position model is located in the models folder
+
+const {createElectionPosition, getAllPositions, findPositionById, findPositionInElection,deletePosition} = require('../models/positionModel') // Assuming your position model is located in the models folder
+const {findElectionById} = require('../models/electionModel')
 
 // Create Position
 const makePosition = async (req, res) => {
@@ -28,11 +30,13 @@ const makePosition = async (req, res) => {
   }
 };
 
+
+
 // Get all Positions
 const getPositions = async (req, res) => {
   try {
-    const positions = await PositionModel.getAllPositions();
-    res.status(200).json(positions);
+    const positions = await getAllPositions();
+    res.status(200).json({positions});
   } catch (error) {
     console.error("Get Positions Error:", error);
     res.status(500).json({ message: "Server error" });
@@ -59,4 +63,39 @@ const delPosition = async (req, res) => {
     }
   };
 
-  module.exports = { makePosition, getPositions, delPosition };
+ const addPositionToElection = async (req, res) => {
+  const { electionId } = req.params;
+  const { positionId } = req.body;
+
+  if (!positionId) {
+    return res.status(400).json({ message: "Position ID is required." });
+  }
+
+  try {
+    // Ensure the election exists
+    const election = await findElectionById(electionId);
+    if (!election) {
+      return res.status(404).json({ message: "Election not found." });
+    }
+
+    // Check if this position is already assigned to the election
+    const existing = await findPositionInElection(electionId, positionId);
+    if (existing) {
+      return res.status(400).json({ message: "Position already added to this election." });
+    }
+
+    // Create new ElectionPosition document
+    const newAssignment = await createElectionPosition(electionId, positionId);
+
+    res.status(200).json({
+      message: "Position successfully added to election.",
+      electionPosition: newAssignment,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+  module.exports = { makePosition, getPositions, delPosition, addPositionToElection };

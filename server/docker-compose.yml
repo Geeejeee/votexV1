@@ -7,7 +7,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongo_db:/data/db
+      - mongo_db:/data/db #perist data mongoDB data para dili mawala
 
   backend:
     container_name: voting_sys_backend

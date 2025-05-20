@@ -253,7 +253,7 @@ if (res.data && res.data.message === 'Voter added successfully') {
               </select>
               <input
                 type="text"
-                placeholder="Search Voter..."
+                placeholder="Search Voter with ID"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />

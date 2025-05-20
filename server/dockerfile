@@ -1,5 +1,5 @@
-# 1. Use Node.js official image
-FROM node:lts-slim
+# 1. Use Node.js official image lts long term support, smaller image to reduce image size
+FROM node:lts-slim 
 
 # 2. Set working directory
 WORKDIR /app

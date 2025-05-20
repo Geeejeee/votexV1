@@ -9,6 +9,30 @@ const candidateSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  party: {
+    type: String,
+    required: true,
+  },
+  yearLevel: {
+    type: String,
+    required: true,
+  },
+  motto: {
+    type: String,
+    required: true,
+  },
+  affiliations: {
+    type: String,
+    required: true,
+  },
+  advocacies: {
+    type: String,
+    required: true,
+  },
+  photo: {
+    type: String,
+    required: true,
+  },
   department: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Department',
