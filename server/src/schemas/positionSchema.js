@@ -4,7 +4,6 @@ const positionSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Position name is required'],
-    unique: true,
     trim: true,
   },
   description: {
@@ -18,7 +17,7 @@ const positionSchema = new mongoose.Schema({
   },
   order: {
     type: Number,
-    default: 0, // for sorting dropdown positions if needed
+    default: 0,
   },
 }, {
   timestamps: true,

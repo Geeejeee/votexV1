@@ -14,7 +14,6 @@ import axios from 'axios';
 const ElectionCandidatesView = () => {
     const { electionId } = useParams();
 
-    // Mock data for positions and candidates
     const [positionsList, setPositionsList] = useState([]);
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -37,18 +36,18 @@ const ElectionCandidatesView = () => {
     const [editingCandidate, setEditingCandidate] = useState(null);
     const [election, setElection] = useState(null);
 
-   useEffect(() => {
+useEffect(() => {
   async function fetchData() {
     try {
       const token = localStorage.getItem('token');
 
-      // 1. Get positions with candidates
+      // 1. Get positions with candidates (or empty candidate arrays)
       const candidatesRes = await axios.get(`/api/admin/elections/${electionId}/candidates`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const cleanedPositions = candidatesRes.data.positions.filter(pos => pos && pos.name);
-      console.log('Fetched positions:', cleanedPositions); // ✅ Add this
-      setPositionsList(cleanedPositions);
+
+      console.log('Fetched positions:', candidatesRes.data.positions); 
+      setPositionsList(candidatesRes.data.positions); 
 
       // 2. Get full election details
       const electionRes = await axios.get(`/api/admin/elections/${electionId}`, {
@@ -63,6 +62,7 @@ const ElectionCandidatesView = () => {
 
   fetchData();
 }, [electionId]);
+
 
 
 
@@ -223,6 +223,7 @@ const ElectionCandidatesView = () => {
                     setNewPositionTitle={setNewPositionTitle}
                     positionsList={positionsList}
                     setPositionsList={setPositionsList}
+                    electionId={electionId}
                 />  
 
 

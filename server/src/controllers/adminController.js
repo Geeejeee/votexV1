@@ -2,6 +2,7 @@ const {createColleges, deleteColleges, findCollegeById, getAllColleges} = requir
 const {createDepartments, deleteDepartments, findDepartmentById, getAllDepartments} = require('../models/departmentModel');
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
 const {createCandidate, deleteCandidates, findCandidatesByElection, findCandidatesByElectionAndPosition} = require('../models/candidateModel');
+const {getPositionsByElectionId} = require('../models/positionModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
@@ -332,14 +333,22 @@ const getCandidatesByElectionId = async (req, res) => {
   try {
     const { electionId } = req.params;
 
-    // Get all candidates for the election, including their position
-    const candidates = await findCandidatesByElectionAndPosition({ election: electionId })
+    // 1. Fetch all positions assigned to this election
+    const assignedPositions = await getPositionsByElectionId(electionId);
 
-    // Group candidates by position
+    // 2. Fetch all candidates for this election (with position populated)
+    const candidates = await findCandidatesByElectionAndPosition({ election: electionId });
+
+    // 3. Group candidates by position ID
     const positionsMap = {};
 
     candidates.forEach(candidate => {
-      const positionId = candidate.position._id.toString();
+      const positionId = candidate.position?._id?.toString();
+      if (!positionId) {
+        console.warn(`Candidate ${candidate._id} is missing position data`);
+        return;
+      }
+
       if (!positionsMap[positionId]) {
         positionsMap[positionId] = {
           id: positionId,
@@ -360,16 +369,25 @@ const getCandidatesByElectionId = async (req, res) => {
         photo: candidate.photo || '',
         college: candidate.college?.name || '',
       });
-       if (!candidate.position) {
-    console.warn(`Candidate ${candidate._id} is missing position data`);
-  }
+    });
+
+    // 4. Ensure all assigned positions are in the map (even if they have no candidates)
+    assignedPositions.forEach(assignment => {
+      const pos = assignment.position;
+      const posId = pos._id.toString();
+      if (!positionsMap[posId]) {
+        positionsMap[posId] = {
+          id: posId,
+          name: pos.name,
+          candidates: [],
+        };
+      }
     });
 
     const positionsList = Object.values(positionsMap);
-
     res.json({ positions: positionsList });
   } catch (error) {
-    console.error(error);
+    console.error('Failed to fetch candidates with positions:', error);
     res.status(500).json({ message: 'Failed to fetch candidates' });
   }
 };
