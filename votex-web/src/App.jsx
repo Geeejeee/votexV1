@@ -18,8 +18,9 @@ function App() {
         <Route path="/voters" element={<Voters />} />
         <Route path="/elections" element={<ElectionsDashboard />} />
         <Route path="/resultsdb" element={<ResultsDashboard />} />
-        <Route path="/elections/:orgId" element={<ElectionCandidatesView />} />
+        <Route path="/elections/:electionId/candidates" element={<ElectionCandidatesView />} />
         <Route path="/elections/:orgId/viewvoterslist" element={<VotersListPage />} />
+        <Route path="*" element={<div>404 Not Found</div>} />
 
 
         {/* Election Results Page */}

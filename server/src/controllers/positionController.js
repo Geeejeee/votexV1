@@ -31,8 +31,8 @@ const makePosition = async (req, res) => {
 // Get all Positions
 const getPositions = async (req, res) => {
   try {
-    const positions = await PositionModel.getAllPositions();
-    res.status(200).json(positions);
+    const positions = await getAllPositions();
+    res.status(200).json({positions});
   } catch (error) {
     console.error("Get Positions Error:", error);
     res.status(500).json({ message: "Server error" });

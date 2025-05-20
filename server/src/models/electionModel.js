@@ -54,8 +54,8 @@ const deleteElections = async (id) => {
 };
 
 // FIND BY ID
-const findElectionById = async (id) => {
-  return await Election.findById(id);
+const findElectionById = async (electionId) => {
+  return await Election.findById(electionId);
 };
 
 // GET ALL
@@ -66,4 +66,11 @@ const getAllElections = async () => {
     .sort({ createdAt: -1 });
 };
 
-module.exports = {createElections, updateElections, deleteElections, findElectionById, getAllElections}
+const findById = async (electionId) => {
+  return await Election.findById(electionId)
+    .populate('college', 'name')
+    .populate('department', 'name');
+};
+
+
+module.exports = {createElections, updateElections, deleteElections, findElectionById, getAllElections, findById};

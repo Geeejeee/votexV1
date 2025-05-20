@@ -1,13 +1,31 @@
 const Candidate = require("../schemas/candidateSchema");
 
-const createCandidate = async (firstName, lastName, position, electionId, collegeId, departmentId) => {
+const createCandidate = async (
+      firstName,
+      lastName,
+      party,
+      yearLevel,
+      motto,
+      affiliations,
+      advocacies,
+      photo,
+      position,
+      electionId,
+      collegeId,
+      departmentId) => {
   return await Candidate.create({
-    firstName,
-    lastName,
-    position,
-    election: electionId,
-    college: collegeId,
-    department: departmentId
+      firstName,
+      lastName,
+      party,
+      yearLevel,
+      motto,
+      affiliations,
+      advocacies,
+      photo,
+      position,
+      election: electionId,
+      college: collegeId,
+      department: departmentId
   });
 };
 
@@ -19,8 +37,15 @@ const findCandidatesByElection = async (electionId) => {
   return await Candidate.find({ election: electionId });
 };
 
+const findCandidatesByElectionAndPosition = async (filter) => {
+  return await Candidate.find(filter)
+      .populate('position')
+      .populate('college')
+      .populate('department');
+};
+
 const findCandidateById = async (id) => {
   return await Candidate.findById(id);
 };
 
-module.exports = {createCandidate, deleteCandidates, findCandidateById, findCandidatesByElection}
+module.exports = {createCandidate, deleteCandidates, findCandidateById, findCandidatesByElection, findCandidatesByElectionAndPosition};

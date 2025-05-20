@@ -379,8 +379,8 @@ const token = localStorage.getItem('token');
     };
 
     const navigate = useNavigate();
-    const handleViewElection = (id) => {
-        navigate(`/elections/${id}`);
+    const handleViewElection = (electionId) => {
+        navigate(`/elections/${electionId}/candidates`);
     };
 
     return (
@@ -429,8 +429,6 @@ const token = localStorage.getItem('token');
         </div>
     ))}
 </div>
-
-
                     </div>
                 </div>
                 <div className="footer">

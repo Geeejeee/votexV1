@@ -1,7 +1,7 @@
 const {createColleges, deleteColleges, findCollegeById, getAllColleges} = require('../models/collegeModel');
 const {createDepartments, deleteDepartments, findDepartmentById, getAllDepartments} = require('../models/departmentModel');
-const {createElections, deleteElections, findElectionById, getAllElections, updateElections} = require('../models/electionModel');
-const {createCandidate, deleteCandidates, findCandidatesByElection} = require('../models/candidateModel');
+const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
+const {createCandidate, deleteCandidates, findCandidatesByElection, findCandidatesByElectionAndPosition} = require('../models/candidateModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
@@ -229,6 +229,22 @@ const createElection = async (req, res) => {
   }
 };
 
+const getElectionById = async (req, res) => {
+  const { electionId } = req.params;
+
+  try {
+    const election = await findById(electionId)
+
+    if (!election) {
+      return res.status(404).json({ message: 'Election not found' });
+    }
+
+    res.status(200).json({ election });
+  } catch (error) {
+    console.error('Error fetching election:', error);
+    res.status(500).json({ message: 'Server error while fetching election' });
+  }
+};
 
 
   // Delete Election
@@ -261,26 +277,100 @@ const createElection = async (req, res) => {
 // Add Candidate
 const addCandidate = async (req, res) => {
   try {
-    const { firstName, lastName, position, electionId } = req.body;
+    const {
+      firstName,
+      lastName,
+      party,
+      yearLevel,
+      motto,
+      affiliations,
+      advocacies,
+      photo,
+      position,
+      electionId
+    } = req.body;
 
+    // Find election to get college and department
     const election = await findElectionById(electionId);
     if (!election) return res.status(404).json({ message: 'Election not found' });
 
     const collegeId = election.college;
     const departmentId = election.department;
 
-    // Optionally, validate if college and department exist (if needed)
+    // Validate college and department
     const college = await findCollegeById(collegeId);
     if (!college) return res.status(404).json({ message: 'College not found (from election)' });
 
     const department = await findDepartmentById(departmentId);
     if (!department) return res.status(404).json({ message: 'Department not found (from election)' });
 
-    const candidate = await createCandidate(firstName, lastName, position, electionId, collegeId, departmentId);
+    // Create candidate
+    const candidate = await createCandidate(
+      firstName,
+      lastName,
+      party,
+      yearLevel,
+      motto,
+      affiliations,
+      advocacies,
+      photo,
+      position,
+      electionId,
+      collegeId,
+      departmentId
+    );
+
     res.status(201).json({ message: 'Candidate added', candidate });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
+  }
+};
+
+const getCandidatesByElectionId = async (req, res) => {
+  try {
+    const { electionId } = req.params;
+
+    // Get all candidates for the election, including their position
+    const candidates = await findCandidatesByElectionAndPosition({ election: electionId })
+
+    // Group candidates by position
+    const positionsMap = {};
+
+    candidates.forEach(candidate => {
+      const positionId = candidate.position._id.toString();
+      if (!positionsMap[positionId]) {
+        positionsMap[positionId] = {
+          id: positionId,
+          name: candidate.position.name,
+          candidates: [],
+        };
+      }
+
+      positionsMap[positionId].candidates.push({
+        id: candidate._id,
+        name: `${candidate.firstName} ${candidate.lastName}`,
+        party: candidate.party || '',
+        department: candidate.department?.name || '',
+        yearLevel: candidate.yearLevel || '',
+        motto: candidate.motto || '',
+        affiliations: candidate.affiliations || '',
+        advocacies: candidate.advocacies || '',
+        photo: candidate.photo || '',
+        college: candidate.college?.name || '',
+      });
+       if (!candidate.position) {
+    console.warn(`Candidate ${candidate._id} is missing position data`);
+  }
+    });
+
+    const positionsList = Object.values(positionsMap);
+
+    res.json({ positions: positionsList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch candidates' });
   }
 };
 
@@ -353,4 +443,5 @@ const deleteCandidate = async (req, res) => {
   module.exports = {
     addVoter, createCollege, deleteCollege, getColleges,
     createDepartment, deleteDepartment, getDepartments, updateElection, deleteElection, getElections,
-    createElection, addCandidate, deleteCandidate, getElectionResults, getAllStudentsWithVoteStatus }
+    getElectionById, createElection, addCandidate,getCandidatesByElectionId, deleteCandidate, getElectionResults, 
+    getAllStudentsWithVoteStatus }
