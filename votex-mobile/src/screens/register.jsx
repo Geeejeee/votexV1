@@ -10,12 +10,14 @@ import {
 } from "react-native";
 import { Formik } from "formik";
 import { Picker } from "@react-native-picker/picker";
-import { Eye, EyeOff } from "lucide-react-native";
+import { Feather } from '@expo/vector-icons';
 import { RegisterSchema } from "../utils/validationSchema";
 import styles from "../styles/register.js";
 import logo from "../assets/votexmlogo.png";
 import axios from "axios";
-import {API_BASE_URL} from '@env'
+import Constants from "expo-constants";
+
+const API_BASE_URL = Constants.manifest.extra.API_BASE_URL;
 
 const RegisterScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -148,7 +150,7 @@ const RegisterScreen = ({ navigation }) => {
                                 value={values.password}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#444" />
                             </TouchableOpacity>
                         </View>
                         {touched.password && errors.password && <Text style={{ color: "red" }}>{errors.password}</Text>}
@@ -164,7 +166,7 @@ const RegisterScreen = ({ navigation }) => {
                                 value={values.confirmPassword}
                             />
                             <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeIcon}>
-                                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#444" />
                             </TouchableOpacity>
                         </View>
                         {touched.confirmPassword && errors.confirmPassword && (
