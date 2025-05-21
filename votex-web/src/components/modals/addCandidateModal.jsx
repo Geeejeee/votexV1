@@ -89,7 +89,7 @@ if (!electionId) {
   setErrorMessage("Election ID is missing. Cannot submit candidate.");
   return;
 }
-
+setIsSubmitting(true);
   try {
     
 
@@ -105,13 +105,19 @@ if (!electionId) {
 
     const data = res.data;
 
-    setPositionsList(prev =>
-      prev.map(pos =>
-        pos.id === selectedPositionId
-          ? { ...pos, candidates: [...pos.candidates, data.candidate] }
-          : pos
-      )
-    );
+    const fullCandidate = {
+  ...data.candidate,
+  name: `${data.candidate.firstName} ${data.candidate.lastName}`.trim()
+};
+
+setPositionsList(prev =>
+  prev.map(pos =>
+    pos.id === selectedPositionId
+      ? { ...pos, candidates: [...pos.candidates, fullCandidate] }
+      : pos
+  )
+);
+
 
     setShowAddCandidateModal(false);
     resetFormFields();
@@ -119,6 +125,8 @@ if (!electionId) {
     console.error("AXIOS ERROR:", err);
     console.error("Response:", err.response?.data);
     setErrorMessage(err.response?.data?.message || 'Failed to add candidate.');
+  }finally{
+    setIsSubmitting(false);
   }
 };
 
