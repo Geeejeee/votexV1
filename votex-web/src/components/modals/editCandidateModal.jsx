@@ -1,5 +1,8 @@
 import { X } from 'lucide-react';
+import { useState } from 'react';
+import axios from 'axios';
 import "../../styles/candidates.css";
+
 
 export default function EditCandidateModal({
   showEditModal,
@@ -11,9 +14,11 @@ export default function EditCandidateModal({
   errorMessage,
   positionsList
 }) {
+  const [isSaving, setIsSaving] = useState(false);
+
   if (!showEditModal || !editingCandidate) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const {
       name,
       party,
@@ -24,6 +29,7 @@ export default function EditCandidateModal({
       affiliations,
       advocacies,
       photo,
+      newPhotoFile,
       positionId,
       candidateId,
     } = editingCandidate;
@@ -36,6 +42,7 @@ export default function EditCandidateModal({
       return;
     }
 
+    // Check for duplicate candidate name in same position, excluding this candidate
     const isDuplicate = positionsList
       .find(pos => pos.id === positionId)
       ?.candidates.some(c =>
@@ -48,34 +55,82 @@ export default function EditCandidateModal({
       return;
     }
 
-    setPositionsList(prev =>
-      prev.map(pos => {
-        if (pos.id !== positionId) return pos;
-        return {
-          ...pos,
-          candidates: pos.candidates.map(c =>
-            c.id === candidateId
-              ? {
-                  ...c,
-                  name: trimmedName,
-                  party: trimmedParty,
-                  position,
-                  course,
-                  yearLevel,
-                  motto,
-                  affiliations,
-                  advocacies,
-                  photo,
-                }
-              : c
-          ),
-        };
-      })
-    );
+    setIsSaving(true);
+    setErrorMessage(null);
 
-    setShowEditModal(false);
-    setEditingCandidate(null);
-    setErrorMessage('');
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      
+      // Assuming your backend expects firstName and lastName separately
+      const [firstName, ...rest] = trimmedName.split(' ');
+      const lastName = rest.join(' ') || '';
+
+      formData.append('firstName', firstName);
+      formData.append('lastName', lastName);
+      formData.append('party', trimmedParty);
+      formData.append('course', course || '');
+      formData.append('yearLevel', yearLevel || '');
+      formData.append('motto', motto || '');
+      formData.append('affiliations', affiliations || '');
+      formData.append('advocacies', advocacies || '');
+
+      // Only append photo file if user selected a new one
+      if (newPhotoFile) {
+        formData.append('photo', newPhotoFile);
+      }
+
+      // Make PUT or PATCH request to your API to update candidate
+      // Adjust the endpoint URL to your actual backend route
+      const res = await axios.put(
+        `/api/admin/candidates/${candidateId}`, 
+        formData, 
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+
+      const updatedCandidate = res.data.candidate;
+
+      // Construct full name to keep UI consistent
+      const fullName = `${updatedCandidate.firstName} ${updatedCandidate.lastName}`.trim();
+
+      setPositionsList(prev =>
+        prev.map(pos => {
+          if (pos.id !== positionId) return pos;
+          return {
+            ...pos,
+            candidates: pos.candidates.map(c =>
+              c.id === candidateId
+                ? {
+                    ...c,
+                    name: fullName,
+                    party: updatedCandidate.party,
+                    course: updatedCandidate.course,
+                    yearLevel: updatedCandidate.yearLevel,
+                    motto: updatedCandidate.motto,
+                    affiliations: updatedCandidate.affiliations,
+                    advocacies: updatedCandidate.advocacies,
+                    photo: updatedCandidate.photo, // URL from backend
+                  }
+                : c
+            ),
+          };
+        })
+      );
+
+      setShowEditModal(false);
+      setEditingCandidate(null);
+      setErrorMessage('');
+    } catch (err) {
+      console.error("Edit candidate error:", err);
+      setErrorMessage(err.response?.data?.message || 'Failed to update candidate.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -90,6 +145,7 @@ export default function EditCandidateModal({
               setEditingCandidate(null);
               setErrorMessage('');
             }}
+            disabled={isSaving}
           >
             <X size={24} />
           </button>
@@ -107,6 +163,7 @@ export default function EditCandidateModal({
               className="ec-form-control"
               value={editingCandidate.name}
               onChange={(e) => setEditingCandidate({ ...editingCandidate, name: e.target.value })}
+              disabled={isSaving}
             />
           </div>
           <div className="ec-form-group">
@@ -116,6 +173,7 @@ export default function EditCandidateModal({
               className="ec-form-control"
               value={editingCandidate.party}
               onChange={(e) => setEditingCandidate({ ...editingCandidate, party: e.target.value })}
+              disabled={isSaving}
             />
           </div>
         </div>
@@ -128,6 +186,7 @@ export default function EditCandidateModal({
               className="ec-form-control"
               value={editingCandidate.position}
               readOnly
+              disabled={isSaving}
             />
           </div>
           <div className="ec-form-group">
@@ -137,6 +196,7 @@ export default function EditCandidateModal({
               className="ec-form-control"
               value={editingCandidate.course}
               onChange={(e) => setEditingCandidate({ ...editingCandidate, course: e.target.value })}
+              disabled={isSaving}
             />
           </div>
           <div className="ec-form-group">
@@ -146,6 +206,7 @@ export default function EditCandidateModal({
               className="ec-form-control"
               value={editingCandidate.yearLevel}
               onChange={(e) => setEditingCandidate({ ...editingCandidate, yearLevel: e.target.value })}
+              disabled={isSaving}
             />
           </div>
         </div>
@@ -167,7 +228,16 @@ export default function EditCandidateModal({
                   });
                 }
               }}
+              disabled={isSaving}
             />
+            {/* Optionally preview current photo */}
+            {editingCandidate.photo && (
+              <img 
+                src={editingCandidate.photo} 
+                alt="Candidate" 
+                style={{ marginTop: 8, maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }}
+              />
+            )}
           </div>
           <div className="ec-form-group">
             <label className="ec-form-label">MOTTO:</label>
@@ -176,6 +246,7 @@ export default function EditCandidateModal({
               className="ec-form-control"
               value={editingCandidate.motto}
               onChange={(e) => setEditingCandidate({ ...editingCandidate, motto: e.target.value })}
+              disabled={isSaving}
             />
           </div>
         </div>
@@ -186,6 +257,7 @@ export default function EditCandidateModal({
             className="ec-form-control ec-form-textarea"
             value={editingCandidate.affiliations}
             onChange={(e) => setEditingCandidate({ ...editingCandidate, affiliations: e.target.value })}
+            disabled={isSaving}
           ></textarea>
         </div>
 
@@ -195,12 +267,17 @@ export default function EditCandidateModal({
             className="ec-form-control ec-form-textarea"
             value={editingCandidate.advocacies}
             onChange={(e) => setEditingCandidate({ ...editingCandidate, advocacies: e.target.value })}
+            disabled={isSaving}
           ></textarea>
         </div>
 
         <div className="ec-form-submit">
-          <button className="ec-btn-submit" onClick={handleSave}>
-            SAVE
+          <button
+            className="ec-btn-submit"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? 'Saving...' : 'SAVE'}
           </button>
         </div>
       </div>

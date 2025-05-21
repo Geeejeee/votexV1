@@ -1,7 +1,7 @@
 const {createColleges, deleteColleges, getAllColleges} = require('../models/collegeModel');
 const {createDepartments, deleteDepartments, getAllDepartments} = require('../models/departmentModel');
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
-const {createCandidate, deleteCandidates, findCandidatesByElection, findCandidatesByElectionAndPosition} = require('../models/candidateModel');
+const {createCandidate, deleteCandidates, findCandidatesByElection, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
 const {getPositionsByElectionId, findPositionInElection} = require('../models/positionModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
@@ -340,6 +340,42 @@ console.log('req.body:', req.body);
   }
 };
 
+
+
+
+const updateCandidate = async (req, res) => {
+  const { candidateId } = req.params;
+
+  try {
+    const updates = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      party: req.body.party,
+      course: req.body.course,
+      yearLevel: req.body.yearLevel,
+      motto: req.body.motto,
+      affiliations: req.body.affiliations,
+      advocacies: req.body.advocacies,
+    };
+
+    if (req.file) {
+      updates.photo = req.file.path || req.file.location;
+    }
+
+    const updatedCandidate = await findCandidateAndUpdate(candidateId, updates);
+
+    if (!updatedCandidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+    res.json({ candidate: updatedCandidate });
+  } catch (error) {
+    console.error("Update candidate error:", error);
+    res.status(500).json({ message: 'Failed to update candidate' });
+  }
+};
+
+
 const getCandidatesByElectionId = async (req, res) => {
   try {
     const { electionId } = req.params;
@@ -473,4 +509,4 @@ const deleteCandidate = async (req, res) => {
     addVoter, createCollege, deleteCollege, getColleges,
     createDepartment, deleteDepartment, getDepartments, updateElection, deleteElection, getElections,
     getElectionById, createElection, addCandidate,getCandidatesByElectionId, deleteCandidate, getElectionResults, 
-    getAllStudentsWithVoteStatus }
+    getAllStudentsWithVoteStatus, updateCandidate }

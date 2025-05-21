@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {addVoter, createCollege, deleteCollege,getColleges,createDepartment, deleteDepartment,getDepartments,createElection, deleteElection,getElectionResults,getElections,getElectionById,updateElection,addCandidate, 
+const {addVoter, createCollege, deleteCollege,getColleges,createDepartment, 
+        updateCandidate,deleteDepartment,getDepartments,createElection, deleteElection,getElectionResults,getElections,getElectionById,updateElection,addCandidate, 
         getCandidatesByElectionId,deleteCandidate, getAllStudentsWithVoteStatus} = require('../controllers/adminController');
 const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
 const validate = require('../utils/validate');
@@ -38,6 +39,7 @@ router.get('/elections/:electionId', verifyToken, requireAdmin, getElectionById)
 
 // Candidate routes
 router.post('/candidates/:electionId/positions/:positionId', verifyToken, requireAdmin, upload.single('photo'), validate(candidateSchema),addCandidate);
+router.put('/candidates/:candidateId', verifyToken, requireAdmin, upload.single('photo'), validate(candidateSchema),updateCandidate);
 router.delete('/candidates/:id', verifyToken, requireAdmin, deleteCandidate);
 
 
