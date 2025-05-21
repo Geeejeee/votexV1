@@ -26,8 +26,8 @@ const HomeScreen = () => {
     
     <View style={styles.container}>
       <View style={styles.fixedHeader}>
-      <Image source={logo} style={styles.logo} />
-      <Text style={styles.menu}>☰</Text>
+        <Image source={logo} style={styles.logo} />
+        <Text style={styles.menu}>☰</Text>
       </View>
 
     <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -77,7 +77,7 @@ const HomeScreen = () => {
 
       {/* Navigation Buttons */}
       <View style={styles.navButtons}>
-        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#32CD32" }]} onPress={() => navigation.navigate("Candidates")}>
+        <TouchableOpacity style={[styles.navBtn, { backgroundColor: "#32CD32" }]} onPress={() => navigation.navigate("Results")}>
         <ChartColumn style={styles.viewCandidates} size={25}/>
           <Text style={styles.navText}>Results</Text>
         </TouchableOpacity>
