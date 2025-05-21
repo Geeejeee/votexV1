@@ -51,6 +51,33 @@ const getVoteStatus = async () => {
     .populate('voter', 'name email');
 };
 
+const getVoterByElectionAndPosition = async (electionId, positionId) => {
+  const votes = await Vote.find({ election: electionId, position: positionId })
+    .populate({
+      path: 'student', // or 'voter' if that's the correct field
+      match: { role: 'student' },
+      select: 'idNumber firstname lastname email college department',
+      populate: [
+        { path: 'college', select: 'name' },
+        { path: 'department', select: 'name' }
+      ]
+    })
+    .sort({ votedAt: -1 });
+
+  // Filter and map results
+  return votes
+    .filter(vote => vote.student) // only include if student is populated
+    .map(vote => ({
+      idNumber: vote.student.idNumber,
+      firstName: vote.student.firstname,
+      lastName: vote.student.lastname,
+      email: vote.student.email,
+      college: vote.student.college?.name || 'N/A',
+      department: vote.student.department?.name || 'N/A',
+      time: vote.votedAt,
+    }));
+};
+
 module.exports = {
   createVote,
   getAllVotes,
@@ -59,4 +86,5 @@ module.exports = {
   getNonVotedStudents,
   castVote,
   getVoteStatus,
+  getVoterByElectionAndPosition
 };

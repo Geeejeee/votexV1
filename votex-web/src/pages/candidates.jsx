@@ -115,9 +115,9 @@ useEffect(() => {
 
 
     const navigate = useNavigate();
-    const handleViewElection = (id) => {
-        navigate(`/elections/${id}/viewvoterslist`);
-    };
+    const handleViewVoters = (electionId, position) => {
+        navigate(`/elections/${electionId}/positions/${position.id}/voters`, {state: { election,position}});
+        };
 
     return (
         !election ? (
@@ -161,18 +161,14 @@ useEffect(() => {
                     </div>
                 </div>
 
-{console.log('Rendering positionsList:', positionsList)}
-{positionsList.forEach((pos, index) => {
-  console.log(`Position ${index + 1}:`, pos.name);
-  console.log('Candidates:', pos.candidates);
-})}
+        
 
                 {/* Positions and Candidates */}
                {positionsList.filter(position => !position.isArchived).map((position) => (
                     <div key={position.id} className="ec-position-section">
                         <div className="ec-position-header">
                         <h2>FOR {position.name ?position.name.toUpperCase() : 'UNNAMED POSITION'} :</h2>
-                        <button className="ec-btn-view-voters" onClick={() => handleViewElection(electionId)}>
+                        <button className="ec-btn-view-voters" onClick={() => handleViewVoters(electionId, position)}>
                             View Voters
                         </button>
                         </div>

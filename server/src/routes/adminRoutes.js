@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {addVoter, createCollege, deleteCollege,getColleges,createDepartment, 
-        updateCandidate,deleteDepartment,getDepartments,createElection, deleteElection,getElectionResults,getElections,getElectionById,updateElection,addCandidate, 
+        updateCandidate,deleteDepartment,getDepartments,createElection, 
+        getVotersByElectionAndPosition,deleteElection,getElectionResults,getElections,getElectionById,updateElection,addCandidate, 
         getCandidatesByElectionId,archiveCandidate, getAllStudentsWithVoteStatus} = require('../controllers/adminController');
 const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
 const validate = require('../utils/validate');
@@ -45,5 +46,7 @@ router.patch('/candidates/:candidateId/archive', verifyToken, requireAdmin, arch
 
 
 router.get('/get-all-students-with-vote-status', verifyToken, requireAdmin, getAllStudentsWithVoteStatus);
+router.get('/elections/:electionId/positions/:positionId/voters', verifyToken, requireAdmin, getVotersByElectionAndPosition);
+
 
 module.exports = router;

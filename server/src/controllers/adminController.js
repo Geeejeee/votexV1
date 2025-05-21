@@ -6,6 +6,7 @@ const {getPositionsByElectionId, findPositionInElection} = require('../models/po
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
+const {getVoterByElectionAndPosition} = require('../models/voteModel');
 const cloudinary = require('../utils/cloudinary');
 
 const addVoter = async (req, res) => {
@@ -277,9 +278,6 @@ const getElectionById = async (req, res) => {
   
 // Add Candidate
 const addCandidate = async (req, res) => {
-console.log('Uploaded file:', req.file);
-console.log('req.body:', req.body);
-
 
   const { electionId, positionId } = req.params;
 
@@ -514,8 +512,21 @@ const archiveCandidate = async (req, res) => {
     }
   };
 
+  const getVotersByElectionAndPosition = async (req, res) => {
+  try {
+    const { electionId, positionId } = req.params;
+
+    const voters = await getVoterByElectionAndPosition(electionId, positionId);
+
+    res.status(200).json({ voters });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch voters.' });
+  }
+};
+
   module.exports = {
     addVoter, createCollege, deleteCollege, getColleges,
     createDepartment, deleteDepartment, getDepartments, updateElection, deleteElection, getElections,
     getElectionById, createElection, addCandidate,getCandidatesByElectionId, archiveCandidate, getElectionResults, 
-    getAllStudentsWithVoteStatus, updateCandidate }
+    getAllStudentsWithVoteStatus, updateCandidate, getVotersByElectionAndPosition }
