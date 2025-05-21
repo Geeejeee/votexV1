@@ -7,6 +7,7 @@ const validate = require('../utils/validate');
 const { collegeSchema, departmentSchema } = require('../validator/adminValidation');
 const { registerSchema } = require('../validator/authValidator');
 const upload = require("../utils/upload")
+const {candidateSchema} = require('../validator/candidateValidation');
 
 
 
@@ -23,6 +24,8 @@ router.get('/get-department/:collegeId',verifyToken, requireAdmin, getDepartment
 
 // Election routes
 router.post('/elections', verifyToken, requireAdmin, upload.single('logo'), createElection);
+
+
   
 router.delete('/delete-elections/:id', verifyToken, requireAdmin, deleteElection);
 router.get('/elections/:electionId/results', verifyToken, requireAdmin, getElectionResults);
@@ -31,8 +34,10 @@ router.put('/update-election/:electionId', verifyToken, requireAdmin, upload.sin
 router.get('/elections/:electionId/candidates', verifyToken, requireAdmin, getCandidatesByElectionId);
 router.get('/elections/:electionId', verifyToken, requireAdmin, getElectionById);
 
+
+
 // Candidate routes
-router.post('/candidates', verifyToken, requireAdmin, addCandidate);
+router.post('/candidates/:electionId/positions/:positionId', verifyToken, requireAdmin, upload.single('photo'), validate(candidateSchema),addCandidate);
 router.delete('/candidates/:id', verifyToken, requireAdmin, deleteCandidate);
 
 
