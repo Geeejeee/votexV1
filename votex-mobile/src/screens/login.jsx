@@ -1,12 +1,14 @@
 // src/screens/LoginScreen.js
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import { Eye, EyeOff } from "lucide-react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
+import { Feather } from '@expo/vector-icons';
 import { Formik } from "formik";
 import * as Yup from "yup";
 import styles from "../styles/login.js";
 import logo from "../assets/votexmlogo.png";
+import Constants from "expo-constants";
 
+const API_BASE_URL = Constants.manifest.extra.API_BASE_URL;
 const LoginScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -14,6 +16,35 @@ const LoginScreen = ({ navigation }) => {
         idNumber: Yup.string().required("ID number is required"),
         password: Yup.string().required("Password is required"),
     });
+
+    const handleLogin = async (values) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/mobile-login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    idNumber: values.idNumber,
+                    password: values.password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Assuming backend returns something like { success: true, user: {...} }
+                console.log("Login Successful:", data);
+                alert("Login Successful");
+                navigation.navigate("Home");
+            } else {
+                Alert.alert("Login Failed", data.message || "Invalid credentials");
+            }
+        } catch (error) {
+            console.error("Login Error:", error);
+            Alert.alert("Error", "Something went wrong. Please try again.");
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -23,9 +54,8 @@ const LoginScreen = ({ navigation }) => {
                 initialValues={{ idNumber: "", password: "" }}
                 validationSchema={LoginSchema}
                 onSubmit={(values) => {
-                    console.log(values);
-                    navigation.navigate("Home");
-                }}
+                    console.log("Submitting with values:", values);
+                    handleLogin(values)}}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
                     <>
@@ -52,7 +82,7 @@ const LoginScreen = ({ navigation }) => {
                                 value={values.password}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                                {showPassword ? <EyeOff size={20} color="#444" /> : <Eye size={20} color="#444" />}
+                                <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#444" />
                             </TouchableOpacity>
                         </View>
                         {touched.password && errors.password && (

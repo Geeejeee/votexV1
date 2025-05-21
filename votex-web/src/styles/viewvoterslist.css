@@ -1,0 +1,159 @@
+/* voters.css */
+  .voters-container {
+    width: 100%;
+  }
+  
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #333;
+    background-color: #F9F9F9;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+
+  .home-icon {
+    color: #333;
+    text-decoration: none;
+    margin-right: 5px;
+  }
+  
+  .breadcrumbs a {
+    color: #0055aa;
+    text-decoration: none;
+  }
+  
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+  
+  .voters-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  
+  .voters-title {
+    display: flex;
+    align-items: center;
+  }
+  
+  .usg-logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+  }
+  
+  .title-text h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .title-text h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .voter-count {
+    display: flex;
+    align-items: center;
+  }
+  
+  .count-box {
+    background-color: #0d3d7a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .count-box p {
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .count-box h2 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-dropdown select {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f2f2f2;
+    width: 150px;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+  }
+  
+  .voters-table-wrapper {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  
+  .voters-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .voters-table th {
+    background-color: #0d3d7a;
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+  }
+  
+  .voters-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .voters-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .voters-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .voters-header, .usg-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .voter-count {
+      margin-top: 20px;
+    }
+    
+    .filters {
+      flex-direction: column;
+    }
+    
+    .filter-dropdown select {
+      width: 100%;
+    }
+    
+    .candidates-grid {
+      justify-content: center;
+    }
+  }

@@ -1,0 +1,74 @@
+.results-header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.result-card {
+  background-color: #d6ecff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-3px);
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.org-logo {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.card-info h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+.card-info p {
+  font-size: 1rem;
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.view-button {
+  background-color: white;
+  color: #0a0a0a;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.view-button:hover {
+  background-color: #f0f0f0;
+}
