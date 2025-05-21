@@ -2,14 +2,17 @@ const express = require('express');
 const router = express.Router();
 const {addVoter, createCollege, deleteCollege,getColleges,createDepartment, 
         updateCandidate,deleteDepartment,getDepartments,createElection, 
-        getVotersByElectionAndPosition,deleteElection,getElectionResults,getElections,getElectionById,updateElection,addCandidate, 
-        getCandidatesByElectionId,archiveCandidate, getAllStudentsWithVoteStatus} = require('../controllers/adminController');
+        getVotersByElectionAndPosition,deleteElection,getElectionResults,getElections,
+        getTopCandidatesByPosition,getElectionById,updateElection,addCandidate, 
+        getCandidatesByElectionId,archiveCandidate, getAllStudentsWithVoteStatus,
+        getPositionsByElection} = require('../controllers/adminController');
 const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
 const validate = require('../utils/validate');
 const { collegeSchema, departmentSchema } = require('../validator/adminValidation');
 const { registerSchema } = require('../validator/authValidator');
 const upload = require("../utils/upload")
 const {candidateSchema} = require('../validator/candidateValidation');
+const { getPositionsByElectionId } = require('../models/positionModel');
 
 
 
@@ -37,6 +40,7 @@ router.get('/get-elections', verifyToken, requireAdmin, getElections);
 router.put('/update-election/:electionId', verifyToken, requireAdmin, upload.single('logo'),updateElection);
 router.get('/elections/:electionId/candidates', verifyToken, requireAdmin, getCandidatesByElectionId);
 router.get('/elections/:electionId', verifyToken, requireAdmin, getElectionById);
+router.get('/election-positions/:electionId', verifyToken, requireAdmin, getPositionsByElection);
 
 
 
@@ -49,6 +53,8 @@ router.patch('/candidates/:candidateId/archive', verifyToken, requireAdmin, arch
 
 router.get('/get-all-students-with-vote-status', verifyToken, requireAdmin, getAllStudentsWithVoteStatus);
 router.get('/elections/:electionId/positions/:positionId/voters', verifyToken, requireAdmin, getVotersByElectionAndPosition);
+
+router.get("/election-results/:electionId/:positionId", verifyToken, requireAdmin, getTopCandidatesByPosition);
 
 
 module.exports = router;

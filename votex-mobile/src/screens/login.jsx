@@ -7,8 +7,15 @@ import * as Yup from "yup";
 import styles from "../styles/login.js";
 import logo from "../assets/votexmlogo.png";
 import Constants from "expo-constants";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = Constants.manifest.extra.API_BASE_URL;
+
+const API_BASE_URL =
+  Constants?.expoConfig?.extra?.API_BASE_URL ||
+  Constants?.manifest?.extra?.API_BASE_URL ||
+  "http://127.0.0.1:5000"; // optional fallback
+
+
 const LoginScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -18,33 +25,39 @@ const LoginScreen = ({ navigation }) => {
     });
 
     const handleLogin = async (values) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/mobile-login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    idNumber: values.idNumber,
-                    password: values.password,
-                }),
-            });
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/mobile-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        idNumber: values.idNumber,
+        password: values.password,
+      }),
+    });
 
-            const data = await response.json();
+    const data = await response.json();
 
-            if (response.ok) {
-                // Assuming backend returns something like { success: true, user: {...} }
-                console.log("Login Successful:", data);
-                alert("Login Successful");
-                navigation.navigate("Home");
-            } else {
-                Alert.alert("Login Failed", data.message || "Invalid credentials");
-            }
-        } catch (error) {
-            console.error("Login Error:", error);
-            Alert.alert("Error", "Something went wrong. Please try again.");
-        }
-    };
+    if (response.ok) {
+      // ✅ Save token
+      if (data.token) {
+        await AsyncStorage.setItem("token", data.token);
+        console.log("Token saved:", data.token);
+      } 
+
+      console.log("Login Successful:", data);
+      Alert.alert("Success", "Login Successful");
+      navigation.navigate("Home");
+    } else {
+      Alert.alert("Login Failed", data.message || "Invalid credentials");
+    }
+  } catch (error) {
+    console.error("Login Error:", error);
+    Alert.alert("Error", "Something went wrong. Please try again.");
+  }
+};
+
 
     return (
         <View style={styles.container}>
