@@ -15,13 +15,13 @@ const RegisterStyles = StyleSheet.create({
     resizeMode: "contain",
   },
   registerHeading: {
-  fontSize: 28,
-  fontWeight: "bold",
-  color: "#002f6c",
-  marginBottom: 20,
-  marginTop: -50,
-  textAlign: "center",
-},
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#002f6c",
+    marginBottom: 20,
+    marginTop: -50,
+    textAlign: "center",
+  },
 
   input: {
     width: "100%",
@@ -70,24 +70,22 @@ const RegisterStyles = StyleSheet.create({
   },
 
   pickerWrapper: {
-  width: "100%",
-  borderWidth: 1,
-  borderColor: "#ccc",
-  borderRadius: 8,
-  marginBottom: 10,
-  backgroundColor: "#fff",
-},
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+  },
 
-label: {
-  alignSelf: "flex-start",
-  marginBottom: 4,
-  marginTop: 10,
-  fontSize: 14,
-  color: "#333",
-  fontWeight: "500",
-},
-
-
+  label: {
+    alignSelf: "flex-start",
+    marginBottom: 4,
+    marginTop: 10,
+    fontSize: 14,
+    color: "#333",
+    fontWeight: "500",
+  },
 });
 
 export default RegisterStyles;
