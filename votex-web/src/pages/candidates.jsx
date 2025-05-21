@@ -81,19 +81,37 @@ useEffect(() => {
     };
 
     // Function to handle candidate removal
-    const handleRemoveCandidate = (positionId, candidateId) => {
-  setPositionsList(prevPositions =>
-    prevPositions.map(position => {
-      if (position.id === positionId) {
-        return {
-          ...position,
-          candidates: position.candidates.filter(candidate => candidate.id !== candidateId)
-        };
-      }
-      return position;
-    })
-  );
+ const handleRemoveCandidate = async (positionId, candidateId) => {
+  const confirmed = window.confirm('Do you want to archive this candidate?');
+  if (!confirmed) return;
+
+  try {
+    const token = localStorage.getItem('token');
+    // Call backend to archive candidate
+    await axios.patch(
+      `/api/admin/candidates/${candidateId}/archive`,
+      { isArchived: true },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    // Remove candidate locally after successful archive
+    setPositionsList(prevPositions =>
+      prevPositions.map(position => {
+        if (position.id === positionId) {
+          return {
+            ...position,
+            candidates: position.candidates.filter(candidate => candidate.id !== candidateId)
+          };
+        }
+        return position;
+      })
+    );
+  } catch (error) {
+    console.error('Failed to archive candidate:', error);
+    alert('Failed to archive candidate, please try again.');
+  }
 };
+
 
 
     const navigate = useNavigate();

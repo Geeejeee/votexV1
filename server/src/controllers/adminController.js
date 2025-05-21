@@ -1,7 +1,7 @@
 const {createColleges, deleteColleges, getAllColleges} = require('../models/collegeModel');
 const {createDepartments, deleteDepartments, getAllDepartments} = require('../models/departmentModel');
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
-const {createCandidate, deleteCandidates, findCandidatesByElection, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
+const {createCandidate,findCandidateById, findCandidatesByElection, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
 const {getPositionsByElectionId, findPositionInElection} = require('../models/positionModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
@@ -384,7 +384,7 @@ const getCandidatesByElectionId = async (req, res) => {
     const assignedPositions = await getPositionsByElectionId(electionId);
 
     // 2. Fetch all candidates for this election (with position populated)
-    const candidates = await findCandidatesByElectionAndPosition({ election: electionId });
+    const candidates = await findCandidatesByElectionAndPosition({ election: electionId, isArchived: false });
 
     // 3. Group candidates by position ID
     const positionsMap = {};
@@ -440,18 +440,27 @@ const getCandidatesByElectionId = async (req, res) => {
 };
 
 
-// Delete Candidate
-const deleteCandidate = async (req, res) => {
+const archiveCandidate = async (req, res) => {
   try {
-    const candidate = await deleteCandidates(req.params.id);
-    if (!candidate) return res.status(404).json({ message: 'Candidate not found' });
+    const { candidateId } = req.params;
+    const { isArchived } = req.body;
 
-    res.status(200).json({ message: 'Candidate deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    if (typeof isArchived !== 'boolean') {
+      return res.status(400).json({ message: 'isArchived must be a boolean' });
+    }
+
+    const candidate = await findCandidateAndUpdate(candidateId, { isArchived });
+
+    if (!candidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+    res.json({ message: `Candidate ${isArchived ? 'archived' : 'unarchived'} successfully`, candidate });
+  } catch (error) {
+    console.error('Error archiving candidate:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
-
 
   const getElectionResults = async (req, res) => {
     try {
@@ -508,5 +517,5 @@ const deleteCandidate = async (req, res) => {
   module.exports = {
     addVoter, createCollege, deleteCollege, getColleges,
     createDepartment, deleteDepartment, getDepartments, updateElection, deleteElection, getElections,
-    getElectionById, createElection, addCandidate,getCandidatesByElectionId, deleteCandidate, getElectionResults, 
+    getElectionById, createElection, addCandidate,getCandidatesByElectionId, archiveCandidate, getElectionResults, 
     getAllStudentsWithVoteStatus, updateCandidate }

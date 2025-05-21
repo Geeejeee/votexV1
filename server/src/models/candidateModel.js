@@ -50,10 +50,7 @@ const findCandidateById = async (id) => {
   return await Candidate.findById(id);
 };
 
-const findCandidateAndUpdate = async (candidateId, updates ) => {
-  console.log("Updating candidate with ID:", candidateId);
-console.log("In service: updateCandidateById", candidateId, updates);
-
+const findCandidateAndUpdate = async (candidateId, updates) => {
   return await Candidate.findByIdAndUpdate(candidateId, updates, { new: true });
 }
 module.exports = {createCandidate, deleteCandidates, findCandidateById, 
