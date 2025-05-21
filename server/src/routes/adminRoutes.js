@@ -30,7 +30,9 @@ router.post('/elections', verifyToken, requireAdmin, upload.single('logo'), crea
 
   
 router.delete('/delete-elections/:id', verifyToken, requireAdmin, deleteElection);
+
 router.get('/elections/:electionId/results', verifyToken, requireAdmin, getElectionResults);
+
 router.get('/get-elections', verifyToken, requireAdmin, getElections);
 router.put('/update-election/:electionId', verifyToken, requireAdmin, upload.single('logo'),updateElection);
 router.get('/elections/:electionId/candidates', verifyToken, requireAdmin, getCandidatesByElectionId);

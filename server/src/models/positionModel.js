@@ -59,7 +59,7 @@ const findPositionByName = async (name, electionId) => {
 
 const getPositionsByElectionId = async (electionId) => {
   return await electionPosition.find({ election: electionId })
-    .populate('position', 'name'); // You can add more fields if needed
+    .populate('position', 'name'); 
 };
 
 const findPositionInElection = async (electionId, positionId) => {

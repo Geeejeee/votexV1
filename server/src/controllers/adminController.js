@@ -1,7 +1,7 @@
 const {createColleges, deleteColleges, getAllColleges} = require('../models/collegeModel');
 const {createDepartments, deleteDepartments, getAllDepartments} = require('../models/departmentModel');
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
-const {createCandidate,findCandidateById, findCandidatesByElection, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
+const {createCandidate,getCandidatesByElectionAndPosition, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
 const {getPositionsByElectionId, findPositionInElection} = require('../models/positionModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
@@ -460,36 +460,45 @@ const archiveCandidate = async (req, res) => {
   }
 };
 
-  const getElectionResults = async (req, res) => {
-    try {
-      const electionId = req.params.electionId;
-  
-      const candidates = await findCandidatesByElection(electionId);
-  
-      const votes = await getVotesByCandidate();
-  
-      const resultMap = {};
-  
-      // Count votes per candidate
-      for (const candidate of candidates) {
-        resultMap[candidate._id] = {
-          candidate,
-          votes: 0,
-        };
-      }
-  
-      for (const vote of votes) {
-        if (vote.candidate && vote.candidate.election.toString() === electionId) {
-          resultMap[vote.candidate._id].votes++;
-        }
-      }
-  
-      const results = Object.values(resultMap);
-      res.status(200).json({ results });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+
+const getElectionResults = async (req, res) => {
+  try {
+    const { electionId } = req.params;
+
+    // Get the election document
+    const election = await findElectionById(electionId);
+    if (!election) {
+      return res.status(404).json({ error: 'Election not found' });
     }
-  };
+
+    // Get all election-position mappings for the election
+    const electionPositions = await getPositionsByElectionId(electionId);
+
+    // Build result per position
+    const results = await Promise.all(
+      electionPositions.map(async (ep) => {
+        const candidates = await getCandidatesByElectionAndPosition(electionId, ep.position._id);
+        return {
+          positionId: ep.position._id,
+          positionName: ep.position.name,
+          candidates,
+        };
+      })
+    );
+
+    res.status(200).json({
+      election: {
+        title: election.title,
+        logo: election.logo,
+      },
+      positions: results,
+    });
+  } catch (error) {
+    console.error('Error fetching election results:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
   
   const getAllStudentsWithVoteStatus = async (req, res) => {
     try {
@@ -524,6 +533,8 @@ const archiveCandidate = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch voters.' });
   }
 };
+
+
 
   module.exports = {
     addVoter, createCollege, deleteCollege, getColleges,

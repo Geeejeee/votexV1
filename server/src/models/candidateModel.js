@@ -53,6 +53,15 @@ const findCandidateById = async (id) => {
 const findCandidateAndUpdate = async (candidateId, updates) => {
   return await Candidate.findByIdAndUpdate(candidateId, updates, { new: true });
 }
+
+const getCandidatesByElectionAndPosition = async (electionId, positionId) => {
+  return Candidate.find({
+    election: electionId,
+    position: positionId,
+    isArchived: false,
+  });
+};
+
 module.exports = {createCandidate, deleteCandidates, findCandidateById, 
   findCandidateAndUpdate,
-  findCandidatesByElection, findCandidatesByElectionAndPosition};
+  findCandidatesByElection, findCandidatesByElectionAndPosition,getCandidatesByElectionAndPosition};

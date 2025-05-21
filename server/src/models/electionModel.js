@@ -55,7 +55,7 @@ const deleteElections = async (id) => {
 
 // FIND BY ID
 const findElectionById = async (electionId) => {
-  return await Election.findById(electionId);
+  return await Election.findById(electionId).lean();
 };
 
 // GET ALL

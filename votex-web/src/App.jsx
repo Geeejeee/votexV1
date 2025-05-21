@@ -24,7 +24,7 @@ function App() {
 
 
         {/* Election Results Page */}
-        <Route path="/resultsdb/:organization" element={<ElectionResultsView />} />
+        <Route path="/resultsdb/:electionId" element={<ElectionResultsView />} />
       </Routes>
     </Router>
   );
