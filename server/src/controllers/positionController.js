@@ -43,25 +43,17 @@ const getPositions = async (req, res) => {
   }
 };
 
-const delPosition = async (req, res) => {
-    try {
-      const { id } = req.params; // Assuming the position ID is passed in the URL
-  
-      // Check if position exists
-      const position = await findPositionById(id);
-      if (!position) {
-        return res.status(404).json({ message: "Position not found" });
-      }
-  
-      // Delete the position
-      await deletePosition(id);
-  
-      res.status(200).json({ message: "Position deleted successfully" });
-    } catch (error) {
-      console.error("Delete Position Error:", error);
-      res.status(500).json({ message: "Server error" });
-    }
-  };
+const deleteElectionPosition = async (req, res) => {
+  try {
+    const { positionId } = req.params;
+    await deletePosition(positionId);
+    res.status(200).json({ message: 'Position removed from election' });
+  } catch (err) {
+    console.error('Failed to delete election position', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
  const addPositionToElection = async (req, res) => {
   const { electionId } = req.params;
@@ -98,4 +90,4 @@ const delPosition = async (req, res) => {
   }
 };
 
-  module.exports = { makePosition, getPositions, delPosition, addPositionToElection };
+  module.exports = { makePosition, getPositions, deleteElectionPosition, addPositionToElection };

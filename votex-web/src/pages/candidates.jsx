@@ -150,7 +150,7 @@ useEffect(() => {
 })}
 
                 {/* Positions and Candidates */}
-               {positionsList.map((position) => (
+               {positionsList.filter(position => !position.isArchived).map((position) => (
                     <div key={position.id} className="ec-position-section">
                         <div className="ec-position-header">
                         <h2>FOR {position.name ?position.name.toUpperCase() : 'UNNAMED POSITION'} :</h2>
@@ -234,6 +234,7 @@ useEffect(() => {
                     setPositionToDelete={setPositionToDelete}
                     positionsList={positionsList}
                     setPositionsList={setPositionsList}
+                    electionPositions={positionsList.map(pos => pos.id)}
                 />
 
                 <AddCandidateModal

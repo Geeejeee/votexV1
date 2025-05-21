@@ -1,4 +1,5 @@
-import "../../styles/candidates.css"
+import "../../styles/candidates.css";
+import axios from "axios";
 
 const DeletePositionModal = ({
   showDeleteModal,
@@ -6,39 +7,50 @@ const DeletePositionModal = ({
   positionToDelete,
   setPositionToDelete,
   positionsList,
-  setPositionsList
+  setPositionsList,
+  electionPositions
 }) => {
   if (!showDeleteModal) return null;
 
-  const handleDelete = () => {
-    setPositionsList(positionsList.filter(p => p.id !== positionToDelete));
+  const handleArchive = async () => {
+  try {
+    await axios.delete(`/api/position/election-positions/${positionToDelete}`);
+    setPositionsList(prev => prev.filter(p => p.id !== positionToDelete));
     setShowDeleteModal(false);
     setPositionToDelete(null);
-  };
+  } catch (err) {
+    console.error("Failed to delete election position:", err);
+  }
+};
+
 
   const handleCancel = () => {
     setShowDeleteModal(false);
     setPositionToDelete(null);
   };
 
+  const filteredPositions = positionsList.filter(
+    pos => electionPositions.includes(pos.id) && !pos.isArchived
+  );
+
   return (
     <div className="ec-modal-overlay">
       <div className="ec-modal">
-        <h2>Select Position to Delete</h2>
+        <h2>Select Position to Archive</h2>
         <select
-          onChange={(e) => setPositionToDelete(Number(e.target.value))}
+          onChange={(e) => setPositionToDelete(e.target.value)}
           defaultValue=""
         >
           <option value="" disabled>Select a position</option>
-          {positionsList.map(pos => (
-            <option key={pos.id} value={pos.id}>{pos.title}</option>
+          {filteredPositions.map(pos => (
+            <option key={pos.id} value={pos.id}>{pos.name}</option>
           ))}
         </select>
         <div className="ec-modal-actions">
           <button
             className="ec-btn-danger"
             disabled={!positionToDelete}
-            onClick={handleDelete}
+            onClick={handleArchive}
           >
             Confirm Delete
           </button>

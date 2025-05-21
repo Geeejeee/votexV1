@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { makePosition, getPositions, delPosition, addPositionToElection } = require('../controllers/positionController.js'); 
+const { makePosition, getPositions, deleteElectionPosition, addPositionToElection } = require('../controllers/positionController.js'); 
 const { verifyToken, requireAdmin } = require('../utils/authMiddleware');
 const validate = require('../utils/validate');
 const { positionSchema } = require('../validator/positionValidator');
@@ -9,7 +9,7 @@ const { positionSchema } = require('../validator/positionValidator');
 
 router.post('/create-position', verifyToken, requireAdmin, validate(positionSchema), makePosition);
 router.get('/get-position', verifyToken, requireAdmin, getPositions);
-router.delete('/delete-position/:id', verifyToken, requireAdmin, delPosition);
+router.delete('/election-positions/:positionId', deleteElectionPosition);
 
 
 router.post('/:electionId/positions', verifyToken, requireAdmin, addPositionToElection);
