@@ -13,6 +13,8 @@ const Header = () => {
 
   const handleConfirmLogout = () => {
     setIsModalOpen(false); // Close the modal
+    // Clear auth token or any other auth info stored
+    localStorage.removeItem("token");  // or your auth key
     navigate("/login"); // Redirect to login page
   };
 

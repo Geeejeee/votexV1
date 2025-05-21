@@ -1,12 +1,41 @@
-import React from "react";
-import { Link } from "react-router-dom"; // Import Link component
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom"; // Added useNavigate for redirect
 import DashboardLayout from "../layouts/DashboardLayout";
 import Calendar from "react-calendar";
-import { BarChart3, Users, User, Barcode } from "lucide-react";
+import { BarChart3, Users, User } from "lucide-react";
 import 'react-calendar/dist/Calendar.css';
-import AnnouncementCarousel from "../components/AnnouncementCarousel.tsx"; // adjust path as needed
+import AnnouncementCarousel from "../components/AnnouncementCarousel.tsx";
 
 const Dashboard = () => {
+  // State to store current date/time string
+  const [dateTimeStr, setDateTimeStr] = useState("");
+
+  // Update date/time every second
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+      // Format date like: April 12, 2025 | 09:44 PM
+      const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      };
+      const formatted = now.toLocaleString("en-US", options).replace(",", " |");
+      setDateTimeStr(formatted);
+    };
+
+    updateDateTime(); // Initial call
+    const timerId = setInterval(updateDateTime, 1000);
+
+    return () => clearInterval(timerId); // Cleanup on unmount
+  }, []);
+
+
+
+
   return (
     <DashboardLayout>
       <nav className="breadcrumb">
@@ -17,7 +46,7 @@ const Dashboard = () => {
       </nav>
       <div className="welcome-row">
         <div className="welcome-card">Welcome back, Admin</div>
-        <div className="datetime-card">April 12, 2025 | 09:44 PM</div>
+        <div className="datetime-card">{dateTimeStr}</div>
       </div>
 
       <div className="main-content">
