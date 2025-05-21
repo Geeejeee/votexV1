@@ -1,6 +1,9 @@
-import React from 'react';
+import React,{useEffect, useState, useMemo} from 'react';
 import { X } from 'lucide-react';
 import "../../styles/candidates.css";
+import axios from 'axios';
+
+const token = localStorage.getItem('token');
 
 const AddCandidateModal = ({
   showAddCandidateModal,
@@ -27,52 +30,99 @@ const AddCandidateModal = ({
   selectedPositionId,
   errorMessage,
   setErrorMessage,
-  resetFormFields
+  resetFormFields,
+  electionId,  // added electionId here
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (showAddCandidateModal) {
+      setErrorMessage(null);
+    }
+  }, [showAddCandidateModal]);
+
+  const runningPositionName = useMemo(() => {
+  const position = positionsList.find(pos => pos.id === selectedPositionId);
+  return position ? position.name : "";
+}, [positionsList, selectedPositionId])
+
   if (!showAddCandidateModal) return null;
 
-  const handleSubmit = () => {
-    const trimmedName = candidateName.trim();
-    const trimmedParty = candidateParty.trim();
+  const handleSubmit = async () => {
+  const trimmedName = candidateName.trim();
+  const trimmedParty = candidateParty.trim();
 
-    if (!trimmedName || !trimmedParty || !candidatePhoto) {
-      setErrorMessage('Please fill all required fields and upload a photo.');
-      return;
-    }
+  if (!trimmedName || !trimmedParty || !candidatePhoto) {
+    setErrorMessage('Please fill all required fields and upload a photo.');
+    return;
+  }
 
-    const duplicate = positionsList
-      .find(pos => pos.id === selectedPositionId)
-      ?.candidates.some(c => c.name.toLowerCase() === trimmedName.toLowerCase());
+  const duplicate = positionsList
+    .find(pos => pos.id === selectedPositionId)
+    ?.candidates.some(c => c.name.toLowerCase() === trimmedName.toLowerCase());
 
-    if (duplicate) {
-      setErrorMessage('A candidate with this name already exists.');
-      return;
-    }
+  if (duplicate) {
+    setErrorMessage('A candidate with this name already exists.');
+    return;
+  }
 
-    const newCandidate = {
-      id: Date.now(),
-      name: trimmedName,
-      party: trimmedParty,
-      position: candidatePosition,
-      course: candidateCourse,
-      yearLevel: candidateYearLevel,
-      motto: candidateMotto,
-      affiliations: candidateAffiliations,
-      advocacies: candidateAdvocacies,
-      photo: URL.createObjectURL(candidatePhoto),
-    };
+  const [firstName, ...rest] = trimmedName.split(' ');
+  const lastName = rest.join(' ') || '';
+
+  const formData = new FormData();
+  formData.append('firstName', firstName);
+  formData.append('lastName', lastName);
+  formData.append('party', trimmedParty);
+  formData.append('yearLevel', candidateYearLevel);
+  formData.append('motto', candidateMotto);
+  formData.append('affiliations', candidateAffiliations);
+  formData.append('advocacies', candidateAdvocacies);
+  formData.append('photo', candidatePhoto);
+
+  console.log("Submitting candidate for:", {
+  electionId,
+  selectedPositionId,
+  
+});
+
+if (!electionId) {
+  setErrorMessage("Election ID is missing. Cannot submit candidate.");
+  return;
+}
+
+  try {
+    
+
+    const res = await axios.post(`/api/admin/candidates/${electionId}/positions/${selectedPositionId}`,
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    const data = res.data;
 
     setPositionsList(prev =>
       prev.map(pos =>
         pos.id === selectedPositionId
-          ? { ...pos, candidates: [...pos.candidates, newCandidate] }
+          ? { ...pos, candidates: [...pos.candidates, data.candidate] }
           : pos
       )
     );
 
     setShowAddCandidateModal(false);
     resetFormFields();
-  };
+  } catch (err) {
+    console.error("AXIOS ERROR:", err);
+    console.error("Response:", err.response?.data);
+    setErrorMessage(err.response?.data?.message || 'Failed to add candidate.');
+  }
+};
+
+
 
   return (
     <div className="ec-modal-overlay">
@@ -92,6 +142,8 @@ const AddCandidateModal = ({
             {errorMessage}
           </p>
         )}
+
+        {/* form inputs here unchanged */}
 
         <div className="ec-form-row">
           <div className="ec-form-group">
@@ -120,7 +172,7 @@ const AddCandidateModal = ({
             <input
               type="text"
               className="ec-form-control"
-              value={candidatePosition}
+              value={runningPositionName}
               readOnly
             />
           </div>
@@ -184,8 +236,12 @@ const AddCandidateModal = ({
         </div>
 
         <div className="ec-form-submit">
-          <button className="ec-btn-submit" onClick={handleSubmit}>
-            SUBMIT
+          <button
+            className="ec-btn-submit"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'SUBMIT'}
           </button>
         </div>
       </div>

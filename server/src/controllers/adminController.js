@@ -1,8 +1,8 @@
-const {createColleges, deleteColleges, findCollegeById, getAllColleges} = require('../models/collegeModel');
-const {createDepartments, deleteDepartments, findDepartmentById, getAllDepartments} = require('../models/departmentModel');
+const {createColleges, deleteColleges, getAllColleges} = require('../models/collegeModel');
+const {createDepartments, deleteDepartments, getAllDepartments} = require('../models/departmentModel');
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
 const {createCandidate, deleteCandidates, findCandidatesByElection, findCandidatesByElectionAndPosition} = require('../models/candidateModel');
-const {getPositionsByElectionId} = require('../models/positionModel');
+const {getPositionsByElectionId, findPositionInElection} = require('../models/positionModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
@@ -277,7 +277,14 @@ const getElectionById = async (req, res) => {
   
 // Add Candidate
 const addCandidate = async (req, res) => {
+console.log('Uploaded file:', req.file);
+console.log('req.body:', req.body);
+
+
+  const { electionId, positionId } = req.params;
+
   try {
+    // Assuming req.body is already validated by Zod in the route middleware
     const {
       firstName,
       lastName,
@@ -286,24 +293,26 @@ const addCandidate = async (req, res) => {
       motto,
       affiliations,
       advocacies,
-      photo,
-      position,
-      electionId
     } = req.body;
 
-    // Find election to get college and department
+    if (!req.file) {
+      return res.status(400).json({ message: 'Candidate photo is required.' });
+    }
+
+    // Get election for college and department
     const election = await findElectionById(electionId);
-    if (!election) return res.status(404).json({ message: 'Election not found' });
+    if (!election) {
+      return res.status(404).json({ message: 'Election not found.' });
+    }
 
-    const collegeId = election.college;
-    const departmentId = election.department;
+    // Validate position belongs to election
+    const electionPosition = await findPositionInElection(electionId,positionId);
+    if (!electionPosition) {
+      return res.status(404).json({ message: 'Position not found in this election.' });
+    }
 
-    // Validate college and department
-    const college = await findCollegeById(collegeId);
-    if (!college) return res.status(404).json({ message: 'College not found (from election)' });
-
-    const department = await findDepartmentById(departmentId);
-    if (!department) return res.status(404).json({ message: 'Department not found (from election)' });
+    // Use file path or URL from multer / cloudinary setup
+    const photoUrl = req.file?.path || req.file?.secure_url ||req.file?.location || '';
 
     // Create candidate
     const candidate = await createCandidate(
@@ -314,18 +323,20 @@ const addCandidate = async (req, res) => {
       motto,
       affiliations,
       advocacies,
-      photo,
-      position,
+      photoUrl,
+      positionId,
       electionId,
-      collegeId,
-      departmentId
+      election.college,
+      election.department
     );
 
-    res.status(201).json({ message: 'Candidate added', candidate });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
+    res.status(201).json({
+      message: 'Candidate added successfully.',
+      candidate,
+    });
+  } catch (error) {
+    console.error('Error adding candidate:', error);
+    res.status(500).json({ message: 'Server error.', error: error.message });
   }
 };
 

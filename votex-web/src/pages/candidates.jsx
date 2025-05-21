@@ -262,6 +262,7 @@ useEffect(() => {
                     errorMessage={errorMessage}
                     setErrorMessage={setErrorMessage}
                     resetFormFields={resetFormFields}
+                    electionId={electionId}
                 />
 
                 {showEditModal && editingCandidate && (

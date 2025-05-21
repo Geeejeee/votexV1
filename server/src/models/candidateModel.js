@@ -1,31 +1,33 @@
 const Candidate = require("../schemas/candidateSchema");
 
+
 const createCandidate = async (
-      firstName,
-      lastName,
-      party,
-      yearLevel,
-      motto,
-      affiliations,
-      advocacies,
-      photo,
-      position,
-      electionId,
-      collegeId,
-      departmentId) => {
+  firstName,
+  lastName,
+  party,
+  yearLevel,
+  motto,
+  affiliations,
+  advocacies,
+  photo,
+  position,
+  electionId,
+  collegeId,
+  departmentId
+) => {
   return await Candidate.create({
-      firstName,
-      lastName,
-      party,
-      yearLevel,
-      motto,
-      affiliations,
-      advocacies,
-      photo,
-      position,
-      election: electionId,
-      college: collegeId,
-      department: departmentId
+    firstName,
+    lastName,
+    party,
+    yearLevel,
+    motto,
+    affiliations,
+    advocacies,
+    photo,
+    position,
+    election: electionId,
+    college: collegeId,
+    department: departmentId,
   });
 };
 
