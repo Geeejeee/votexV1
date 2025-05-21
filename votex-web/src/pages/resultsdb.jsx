@@ -1,81 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from "../layouts/DashboardLayout";
+import axios from 'axios';
 import '../styles/resultsdb.css';
-
-import USGLogo from '../assets/USG.png';
-import CITCLogo from '../assets/CITC.png'; 
-import SITELogo from '../assets/SITE.png'; 
 
 const ElectionsDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [elections, setElections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
-  const handleViewClick = (organization) => {
-    console.log(`View clicked for ${organization}`);
-    // Navigate to the result page for the clicked organization
-    navigate(`/resultsdb/${organization}`);
+  const token = localStorage.getItem('token'); // Assuming you need token for auth
+
+  useEffect(() => {
+    const fetchElections = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get('/api/admin/get-elections', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setElections(res.data.elections);
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch elections:', err);
+        setError('Failed to load elections.');
+        setLoading(false);
+      }
+    };
+
+    fetchElections();
+  }, [token]);
+
+  const handleViewClick = (electionId) => {
+    navigate(`/resultsdb/${electionId}`);
   };
 
   return (
     <DashboardLayout>
-    <nav className="breadcrumb">
+      <nav className="breadcrumb">
         <a href="/dashboard" className="home-icon">
           <i className="fa fa-home"></i>
         </a>
         <span> › Results</span>
       </nav>
 
-          <div className="election-results-container">
-            <div className="results-header">
-              <h1>Overall Results</h1>
+      <div className="election-results-container">
+        <div className="results-header">
+          <h1>Overall Results</h1>
+        </div>
+
+        {loading && <p>Loading elections...</p>}
+        {error && <p className="error-message">{error}</p>}
+
+        <div className="results-grid">
+          {!loading && !error && elections.length === 0 && (
+            <p>No elections found.</p>
+          )}
+
+          {!loading && !error && elections.map(election => (
+            <div key={election._id} className="result-card">
+              <div className="card-content">
+                <img
+                  src={election.logo}
+                  alt={`${election.title} Logo`}
+                  className="org-logo"
+                />
+                <div className="card-info">
+                  <h2>{election.title}</h2>
+                  <p>
+                    {election.college?.name} - {election.department?.name}
+                  </p>
+                  <p>{new Date(election.startDate).getFullYear()} ELECTIONS</p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleViewClick(election._id)}
+                className="view-button"
+              >
+                VIEW
+              </button>
             </div>
-
-            <div className="results-grid">
-              {/* USG Card */}
-              <div className="result-card">
-                <div className="card-content">
-                  <img src={USGLogo} alt="USG Logo" className="org-logo" />
-                  <div className="card-info">
-                    <h2>UNIVERSITY STUDENT GOVERNMENT</h2>
-                    <p>2025 ELECTIONS</p>
-                  </div>
-                </div>
-                <button onClick={() => handleViewClick('USG')} className="view-button">
-                  VIEW
-                </button>
-              </div>
-
-              {/* CITC Card */}
-              <div className="result-card">
-                <div className="card-content">
-                  <img src={CITCLogo} alt="CITC Logo" className="org-logo" />
-                  <div className="card-info">
-                    <h2>COLLEGE OF INFORMATION TECHNOLOGY AND COMPUTING</h2>
-                    <p>2025 ELECTIONS</p>
-                  </div>
-                </div>
-                <button onClick={() => handleViewClick('CITC')} className="view-button">
-                  VIEW
-                </button>
-              </div>
-
-              {/* SITE Card */}
-              <div className="result-card">
-                <div className="card-content">
-                  <img src={SITELogo} alt="SITE Logo" className="org-logo" />
-                  <div className="card-info">
-                    <h2>SOCIETY OF INFORMATION TECHNOLOGY ENTHUSIASTS</h2>
-                    <p>2025 ELECTIONS</p>
-                  </div>
-                </div>
-                <button onClick={() => handleViewClick('SITE')} className="view-button">
-                  VIEW
-                </button>
-              </div>
-            </div>
-          </div>
-          
+          ))}
+        </div>
+      </div>
     </DashboardLayout>
   );
 };

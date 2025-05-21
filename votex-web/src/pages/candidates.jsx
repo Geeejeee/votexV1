@@ -81,25 +81,43 @@ useEffect(() => {
     };
 
     // Function to handle candidate removal
-    const handleRemoveCandidate = (positionId, candidateId) => {
-  setPositionsList(prevPositions =>
-    prevPositions.map(position => {
-      if (position.id === positionId) {
-        return {
-          ...position,
-          candidates: position.candidates.filter(candidate => candidate.id !== candidateId)
-        };
-      }
-      return position;
-    })
-  );
+ const handleRemoveCandidate = async (positionId, candidateId) => {
+  const confirmed = window.confirm('Do you want to archive this candidate?');
+  if (!confirmed) return;
+
+  try {
+    const token = localStorage.getItem('token');
+    // Call backend to archive candidate
+    await axios.patch(
+      `/api/admin/candidates/${candidateId}/archive`,
+      { isArchived: true },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    // Remove candidate locally after successful archive
+    setPositionsList(prevPositions =>
+      prevPositions.map(position => {
+        if (position.id === positionId) {
+          return {
+            ...position,
+            candidates: position.candidates.filter(candidate => candidate.id !== candidateId)
+          };
+        }
+        return position;
+      })
+    );
+  } catch (error) {
+    console.error('Failed to archive candidate:', error);
+    alert('Failed to archive candidate, please try again.');
+  }
 };
 
 
+
     const navigate = useNavigate();
-    const handleViewElection = (id) => {
-        navigate(`/elections/${id}/viewvoterslist`);
-    };
+    const handleViewVoters = (electionId, position) => {
+        navigate(`/elections/${electionId}/positions/${position.id}/voters`, {state: { election,position}});
+        };
 
     return (
         !election ? (
@@ -143,18 +161,14 @@ useEffect(() => {
                     </div>
                 </div>
 
-{console.log('Rendering positionsList:', positionsList)}
-{positionsList.forEach((pos, index) => {
-  console.log(`Position ${index + 1}:`, pos.name);
-  console.log('Candidates:', pos.candidates);
-})}
+        
 
                 {/* Positions and Candidates */}
-               {positionsList.map((position) => (
+               {positionsList.filter(position => !position.isArchived).map((position) => (
                     <div key={position.id} className="ec-position-section">
                         <div className="ec-position-header">
                         <h2>FOR {position.name ?position.name.toUpperCase() : 'UNNAMED POSITION'} :</h2>
-                        <button className="ec-btn-view-voters" onClick={() => handleViewElection(electionId)}>
+                        <button className="ec-btn-view-voters" onClick={() => handleViewVoters(electionId, position)}>
                             View Voters
                         </button>
                         </div>
@@ -234,6 +248,7 @@ useEffect(() => {
                     setPositionToDelete={setPositionToDelete}
                     positionsList={positionsList}
                     setPositionsList={setPositionsList}
+                    electionPositions={positionsList.map(pos => pos.id)}
                 />
 
                 <AddCandidateModal

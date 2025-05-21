@@ -50,4 +50,18 @@ const findCandidateById = async (id) => {
   return await Candidate.findById(id);
 };
 
-module.exports = {createCandidate, deleteCandidates, findCandidateById, findCandidatesByElection, findCandidatesByElectionAndPosition};
+const findCandidateAndUpdate = async (candidateId, updates) => {
+  return await Candidate.findByIdAndUpdate(candidateId, updates, { new: true });
+}
+
+const getCandidatesByElectionAndPosition = async (electionId, positionId) => {
+  return Candidate.find({
+    election: electionId,
+    position: positionId,
+    isArchived: false,
+  });
+};
+
+module.exports = {createCandidate, deleteCandidates, findCandidateById, 
+  findCandidateAndUpdate,
+  findCandidatesByElection, findCandidatesByElectionAndPosition,getCandidatesByElectionAndPosition};

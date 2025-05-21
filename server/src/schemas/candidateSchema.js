@@ -55,7 +55,11 @@ const candidateSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Election',
     required: true,
-  }
+  },
+  isArchived: {
+    type: Boolean,
+    default: false,
+  },
   
 });
 

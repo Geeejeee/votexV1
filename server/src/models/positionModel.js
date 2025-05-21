@@ -41,8 +41,8 @@ const createPositionAndAddToElection = async (electionId, name, description) => 
   return newPosition;
 };
 
-const deletePosition = async (id) => {
-  return await Position.findByIdAndDelete(id);
+const deletePosition = async (positionId) => {
+  await electionPosition.deleteOne({ position: positionId });
 };
 
 const findPositionById = async (id) => {
@@ -59,7 +59,7 @@ const findPositionByName = async (name, electionId) => {
 
 const getPositionsByElectionId = async (electionId) => {
   return await electionPosition.find({ election: electionId })
-    .populate('position', 'name'); // You can add more fields if needed
+    .populate('position', 'name'); 
 };
 
 const findPositionInElection = async (electionId, positionId) => {

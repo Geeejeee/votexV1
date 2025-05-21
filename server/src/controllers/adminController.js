@@ -1,11 +1,12 @@
 const {createColleges, deleteColleges, getAllColleges} = require('../models/collegeModel');
 const {createDepartments, deleteDepartments, getAllDepartments} = require('../models/departmentModel');
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
-const {createCandidate, deleteCandidates, findCandidatesByElection, findCandidatesByElectionAndPosition} = require('../models/candidateModel');
+const {createCandidate,getCandidatesByElectionAndPosition, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
 const {getPositionsByElectionId, findPositionInElection} = require('../models/positionModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
+const {getVoterByElectionAndPosition} = require('../models/voteModel');
 const cloudinary = require('../utils/cloudinary');
 
 const addVoter = async (req, res) => {
@@ -277,9 +278,6 @@ const getElectionById = async (req, res) => {
   
 // Add Candidate
 const addCandidate = async (req, res) => {
-console.log('Uploaded file:', req.file);
-console.log('req.body:', req.body);
-
 
   const { electionId, positionId } = req.params;
 
@@ -340,6 +338,42 @@ console.log('req.body:', req.body);
   }
 };
 
+
+
+
+const updateCandidate = async (req, res) => {
+  const { candidateId } = req.params;
+
+  try {
+    const updates = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      party: req.body.party,
+      course: req.body.course,
+      yearLevel: req.body.yearLevel,
+      motto: req.body.motto,
+      affiliations: req.body.affiliations,
+      advocacies: req.body.advocacies,
+    };
+
+    if (req.file) {
+      updates.photo = req.file.path || req.file.location;
+    }
+
+    const updatedCandidate = await findCandidateAndUpdate(candidateId, updates);
+
+    if (!updatedCandidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+    res.json({ candidate: updatedCandidate });
+  } catch (error) {
+    console.error("Update candidate error:", error);
+    res.status(500).json({ message: 'Failed to update candidate' });
+  }
+};
+
+
 const getCandidatesByElectionId = async (req, res) => {
   try {
     const { electionId } = req.params;
@@ -348,7 +382,7 @@ const getCandidatesByElectionId = async (req, res) => {
     const assignedPositions = await getPositionsByElectionId(electionId);
 
     // 2. Fetch all candidates for this election (with position populated)
-    const candidates = await findCandidatesByElectionAndPosition({ election: electionId });
+    const candidates = await findCandidatesByElectionAndPosition({ election: electionId, isArchived: false });
 
     // 3. Group candidates by position ID
     const positionsMap = {};
@@ -404,49 +438,67 @@ const getCandidatesByElectionId = async (req, res) => {
 };
 
 
-// Delete Candidate
-const deleteCandidate = async (req, res) => {
+const archiveCandidate = async (req, res) => {
   try {
-    const candidate = await deleteCandidates(req.params.id);
-    if (!candidate) return res.status(404).json({ message: 'Candidate not found' });
+    const { candidateId } = req.params;
+    const { isArchived } = req.body;
 
-    res.status(200).json({ message: 'Candidate deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    if (typeof isArchived !== 'boolean') {
+      return res.status(400).json({ message: 'isArchived must be a boolean' });
+    }
+
+    const candidate = await findCandidateAndUpdate(candidateId, { isArchived });
+
+    if (!candidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+    res.json({ message: `Candidate ${isArchived ? 'archived' : 'unarchived'} successfully`, candidate });
+  } catch (error) {
+    console.error('Error archiving candidate:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
 
-  const getElectionResults = async (req, res) => {
-    try {
-      const electionId = req.params.electionId;
-  
-      const candidates = await findCandidatesByElection(electionId);
-  
-      const votes = await getVotesByCandidate();
-  
-      const resultMap = {};
-  
-      // Count votes per candidate
-      for (const candidate of candidates) {
-        resultMap[candidate._id] = {
-          candidate,
-          votes: 0,
-        };
-      }
-  
-      for (const vote of votes) {
-        if (vote.candidate && vote.candidate.election.toString() === electionId) {
-          resultMap[vote.candidate._id].votes++;
-        }
-      }
-  
-      const results = Object.values(resultMap);
-      res.status(200).json({ results });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+const getElectionResults = async (req, res) => {
+  try {
+    const { electionId } = req.params;
+
+    // Get the election document
+    const election = await findElectionById(electionId);
+    if (!election) {
+      return res.status(404).json({ error: 'Election not found' });
     }
-  };
+
+    // Get all election-position mappings for the election
+    const electionPositions = await getPositionsByElectionId(electionId);
+
+    // Build result per position
+    const results = await Promise.all(
+      electionPositions.map(async (ep) => {
+        const candidates = await getCandidatesByElectionAndPosition(electionId, ep.position._id);
+        return {
+          positionId: ep.position._id,
+          positionName: ep.position.name,
+          candidates,
+        };
+      })
+    );
+
+    res.status(200).json({
+      election: {
+        title: election.title,
+        logo: election.logo,
+      },
+      positions: results,
+    });
+  } catch (error) {
+    console.error('Error fetching election results:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
   
   const getAllStudentsWithVoteStatus = async (req, res) => {
     try {
@@ -469,8 +521,23 @@ const deleteCandidate = async (req, res) => {
     }
   };
 
+  const getVotersByElectionAndPosition = async (req, res) => {
+  try {
+    const { electionId, positionId } = req.params;
+
+    const voters = await getVoterByElectionAndPosition(electionId, positionId);
+
+    res.status(200).json({ voters });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch voters.' });
+  }
+};
+
+
+
   module.exports = {
     addVoter, createCollege, deleteCollege, getColleges,
     createDepartment, deleteDepartment, getDepartments, updateElection, deleteElection, getElections,
-    getElectionById, createElection, addCandidate,getCandidatesByElectionId, deleteCandidate, getElectionResults, 
-    getAllStudentsWithVoteStatus }
+    getElectionById, createElection, addCandidate,getCandidatesByElectionId, archiveCandidate, getElectionResults, 
+    getAllStudentsWithVoteStatus, updateCandidate, getVotersByElectionAndPosition }
