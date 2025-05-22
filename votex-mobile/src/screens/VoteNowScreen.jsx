@@ -1,34 +1,67 @@
-import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
-import { UserContext } from "../context/UserContext"; // adjust the path if necessary
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { UserContext } from "../context/UserContext";
 import { useNavigation } from "@react-navigation/native";
-import styles from "../styles/votenow"; // Create this style file next!
-import usgLogo from "../assets/usg-logo.png";
-import citcLogo from "../assets/citc-logo.png";
-import siteLogo from "../assets/site-logo.png";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import styles from "../styles/votenow";
 import votexmlogo from "../assets/votexmlogo.png";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+
+const BACKEND_URL =
+  Constants?.expoConfig?.extra?.API_BASE_URL ||
+  Constants?.manifest?.extra?.API_BASE_URL ||
+  "http://127.0.0.1:5000";
 
 const VoteNowScreen = () => {
   const navigation = useNavigation();
-  const { userDetails } = useContext(UserContext); // Access the UserContext for selected college and department
+  const [elections, setElections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useContext(UserContext);
 
-  const elections = [
-    {
-      id: 1,
-      title: "UNIVERSITY STUDENT GOVERNMENT \n2025 ELECTIONS",
-      logo: usgLogo,
-    },
-    {
-      id: 2,
-      title: "COLLEGE OF INFORMATION TECHNOLOGY AND COMPUTING \n2025 ELECTIONS",
-      logo: citcLogo,
-    },
-    {
-      id: 3,
-      title: "SOCIETY OF INFORMATION TECHNOLOGY ENTHUSIASTS \n2025 ELECTIONS",
-      logo: siteLogo,
-    },
-  ];
+  useEffect(() => {
+  const fetchElectionData = async () => {
+    const token = await AsyncStorage.getItem("token");
+    try {
+      const electionRes = await axios.get(`${BACKEND_URL}/api/student/get-elections`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const allElections = electionRes.data.elections || [];
+
+      const filtered = allElections.filter((election) => {
+        const matchesCollege = election.college?._id === user?.college?._id;
+        const matchesDepartment =
+          !election.department || election.department?._id === user?.department?._id;
+        return matchesCollege && matchesDepartment;
+      });
+
+      if (filtered.length === 0) {
+        console.warn("No elections found.");
+      }
+
+      setElections(filtered);
+      console.log("Filtered Elections:", filtered);
+    } catch (err) {
+      console.error("Error fetching elections:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (user) {
+    fetchElectionData();
+  }
+}, [user]);
 
   return (
     <View style={styles.container}>
@@ -40,35 +73,29 @@ const VoteNowScreen = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.header}>VOTE NOW !</Text>
 
-        {/* Displaying College and Department from UserContext */}
-        <View style={styles.labelRow}>
-          <View style={styles.labelGroup}>
-            <Text style={styles.label}>COLLEGE:</Text>
-            <Text style={styles.value}>{userDetails?.college || "N/A"}</Text>
-          </View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#000" />
+        ) : (
+          elections.map((election) => (
+            <TouchableOpacity
+              key={election._id}
+              style={styles.card}
+              onPress={() =>
+                navigation.navigate("VoteElection", {
+                  electionId: election._id,
+                  electionTitle: election.title,
+                })
+              }
+            >
+              <Text style={styles.cardTitle}>{election.title}</Text>
+              <Image
+                source={election.logo ? { uri: election.logo } : votexmlogo}
+                style={styles.cardLogo}
+              />
+            </TouchableOpacity>
+          ))
+        )}
 
-          <View style={styles.labelGroup}>
-            <Text style={styles.label}>DEPARTMENT:</Text>
-            <Text style={styles.value}>{userDetails?.department || "N/A"}</Text>
-          </View>
-        </View>
-
-        {/* Election Cards */}
-        {elections.map((election) => (
-          <TouchableOpacity
-          key={election.id}
-          style={styles.card}
-          onPress={() => navigation.navigate("VoteElection", {
-            electionId: election.id,
-            electionTitle: election.title,
-          })}
-        >
-          <Text style={styles.cardTitle}>{election.title}</Text>
-          <Image source={election.logo} style={styles.cardLogo} />
-        </TouchableOpacity>
-        ))}
-
-        {/* Home Button */}
         <TouchableOpacity style={styles.homeBtn} onPress={() => navigation.goBack()}>
           <Text style={styles.homeText}>HOME</Text>
         </TouchableOpacity>
