@@ -540,30 +540,25 @@ const getTopCandidatesByPosition = async (req, res) => {
   try {
     // Fetch election details
     const election = await findById(electionId);
-
     if (!election) {
-      console.log("Election not found");
       return res.status(404).json({ message: "Election not found" });
     }
 
-    // Find all candidates in this election + position
+    // Fetch all candidates for this election + position
     const candidates = await getCandidatesByElectionAndPosition(electionId, positionId);
-
     if (!candidates.length) {
-      console.log("No candidates found for this position.");
       return res.status(404).json({ message: "No candidates found for this position." });
     }
 
-    // Count votes per candidate
+    // Get vote count per candidate
     const votes = await getTopCandidatesForPosition(electionId, positionId);
 
-    // Create a map of candidateId => voteCount for quick lookup
-    const voteCountMap = new Map();
-    votes.forEach((voteEntry) => {
-      voteCountMap.set(voteEntry._id.toString(), voteEntry.voteCount);
-    });
+    // Build vote count map
+    const voteCountMap = new Map(
+      votes.map((v) => [v._id.toString(), v.voteCount])
+    );
 
-    // Map candidate data and votes, defaulting to 0 votes if none
+    // Build candidate result with vote counts
     const candidateResults = candidates.map((candidate) => {
       const idStr = candidate._id.toString();
       const votes = voteCountMap.get(idStr) || 0;
@@ -576,10 +571,8 @@ const getTopCandidatesByPosition = async (req, res) => {
       };
     });
 
-    // Total votes for position (sum all votes or zero if none)
     const totalVotes = candidateResults.reduce((sum, c) => sum + c.votes, 0);
 
-    // Calculate percentage
     const withPercentage = candidateResults.map((c) => ({
       ...c,
       percent: totalVotes > 0 ? c.votes / totalVotes : 0,
@@ -594,10 +587,11 @@ const getTopCandidatesByPosition = async (req, res) => {
       topCandidates: withPercentage,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error in getTopCandidatesByPosition:", error);
     res.status(500).json({ message: "Server error while getting top candidates" });
   }
 };
+
 
 
 const getPositionsByElection = async (req, res) => {

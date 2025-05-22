@@ -1,23 +1,37 @@
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
+  container: {
+  flex: 1,
+  backgroundColor: "#f9f9f9", // optional: clean background
+},
+
   fixedHeader: {
-    backgroundColor: "#002F6C",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 80, // adjust as needed
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 40,
-    paddingHorizontal: 16,
-    zIndex: 99,
-  },
+  backgroundColor: "#002F6C",
+  height: 80,
+  paddingHorizontal: 20,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginTop: 35, // keep this for safe area (iOS)
+},
+
+logo: {
+  width: 60,
+  height: 60,
+  resizeMode: "contain",
+},
+
+menu: {
+  fontSize: 28,
+  color: "#fff",
+  paddingRight: 10,
+},
+
 
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 10,
     paddingBottom: 100, // optional extra space at bottom
   },
 
@@ -32,35 +46,35 @@ export default StyleSheet.create({
     color: "#fff",
   },
 
-  candidateRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-    gap: 0,
-  },
+ candidateRow: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+  gap: 10,
+},
+
 
   candidateCard: {
-    flex: 1,
-    height: 120,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 5,
-    padding: 0,
-    paddingTop: 20,
-  },
+  width: 140,
+  height: 160,
+  borderRadius: 10,
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "#fff",
+  padding: 10,
+  marginRight: 10,
+},
 
-  candidateInfoBox: {
-    backgroundColor: "#002F6C", // or white, depending on your theme
-    paddingVertical: 6,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "60%",
-  },
+
+
+candidateInfoBox: {
+  backgroundColor: "#002F6C",
+  paddingVertical: 6,
+  borderRadius: 6,
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+},
 
   candidateAvatar: {
     width: 40,
@@ -98,21 +112,20 @@ export default StyleSheet.create({
   },
 
   electionCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 24,
-    minHeight: 140,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: "#002F6C",
-    marginBottom: 60,
-    width: "100%",
-    height: "15%",
-    marginVertical: 10,
-    elevation: 6,
-  },
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: 16,
+  minHeight: 120,
+  backgroundColor: "#fff",
+  borderRadius: 16,
+  borderWidth: 2,
+  borderColor: "#002F6C",
+  marginBottom: 30,
+  width: "100%",
+  elevation: 6,
+},
+
 
   titleContainer: {
     flexDirection: "column", // stack text vertically
@@ -150,4 +163,12 @@ export default StyleSheet.create({
     color: "#999",
     marginTop: 30,
   },
+  loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingTop: 0,
+},
+
+
 });

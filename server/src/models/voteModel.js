@@ -79,17 +79,25 @@ const getVoterByElectionAndPosition = async (electionId, positionId) => {
     }));
 };
 
+
 const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) => {
   return await Vote.aggregate([
     {
       $match: {
         election: new mongoose.Types.ObjectId(electionId),
-        position: new mongoose.Types.ObjectId(positionId),
+      },
+    },
+    {
+      $unwind: "$votes",
+    },
+    {
+      $match: {
+        "votes.position": new mongoose.Types.ObjectId(positionId),
       },
     },
     {
       $group: {
-        _id: "$candidate",
+        _id: "$votes.candidate",
         voteCount: { $sum: 1 },
       },
     },
@@ -102,11 +110,53 @@ const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) =>
   ]);
 };
 
+
 const getTotalVotesForPosition = async (electionId, positionId) => {
   return await Vote.countDocuments({
     election: electionId,
     position: positionId,
   });
+};
+
+const checkVoteForPosition = async (election, position, student) => {
+  return await Vote.findOne({
+    election: election,
+    position: position,
+    student: student
+  });
+};
+
+const checkStudentVotedInElection = async (election, student) => {
+  return await Vote.findOne({
+    election: election,
+    student: student
+  });
+};
+
+
+const saveVote = async (election, student, position, candidate) => {
+  const voteDoc = new Vote({
+    election,
+    student,
+    votes: [{ position, candidate }],
+  });
+  return await voteDoc.save();
+};
+
+const findVoterForElection = async (electionId, studentId) => {
+  return await Vote.findOne({ election: electionId, student: studentId })
+      .populate('votes.position')   // Only populate name field of position
+      .populate('votes.candidate'); // Only populate name field of candidate;
+};
+
+const createVoteDocument = async (election, student, position, candidate) => {
+  const voteDoc = new Vote({
+    election,
+    student,
+    votes: [{ position, candidate }],
+  });
+
+  return await voteDoc.save();
 };
 
 module.exports = {
@@ -119,5 +169,10 @@ module.exports = {
   getVoteStatus,
   getVoterByElectionAndPosition,
   getTopCandidatesForPosition,
-  getTotalVotesForPosition
+  getTotalVotesForPosition,
+  checkVoteForPosition,
+  checkStudentVotedInElection,
+  saveVote,
+  findVoterForElection,
+  createVoteDocument
 };

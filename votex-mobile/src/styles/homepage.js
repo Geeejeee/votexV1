@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 40,
+    marginTop: 35,
     paddingHorizontal: 16,
     zIndex: 99,
   },
@@ -207,6 +207,12 @@ const styles = StyleSheet.create({
     color: "#888",
     fontSize: 12,
   },
+  loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingTop: 50,
+},
 });
 
 export default styles;

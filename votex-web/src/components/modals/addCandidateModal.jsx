@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import "../../styles/candidates.css";
 import axios from 'axios';
 
-const token = localStorage.getItem('token');
+
 
 const AddCandidateModal = ({
   showAddCandidateModal,
@@ -90,6 +90,7 @@ if (!electionId) {
   return;
 }
 setIsSubmitting(true);
+const token = localStorage.getItem('token');
   try {
     
 

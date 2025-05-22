@@ -1,29 +1,51 @@
 const {  findUserByIdNumber, updateUserVote, getProfile } = require('../models/userModel');
-const {castVote, getVoteStatus} = require('../models/voteModel');
+const {checkVoteForPosition, getVoteStatus, checkStudentVotedInElection, saveVote,
+  findVoterForElection, createVoteDocument} = require('../models/voteModel');
 
 
 // Cast a Vote
-const vote = async (req, res, next) => {
+const submitVote = async (req, res) => {
+  console.log("submitVote req.body:", req.body);
+  console.log("Authenticated user:", req.user);
+
   try {
-    const userId = req.user.userId; 
-    const idNumber = req.user.idNumber;
+    const { election, position, candidate } = req.body;
+    const student = req.user.userId;
 
-    const { candidateId } = req.body;
-
-    const user = await findUserByIdNumber(idNumber);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    if (user.hasVoted) {
-      return res.status(403).json({ message: 'You have already voted' });
+    console.log("studentID:", student);
+    if (!election || !position || !candidate || !student) {
+      return res.status(400).json({ message: "Missing required vote fields." });
     }
 
-    await castVote(userId, candidateId);
-    await updateUserVote(userId);
+    // Step 1: Check if a vote document exists for this student in this election
+    let voteDoc = await checkStudentVotedInElection(election, student);
 
-    res.status(200).json({ message: 'Vote submitted successfully' });
+    // Step 2: If exists, check if this position was already voted
+    if (voteDoc) {
+      const alreadyVotedForPosition = voteDoc.votes.some((v) =>
+        v.position.equals(position)
+      );
 
-  } catch (err) {
-    next(err);
+      if (alreadyVotedForPosition) {
+        return res.status(400).json({ message: "You have already voted for this position." });
+      }
+
+      // Step 3a: Add the new vote
+      voteDoc.votes.push({ position, candidate });
+      await voteDoc.save();
+    } else {
+      // Step 3b: Create a new vote document
+      console.log("Before saveVote, student ID is:", student);
+      await saveVote(election, student, position, candidate);
+
+      // Step 4: Mark user as having voted
+      await updateUserVote(student);
+    }
+
+    return res.status(201).json({ message: "Vote submitted successfully." });
+  } catch (error) {
+    console.error("Vote submission error:", error);
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
@@ -55,5 +77,29 @@ const getStudentProfile = async (req, res) => {
   }
 };
 
+const getVotesByElection = async (req, res) => {
+  try {
+    const { electionId } = req.params;
+    const studentId = req.user._id;
 
-module.exports = {vote, getVote, getStudentProfile};
+    const voteDoc = await findVoterForElection(electionId, studentId);
+
+    if (!voteDoc) {
+      return res.json({ votes: [] });
+    }
+
+    const formattedVotes = voteDoc.votes.map((vote) => ({
+      positionId: vote.position._id,
+      positionName: vote.position.name,
+      candidateId: vote.candidate._id,
+      candidateName: vote.candidate.name,
+    }));
+
+    res.json({ votes: formattedVotes });
+  } catch (error) {
+    console.error('Error fetching votes:', error);
+    res.status(500).json({ message: 'Failed to fetch votes' });
+  }
+};
+
+module.exports = {submitVote, getVote, getStudentProfile, getVotesByElection};
