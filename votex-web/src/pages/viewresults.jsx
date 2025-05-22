@@ -5,53 +5,39 @@ import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
 import '../styles/viewresultsdb.css';
 
-
 const ElectionResultsView = () => {
   const { electionId } = useParams();
   const [positions, setPositions] = useState([]);
   const [selectedPositionId, setSelectedPositionId] = useState(null);
   const [selectedPositionName, setSelectedPositionName] = useState('');
-  const [totalVotes, setTotalVotes] = useState(0);
   const [electionTitle, setElectionTitle] = useState('');
   const [electionLogo, setElectionLogo] = useState('');
 
- useEffect(() => {
-  const fetchResults = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/admin/elections/${electionId}/results`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`/api/admin/elections/${electionId}/results`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const { election, positions: fetchedPositions } = res.data;
+
+        setElectionTitle(election?.title || '');
+        setElectionLogo(election?.logo || '');
+        setPositions(fetchedPositions || []);
+
+        if (fetchedPositions && fetchedPositions.length > 0) {
+          setSelectedPositionId(fetchedPositions[0].positionId);
+          setSelectedPositionName(fetchedPositions[0].positionName);
         }
-      )
-      console.log(res.data); // <---- Check this in browser console
-
-      const { election, positions: fetchedPositions } = res.data;
-
-      setElectionTitle(election?.title || '');
-      setElectionLogo(election?.logo || '');
-      setPositions(fetchedPositions);
-
-      if (fetchedPositions.length > 0) {
-        setSelectedPositionId(fetchedPositions[0].positionId);
-        setSelectedPositionName(fetchedPositions[0].positionName);
+      } catch (err) {
+        console.error('Failed to fetch election results:', err);
       }
+    };
 
-      const allVotes = fetchedPositions
-        .flatMap(p => p.candidates)
-        .reduce((acc, curr) => acc + (curr.votes || 0), 0);
-
-      setTotalVotes(allVotes);
-    } catch (err) {
-      console.error('Failed to fetch election results:', err);
-    }
-  };
-
-  fetchResults();
-}, [electionId]);
-
+    fetchResults();
+  }, [electionId]);
 
   const handlePositionChange = (e) => {
     const selectedId = e.target.value;
@@ -68,6 +54,11 @@ const ElectionResultsView = () => {
     null
   );
 
+  const totalVotesForPosition = selectedCandidates.reduce(
+    (sum, candidate) => sum + (candidate.votes || 0),
+    0
+  );
+
   return (
     <DashboardLayout>
       <nav className="breadcrumb">
@@ -82,12 +73,11 @@ const ElectionResultsView = () => {
       <div className="org-header">
         <div className="org-logo-title">
           <div className="org-logo">
-            <img
-              src={electionLogo || undefined}
-              alt={`${electionTitle} Logo`}
-              className="org-logo"
-            />
-
+            {electionLogo ? (
+              <img src={electionLogo} alt={`${electionTitle} Logo`} className="org-logo" />
+            ) : (
+              <div className="org-logo-placeholder">No Logo</div>
+            )}
           </div>
           <div className="org-title">
             <h1>{electionTitle.toUpperCase()}</h1>
@@ -113,7 +103,7 @@ const ElectionResultsView = () => {
       <div className="election-stats">
         <div className="stat-box total-voters">
           <p className="stat-label">TOTAL VOTES:</p>
-          <p className="stat-value">{totalVotes}</p>
+          <p className="stat-value">{totalVotesForPosition}</p>
         </div>
         <div className="stat-box top-voted">
           <p className="stat-label">TOP VOTED:</p>
@@ -133,8 +123,8 @@ const ElectionResultsView = () => {
               position: selectedPositionName,
               image: candidate.photo,
               percentage:
-                totalVotes > 0
-                  ? ((candidate.votes || 0) / totalVotes) * 100
+                totalVotesForPosition > 0
+                  ? ((candidate.votes || 0) / totalVotesForPosition) * 100
                   : 0,
             }}
           />
@@ -166,6 +156,8 @@ const CandidateCard = ({ candidate }) => {
           setCount(Math.floor(start));
         }
       }, 10);
+
+      return () => clearInterval(counter);
     }
   }, [inView, candidate.percentage]);
 

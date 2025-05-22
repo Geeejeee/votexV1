@@ -53,9 +53,12 @@ const getVoteStatus = async () => {
 };
 
 const getVoterByElectionAndPosition = async (electionId, positionId) => {
-  const votes = await Vote.find({ election: electionId, position: positionId })
+  const votes = await Vote.find({
+    election: electionId,
+    'votes.position': positionId, // filter inside the votes array
+  })
     .populate({
-      path: 'student', // or 'voter' if that's the correct field
+      path: 'student',
       match: { role: 'student' },
       select: 'idNumber firstname lastname email college department',
       populate: [
@@ -79,17 +82,25 @@ const getVoterByElectionAndPosition = async (electionId, positionId) => {
     }));
 };
 
+
 const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) => {
   return await Vote.aggregate([
     {
       $match: {
-        election: new mongoose.Types.ObjectId(electionId),
-        position: new mongoose.Types.ObjectId(positionId),
+        election: new new mongoose.Types.ObjectId(electionId),
+      },
+    },
+    {
+      $unwind: "$votes",
+    },
+    {
+      $match: {
+        "votes.position": new new mongoose.Types.ObjectId(positionId),
       },
     },
     {
       $group: {
-        _id: "$candidate",
+        _id: "$votes.candidate",
         voteCount: { $sum: 1 },
       },
     },
@@ -102,12 +113,96 @@ const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) =>
   ]);
 };
 
+
 const getTotalVotesForPosition = async (electionId, positionId) => {
   return await Vote.countDocuments({
     election: electionId,
     position: positionId,
   });
 };
+
+const checkVoteForPosition = async (election, position, student) => {
+  return await Vote.findOne({
+    election: election,
+    position: position,
+    student: student
+  });
+};
+
+const checkStudentVotedInElection = async (election, student) => {
+  return await Vote.findOne({
+    election: election,
+    student: student
+  });
+};
+
+
+const saveVote = async (election, student, position, candidate) => {
+  const voteDoc = new Vote({
+    election,
+    student,
+    votes: [{ position, candidate }],
+  });
+  return await voteDoc.save();
+};
+
+const findVoterForElection = async (electionId, studentId) => {
+  return await Vote.findOne({ election: electionId, student: studentId })
+      .populate('votes.position')   // Only populate name field of position
+      .populate('votes.candidate'); // Only populate name field of candidate;
+};
+
+const createVoteDocument = async (election, student, position, candidate) => {
+  const voteDoc = new Vote({
+    election,
+    student,
+    votes: [{ position, candidate }],
+  });
+
+  return await voteDoc.save();
+};
+const getCandidateVotesByElection = async (electionId) => {
+  return Candidate.aggregate([
+    { $match: { election: new mongoose.Types.ObjectId(electionId) } }, // only candidates of this election
+    {
+      $lookup: {
+        from: 'votes',
+        let: { candidateId: '$_id' },
+        pipeline: [
+          { $match: { election: new mongoose.Types.ObjectId(electionId) } },
+          { $unwind: '$votes' },
+          { $match: { $expr: { $eq: ['$votes.candidate', '$$candidateId'] } } },
+          { $count: 'count' }
+        ],
+        as: 'voteData'
+      }
+    },
+    {
+      $addFields: {
+        votes: { $arrayElemAt: ['$voteData.count', 0] }
+      }
+    },
+    { $lookup: {
+        from: 'positions',
+        localField: 'position',
+        foreignField: '_id',
+        as: 'positionDetails'
+    }},
+    { $unwind: '$positionDetails' },
+    {
+      $project: {
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        photo: 1,
+        votes: { $ifNull: ['$votes', 0] },
+        positionId: '$positionDetails._id',
+        positionName: '$positionDetails.name'
+      }
+    }
+  ]);
+};
+
 
 module.exports = {
   createVote,
@@ -119,5 +214,11 @@ module.exports = {
   getVoteStatus,
   getVoterByElectionAndPosition,
   getTopCandidatesForPosition,
-  getTotalVotesForPosition
+  getTotalVotesForPosition,
+  checkVoteForPosition,
+  checkStudentVotedInElection,
+  saveVote,
+  findVoterForElection,
+  createVoteDocument,
+  getCandidateVotesByElection
 };
