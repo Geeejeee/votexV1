@@ -13,7 +13,7 @@ export default StyleSheet.create({
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
-  marginTop: 35, // keep this for safe area (iOS)
+    marginTop: '0%',
 },
 
 logo: {
