@@ -37,6 +37,7 @@ const HomeScreen = () => {
 
 
   useEffect(() => {
+    if(!user) return;
     const fetchElectionData = async () => {
         const token = await AsyncStorage.getItem("token");
       try {
@@ -105,12 +106,12 @@ const HomeScreen = () => {
     };
 
     fetchElectionData();
-  }, []);
+  }, [user]);
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loading}>Loading...</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={{ marginTop: -20 }}>Loading...</Text>
       </View>
     );
   }
