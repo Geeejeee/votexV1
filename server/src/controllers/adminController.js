@@ -9,7 +9,10 @@ const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/use
 const {getVoterByElectionAndPosition, getTopCandidatesForPosition, getTotalVotesForPosition} = require('../models/voteModel');
 const cloudinary = require('../utils/cloudinary');
 
+
 const addVoter = async (req, res) => {
+  console.log('Add voter request body:', req.body);
+
   try {
     const {
       idNumber,
@@ -39,7 +42,7 @@ const addVoter = async (req, res) => {
       return res.status(409).json({ message: 'ID Number already exists' });
     }
 
-   
+
 
     // Create the voter
     const newVoter = await createUser({
@@ -52,8 +55,8 @@ const addVoter = async (req, res) => {
       department,
       yearLevel,
       section,
-      role: 'student'
-    });
+      role:"student"
+  });
 
     res.status(201).json({
       message: 'Voter added successfully',
