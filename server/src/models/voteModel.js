@@ -87,7 +87,7 @@ const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) =>
   return await Vote.aggregate([
     {
       $match: {
-        election: new mongoose.Types.ObjectId(electionId),
+        election: new new mongoose.Types.ObjectId(electionId),
       },
     },
     {
@@ -95,7 +95,7 @@ const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) =>
     },
     {
       $match: {
-        "votes.position": new mongoose.Types.ObjectId(positionId),
+        "votes.position": new new mongoose.Types.ObjectId(positionId),
       },
     },
     {
@@ -161,6 +161,48 @@ const createVoteDocument = async (election, student, position, candidate) => {
 
   return await voteDoc.save();
 };
+const getCandidateVotesByElection = async (electionId) => {
+  return Candidate.aggregate([
+    { $match: { election: new mongoose.Types.ObjectId(electionId) } }, // only candidates of this election
+    {
+      $lookup: {
+        from: 'votes',
+        let: { candidateId: '$_id' },
+        pipeline: [
+          { $match: { election: new mongoose.Types.ObjectId(electionId) } },
+          { $unwind: '$votes' },
+          { $match: { $expr: { $eq: ['$votes.candidate', '$$candidateId'] } } },
+          { $count: 'count' }
+        ],
+        as: 'voteData'
+      }
+    },
+    {
+      $addFields: {
+        votes: { $arrayElemAt: ['$voteData.count', 0] }
+      }
+    },
+    { $lookup: {
+        from: 'positions',
+        localField: 'position',
+        foreignField: '_id',
+        as: 'positionDetails'
+    }},
+    { $unwind: '$positionDetails' },
+    {
+      $project: {
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        photo: 1,
+        votes: { $ifNull: ['$votes', 0] },
+        positionId: '$positionDetails._id',
+        positionName: '$positionDetails.name'
+      }
+    }
+  ]);
+};
+
 
 module.exports = {
   createVote,
@@ -177,5 +219,6 @@ module.exports = {
   checkStudentVotedInElection,
   saveVote,
   findVoterForElection,
-  createVoteDocument
+  createVoteDocument,
+  getCandidateVotesByElection
 };

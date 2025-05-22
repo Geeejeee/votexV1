@@ -3,7 +3,7 @@ const {createDepartments, deleteDepartments, getAllDepartments} = require('../mo
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
 const {createCandidate,getCandidatesByElectionAndPosition, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
 const {getPositionsByElectionId, findPositionInElection, getTopPresidents} = require('../models/positionModel');
-const { getVotesByCandidate} = require('../models/voteModel');
+const { getCandidateVotesByElection} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
 const {getVoterByElectionAndPosition, getTopCandidatesForPosition, getTotalVotesForPosition} = require('../models/voteModel');
@@ -465,39 +465,52 @@ const getElectionResults = async (req, res) => {
   try {
     const { electionId } = req.params;
 
-    // Get the election document
     const election = await findElectionById(electionId);
-    if (!election) {
-      return res.status(404).json({ error: 'Election not found' });
-    }
+    if (!election) return res.status(404).json({ error: 'Election not found' });
 
-    // Get all election-position mappings for the election
-    const electionPositions = await getPositionsByElectionId(electionId);
+    // get all candidates with votes and positions
+    const candidatesWithVotes = await getCandidateVotesByElection(electionId);
 
-    // Build result per position
-    const results = await Promise.all(
-      electionPositions.map(async (ep) => {
-        const candidates = await getCandidatesByElectionAndPosition(electionId, ep.position._id);
-        return {
-          positionId: ep.position._id,
-          positionName: ep.position.name,
-          candidates,
-        };
-      })
-    );
+    console.log('candidatesWithVotes:', candidatesWithVotes);
+    // Group candidates by position
+    const positionsMap = new Map();
+
+    candidatesWithVotes.forEach(cand => {
+      const posId = cand.positionId.toString();
+      if (!positionsMap.has(posId)) {
+        positionsMap.set(posId, {
+          positionId: posId,
+          positionName: cand.positionName,
+          candidates: []
+        });
+      }
+
+      positionsMap.get(posId).candidates.push({
+        _id: cand._id.toString(),
+        firstName: cand.firstName,
+        lastName: cand.lastName,
+        photo: cand.photo,
+        votes: cand.votes || 0 // just in case
+      });
+    });
+
+    // Convert to array
+    const positions = Array.from(positionsMap.values());
 
     res.status(200).json({
       election: {
         title: election.title,
         logo: election.logo,
       },
-      positions: results,
+      positions,
     });
+
   } catch (error) {
     console.error('Error fetching election results:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
   
   const getAllStudentsWithVoteStatus = async (req, res) => {
