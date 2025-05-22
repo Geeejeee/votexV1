@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, ScrollView, Text, View, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,6 +8,7 @@ import ElectionDetailModal from '../components/modal/electionDetailModal';
 import logo from "../assets/votexmlogo.png";
 import styles from '../styles/resultsStyles';
 import Constants from 'expo-constants';
+
 
 
 const BACKEND_URL =
@@ -178,6 +180,7 @@ useEffect(() => {
 
   const closeElectionDetails = () => {
     setDetailModalVisible(false);
+
   };
 
   return (
@@ -212,5 +215,6 @@ useEffect(() => {
     </SafeAreaView>
   );
 };
+
 
 export default ElectionResultsApp;

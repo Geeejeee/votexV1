@@ -1,7 +1,7 @@
 const User = require("../schemas/userSchema");
 const { hashPassword } = require("../utils/authUtils");
 
- const createUser = async (
+ const createUser = async ({
     idNumber,
     firstname,
     lastname,
@@ -12,15 +12,15 @@ const { hashPassword } = require("../utils/authUtils");
     yearLevel,
     section,
     role
-  ) => {
-    const hashed = await hashPassword(password);
+  }) => {
 
+const hashedPassword = await hashPassword(password);
     const payload = {
       idNumber,
       firstname,
       lastname,
       email,
-      password: hashed,
+      password: hashedPassword,
       college,
       department,
       yearLevel,
