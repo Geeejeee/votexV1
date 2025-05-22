@@ -125,7 +125,8 @@ const HomeScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Welcome */}
         <Text style={styles.welcome}>
-          WELCOME, {user ? `${user.firstname} ${user.lastname}`.toUpperCase() : "USER"}!
+          WELCOME {'\n'}
+          {user ? `${user.firstname} ${user.lastname}`.toUpperCase() : "USER"}!
         </Text>
 
 
