@@ -93,6 +93,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   candidateAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
     color: "#fff",
     position: "relative",
     left: 8,

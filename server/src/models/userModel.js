@@ -55,6 +55,14 @@ const { hashPassword } = require("../utils/authUtils");
       .sort({ createdAt: -1 });
   };
 
+  const getProfile = async (userId) => {
+    return await User.findById(userId)
+      .populate("college", "name")        
+      .populate("department", "name")     
+      .select("-password");               
+  };
+
+
 module.exports = {
   createUser,
   findUserByEmail,
@@ -62,4 +70,5 @@ module.exports = {
   findUserByIdNumber,
   findAdminByUsername,
   findAllStudentsWithVoteStatus,
+  getProfile
 };

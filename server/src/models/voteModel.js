@@ -1,6 +1,7 @@
 const Vote = require("../schemas/voteSchema");
 const User = require("../schemas/userSchema");
 const Candidate = require("../schemas/candidateSchema");
+const mongoose = require('mongoose');
 
 const createVote = async (data) => {
   return await Vote.create(data);
@@ -78,6 +79,36 @@ const getVoterByElectionAndPosition = async (electionId, positionId) => {
     }));
 };
 
+const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) => {
+  return await Vote.aggregate([
+    {
+      $match: {
+        election: new mongoose.Types.ObjectId(electionId),
+        position: new mongoose.Types.ObjectId(positionId),
+      },
+    },
+    {
+      $group: {
+        _id: "$candidate",
+        voteCount: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { voteCount: -1 },
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+};
+
+const getTotalVotesForPosition = async (electionId, positionId) => {
+  return await Vote.countDocuments({
+    election: electionId,
+    position: positionId,
+  });
+};
+
 module.exports = {
   createVote,
   getAllVotes,
@@ -86,5 +117,7 @@ module.exports = {
   getNonVotedStudents,
   castVote,
   getVoteStatus,
-  getVoterByElectionAndPosition
+  getVoterByElectionAndPosition,
+  getTopCandidatesForPosition,
+  getTotalVotesForPosition
 };

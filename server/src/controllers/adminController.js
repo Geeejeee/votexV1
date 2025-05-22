@@ -2,11 +2,11 @@ const {createColleges, deleteColleges, getAllColleges} = require('../models/coll
 const {createDepartments, deleteDepartments, getAllDepartments} = require('../models/departmentModel');
 const {createElections, deleteElections, findElectionById, findById,getAllElections, updateElections} = require('../models/electionModel');
 const {createCandidate,getCandidatesByElectionAndPosition, findCandidateAndUpdate,findCandidatesByElectionAndPosition} = require('../models/candidateModel');
-const {getPositionsByElectionId, findPositionInElection} = require('../models/positionModel');
+const {getPositionsByElectionId, findPositionInElection, getTopPresidents} = require('../models/positionModel');
 const { getVotesByCandidate} = require('../models/voteModel');
 const {findAllStudentsWithVoteStatus} = require('../models/userModel');
 const {findUserByIdNumber, findUserByEmail, createUser} = require('../models/userModel');
-const {getVoterByElectionAndPosition} = require('../models/voteModel');
+const {getVoterByElectionAndPosition, getTopCandidatesForPosition, getTotalVotesForPosition} = require('../models/voteModel');
 const cloudinary = require('../utils/cloudinary');
 
 const addVoter = async (req, res) => {
@@ -534,10 +534,87 @@ const getElectionResults = async (req, res) => {
   }
 };
 
+const getTopCandidatesByPosition = async (req, res) => {
+  const { electionId, positionId } = req.params;
 
+  try {
+    // Fetch election details
+    const election = await findById(electionId);
+
+    if (!election) {
+      console.log("Election not found");
+      return res.status(404).json({ message: "Election not found" });
+    }
+
+    // Find all candidates in this election + position
+    const candidates = await getCandidatesByElectionAndPosition(electionId, positionId);
+
+    if (!candidates.length) {
+      console.log("No candidates found for this position.");
+      return res.status(404).json({ message: "No candidates found for this position." });
+    }
+
+    // Count votes per candidate
+    const votes = await getTopCandidatesForPosition(electionId, positionId);
+
+    // Create a map of candidateId => voteCount for quick lookup
+    const voteCountMap = new Map();
+    votes.forEach((voteEntry) => {
+      voteCountMap.set(voteEntry._id.toString(), voteEntry.voteCount);
+    });
+
+    // Map candidate data and votes, defaulting to 0 votes if none
+    const candidateResults = candidates.map((candidate) => {
+      const idStr = candidate._id.toString();
+      const votes = voteCountMap.get(idStr) || 0;
+      return {
+        id: candidate._id,
+        name: `${candidate.firstName} ${candidate.lastName}`,
+        votes,
+        party: candidate.party,
+        photo: candidate.photo,
+      };
+    });
+
+    // Total votes for position (sum all votes or zero if none)
+    const totalVotes = candidateResults.reduce((sum, c) => sum + c.votes, 0);
+
+    // Calculate percentage
+    const withPercentage = candidateResults.map((c) => ({
+      ...c,
+      percent: totalVotes > 0 ? c.votes / totalVotes : 0,
+    }));
+
+    res.status(200).json({
+      electionTitle: election.title,
+      electionDate: election.startDate,
+      collegeName: election.college.name,
+      departmentName: election.department.name,
+      positionId,
+      topCandidates: withPercentage,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while getting top candidates" });
+  }
+};
+
+
+const getPositionsByElection = async (req, res) => {
+  const { electionId } = req.params;
+  try {
+    const positions = await getPositionsByElectionId(electionId);
+    res.status(200).json({ positions });
+  } catch (err) {
+    console.error("Error fetching positions for election:", err);
+    res.status(500).json({ message: 'Server error while fetching election positions.' });
+  }
+};
 
   module.exports = {
     addVoter, createCollege, deleteCollege, getColleges,
     createDepartment, deleteDepartment, getDepartments, updateElection, deleteElection, getElections,
     getElectionById, createElection, addCandidate,getCandidatesByElectionId, archiveCandidate, getElectionResults, 
-    getAllStudentsWithVoteStatus, updateCandidate, getVotersByElectionAndPosition }
+    getAllStudentsWithVoteStatus, updateCandidate, getVotersByElectionAndPosition, getTopCandidatesByPosition,
+    getPositionsByElection
+  };

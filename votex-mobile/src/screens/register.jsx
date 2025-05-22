@@ -17,7 +17,10 @@ import logo from "../assets/votexmlogo.png";
 import axios from "axios";
 import Constants from "expo-constants";
 
-const API_BASE_URL = Constants.manifest.extra.API_BASE_URL;
+const API_BASE_URL =
+  Constants?.expoConfig?.extra?.API_BASE_URL ||
+  Constants?.manifest?.extra?.API_BASE_URL ||
+  "http://127.0.0.1:5000"; // optional fallback
 
 const RegisterScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);

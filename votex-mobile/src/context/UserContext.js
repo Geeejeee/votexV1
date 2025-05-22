@@ -1,16 +1,13 @@
+// UserContext.js
 import React, { createContext, useState } from "react";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userDetails, setUserDetails] = useState({
-    college: "",
-    department: "",
-    // add other fields if needed
-  });
+  const [user, setUser] = useState(null); // Holds student profile info
 
   return (
-    <UserContext.Provider value={{ userDetails, setUserDetails }}>
+    <UserContext.Provider value={{ user, setUser }}>
       {children}
     </UserContext.Provider>
   );
