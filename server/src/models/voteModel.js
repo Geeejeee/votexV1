@@ -87,7 +87,7 @@ const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) =>
   return await Vote.aggregate([
     {
       $match: {
-        election: new new mongoose.Types.ObjectId(electionId),
+        election: new mongoose.Types.ObjectId(electionId),
       },
     },
     {
@@ -95,7 +95,7 @@ const getTopCandidatesForPosition = async (electionId, positionId, limit = 3) =>
     },
     {
       $match: {
-        "votes.position": new new mongoose.Types.ObjectId(positionId),
+        "votes.position": new mongoose.Types.ObjectId(positionId),
       },
     },
     {
@@ -203,6 +203,11 @@ const getCandidateVotesByElection = async (electionId) => {
   ]);
 };
 
+const getAllVotesForElection = async (electionId) =>{
+  // Find all vote documents for this election
+  return await Vote.find({ electionId }).select('votes').lean();
+}
+
 
 module.exports = {
   createVote,
@@ -220,5 +225,6 @@ module.exports = {
   saveVote,
   findVoterForElection,
   createVoteDocument,
-  getCandidateVotesByElection
+  getCandidateVotesByElection,
+  getAllVotesForElection
 };

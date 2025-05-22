@@ -1,6 +1,6 @@
 const {  findUserByIdNumber, updateUserVote, getProfile } = require('../models/userModel');
 const {checkVoteForPosition, getVoteStatus, checkStudentVotedInElection, saveVote,
-  findVoterForElection, createVoteDocument} = require('../models/voteModel');
+  findVoterForElection, getAllVotesForElection} = require('../models/voteModel');
 
 
 // Cast a Vote
@@ -102,4 +102,80 @@ const getVotesByElection = async (req, res) => {
   }
 };
 
-module.exports = {submitVote, getVote, getStudentProfile, getVotesByElection};
+const getElectionFullResults = async (req, res) => {
+  const { electionId } = req.params;
+
+  try {
+    // 1. Get election details
+    const election = await findById(electionId);
+    if (!election) {
+      return res.status(404).json({ message: "Election not found" });
+    }
+
+    // 2. Get all positions for this election
+    const positions = await getPositionsByElectionId(electionId);
+    if (!positions.length) {
+      return res.status(404).json({ message: "No positions found" });
+    }
+
+    // 3. Get all candidates for this election
+    const candidates = await getCandidatesByElectionId(electionId);
+
+    // 4. Get all votes for this election
+    const votes = await getAllVotesForElection(electionId);
+
+    // 5. Count votes per candidate
+    const voteCountMap = new Map();
+    for (const voteDoc of votes) {
+      for (const vote of voteDoc.votes) {
+        const candidateId = vote.candidate.toString();
+        voteCountMap.set(candidateId, (voteCountMap.get(candidateId) || 0) + 1);
+      }
+    }
+
+    // 6. Group candidates under each position
+    const positionResults = positions.map((pos) => {
+      const positionCandidates = candidates
+        .filter((c) => c.position.toString() === pos._id.toString())
+        .map((candidate) => {
+          const idStr = candidate._id.toString();
+          const voteCount = voteCountMap.get(idStr) || 0;
+          return {
+            id: candidate._id,
+            name: `${candidate.firstName} ${candidate.lastName}`,
+            party: candidate.party,
+            photo: candidate.photo,
+            votes: voteCount,
+          };
+        });
+
+      const totalVotes = positionCandidates.reduce((sum, c) => sum + c.votes, 0);
+
+      const withPercentage = positionCandidates.map((c) => ({
+        ...c,
+        percent: totalVotes > 0 ? c.votes / totalVotes : 0,
+      }));
+
+      return {
+        positionId: pos._id,
+        title: pos.name,
+        candidates: withPercentage.sort((a, b) => b.votes - a.votes),
+      };
+    });
+
+    res.status(200).json({
+      election: {
+        id: election._id,
+        title: election.title,
+        date: election.startDate,
+        college: election.college?.name || "",
+        department: election.department?.name || "",
+      },
+      positions: positionResults,
+    });
+  } catch (err) {
+    console.error("Error in getElectionFullResults:", err);
+    res.status(500).json({ message: "Server error while fetching full election results." });
+  }
+};
+module.exports = {submitVote, getVote, getStudentProfile, getVotesByElection, getElectionFullResults};

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {submitVote, getVote, getStudentProfile, getVotesByElection} = require('../controllers/studentController');
+const {submitVote, getVote, getStudentProfile, getVotesByElection, getElectionFullResults} = require('../controllers/studentController');
 const {verifyToken, requireStudent} = require('../utils/authMiddleware');
 const {voteValidator} = require('../validator/voteValidator');
 const validate = require('../utils/validate');
@@ -20,6 +20,8 @@ router.get('/election-results/:electionId/:positionId', verifyToken, requireStud
 router.get('/elections/:electionId', verifyToken, requireStudent, getElectionById);
 router.get('/elections/:electionId/candidates', verifyToken, requireStudent, getCandidatesByElectionId);
 router.get('/elections/:electionId/votes', verifyToken, requireStudent, getVotesByElection);
+
+router.get('/election-full-results/:electionId', verifyToken, requireStudent, getElectionFullResults);
 
 
 module.exports = router;
