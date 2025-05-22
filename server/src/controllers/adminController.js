@@ -524,6 +524,9 @@ const getElectionResults = async (req, res) => {
   const getVotersByElectionAndPosition = async (req, res) => {
   try {
     const { electionId, positionId } = req.params;
+    if (!electionId || !positionId) {
+    return res.status(400).json({ message: 'Election ID and Position ID are required.' });
+}
 
     const voters = await getVoterByElectionAndPosition(electionId, positionId);
 

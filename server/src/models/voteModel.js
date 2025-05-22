@@ -53,9 +53,12 @@ const getVoteStatus = async () => {
 };
 
 const getVoterByElectionAndPosition = async (electionId, positionId) => {
-  const votes = await Vote.find({ election: electionId, position: positionId })
+  const votes = await Vote.find({
+    election: electionId,
+    'votes.position': positionId, // filter inside the votes array
+  })
     .populate({
-      path: 'student', // or 'voter' if that's the correct field
+      path: 'student',
       match: { role: 'student' },
       select: 'idNumber firstname lastname email college department',
       populate: [
