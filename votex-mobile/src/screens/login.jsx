@@ -1,5 +1,5 @@
 // src/screens/LoginScreen.js
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { Formik } from "formik";
@@ -8,6 +8,8 @@ import styles from "../styles/login.js";
 import logo from "../assets/votexmlogo.png";
 import Constants from "expo-constants";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext } from "../context/UserContext";
+
 
 
 const API_BASE_URL =
@@ -18,6 +20,7 @@ const API_BASE_URL =
 
 const LoginScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const { setUser } = useContext(UserContext);
 
     const LoginSchema = Yup.object().shape({
         idNumber: Yup.string().required("ID number is required"),
@@ -45,6 +48,22 @@ const LoginScreen = ({ navigation }) => {
         await AsyncStorage.setItem("token", data.token);
         console.log("Token saved:", data.token);
       } 
+
+      const profileRes = await fetch(`${API_BASE_URL}/api/student/profile`, {
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+          },
+        });
+
+        const profileData = await profileRes.json();
+        if (profileRes.ok) {
+            setUser(profileData.student);
+            console.log("User profile loaded:", profileData.student);
+          } else {
+            console.warn("Failed to load student profile:", profileData.message || profileData.error || profileData);
+          }
+          console.log("Profile fetch status:", profileRes.status);
+
 
       console.log("Login Successful:", data);
       Alert.alert("Success", "Login Successful");

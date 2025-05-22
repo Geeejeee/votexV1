@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import styles from "../styles/homepage.js";
 import axios from "axios";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UserContext } from "../context/UserContext";
 
 
 
@@ -31,6 +32,7 @@ const HomeScreen = () => {
   const [electionInfo, setElectionInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [positions, setPositions] = useState([]);
+  const { user } = useContext(UserContext);
 
 
 
@@ -40,17 +42,25 @@ const HomeScreen = () => {
       try {
         // 1. Get all elections
         const electionRes = await axios.get(`${BACKEND_URL}/api/student/get-elections`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-        const elections = electionRes.data.elections || [];
-        if (elections.length === 0) {
-          console.warn("No elections found.");
-          return;
-        }
-        console.log("Elections:", elections);
-        const election = elections[0]; // Pick latest/first/etc.
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            const elections = (electionRes.data.elections || []).filter((election) => {
+              const matchesCollege = election.college?._id === user?.college?._id;
+              const matchesDepartment =
+                !election.department || election.department?._id === user?.department?._id;
+              return matchesCollege && matchesDepartment;
+            });
+
+            if (elections.length === 0) {
+              console.warn("No elections found.");
+              return;
+            }
+
+            console.log("Filtered Elections:", elections);
+            const election = elections[0]; // Pick latest/first/etc.
         const electionId = election._id;
 
         // 2. Get its associated positions
@@ -114,7 +124,10 @@ const HomeScreen = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Welcome */}
-        <Text style={styles.welcome}>WELCOME, USER!</Text>
+        <Text style={styles.welcome}>
+          WELCOME, {user ? `${user.firstname} ${user.lastname}`.toUpperCase() : "USER"}!
+        </Text>
+
 
         {/* Election Info */}
         {electionInfo && (

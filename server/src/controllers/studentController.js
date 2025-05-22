@@ -1,4 +1,4 @@
-const {  findUserByIdNumber, updateUserVote } = require('../models/userModel');
+const {  findUserByIdNumber, updateUserVote, getProfile } = require('../models/userModel');
 const {castVote, getVoteStatus} = require('../models/voteModel');
 
 
@@ -38,4 +38,22 @@ const getVote = async (req, res, next) => {
   }
 };
 
-module.exports = {vote, getVote}
+const getStudentProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId; // assuming you're using a decoded JWT to get user ID
+
+    const student = await getProfile(userId);
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json({ student });
+  } catch (err) {
+    console.error("Profile fetch error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+module.exports = {vote, getVote, getStudentProfile};
