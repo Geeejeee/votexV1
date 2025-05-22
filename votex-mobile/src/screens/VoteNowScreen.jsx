@@ -83,7 +83,6 @@ const VoteNowScreen = () => {
               onPress={() =>
                 navigation.navigate("VoteElection", {
                   electionId: election._id,
-                  electionTitle: election.title,
                 })
               }
             >
