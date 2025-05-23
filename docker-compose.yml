@@ -1,0 +1,38 @@
+# docker-compose.yml
+
+services:
+  server:
+    container_name: votex-server
+    build: ./server
+    ports:
+      - "5000:5000"
+    env_file: 
+      - ./server/.env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/votex
+    depends_on:
+      - mongo
+
+  votex-web:
+    container_name: votex-web
+    build: ./votex-web
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./votex-web:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+    depends_on:
+      - server
+
+  mongo:
+    container_name: votex-mongo
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

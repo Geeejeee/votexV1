@@ -4,6 +4,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
 import '../styles/viewresultsdb.css';
+import socket from '../socket';
 
 const ElectionResultsView = () => {
   const { electionId } = useParams();
@@ -14,30 +15,62 @@ const ElectionResultsView = () => {
   const [electionLogo, setElectionLogo] = useState('');
 
   useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(`/api/admin/elections/${electionId}/results`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+  const fetchResults = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`/api/admin/elections/${electionId}/results`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-        const { election, positions: fetchedPositions } = res.data;
+      const { election, positions: fetchedPositions } = res.data;
 
-        setElectionTitle(election?.title || '');
-        setElectionLogo(election?.logo || '');
-        setPositions(fetchedPositions || []);
+      setElectionTitle(election?.title || '');
+      setElectionLogo(election?.logo || '');
+      setPositions(fetchedPositions || []);
 
-        if (fetchedPositions && fetchedPositions.length > 0) {
-          setSelectedPositionId(fetchedPositions[0].positionId);
-          setSelectedPositionName(fetchedPositions[0].positionName);
-        }
-      } catch (err) {
-        console.error('Failed to fetch election results:', err);
+      if (fetchedPositions && fetchedPositions.length > 0) {
+        setSelectedPositionId(fetchedPositions[0].positionId);
+        setSelectedPositionName(fetchedPositions[0].positionName);
       }
-    };
 
-    fetchResults();
-  }, [electionId]);
+      socket.emit('joinElectionRoom', `election_${electionId}`);
+
+    } catch (err) {
+      console.error('Failed to fetch election results:', err);
+    }
+  };
+
+  fetchResults();
+
+  const onVoteUpdate = (data) => {
+    console.log('Received vote update:', data);
+
+    if (data.positions) {
+      setPositions(data.positions);
+
+      if (data.election) {
+        setElectionTitle(data.election.title || '');
+        setElectionLogo(data.election.logo || '');
+      }
+
+      const stillHasSelected = data.positions.some(
+        (pos) => pos.positionId === selectedPositionId
+      );
+      if (!stillHasSelected && data.positions.length > 0) {
+        setSelectedPositionId(data.positions[0].positionId);
+        setSelectedPositionName(data.positions[0].positionName);
+      }
+    }
+  };
+
+  socket.on('voteUpdate', onVoteUpdate);
+
+  return () => {
+    socket.emit('leaveElectionRoom', `election_${electionId}`);
+    socket.off('voteUpdate', onVoteUpdate);
+  };
+}, [electionId, selectedPositionId]);
+
 
   const handlePositionChange = (e) => {
     const selectedId = e.target.value;

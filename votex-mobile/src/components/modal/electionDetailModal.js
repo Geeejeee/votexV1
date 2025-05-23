@@ -109,8 +109,14 @@ const ElectionDetailModal = ({
 
                   return (
                     <View key={candidate.id} style={styles.detailCandidateRow}>
-                      <View style={[styles.detailCandidateAvatar, { backgroundColor: avatarColor }]}>
-                        <Feather name="user" size={24} color="white" />
+                      <View style={[styles.detailCandidateAvatar, { backgroundColor: avatarColor || '#ddd' }]}>
+                        {candidate.photo ? (
+                          <Image source={{ uri: candidate.photo }} style={styles.detailCandidateAvatar} />
+                        ) : (
+                          <Feather name="user" size={24} color="white" />
+                        )
+                      }
+                        
                       </View>
                       <View style={styles.detailCandidateContent}>
                         <View style={styles.detailCandidateInfo}>

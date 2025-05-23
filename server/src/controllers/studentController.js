@@ -1,18 +1,14 @@
 const {  findUserByIdNumber, updateUserVote, getProfile } = require('../models/userModel');
 const {checkVoteForPosition, getVoteStatus, checkStudentVotedInElection, saveVote,
   findVoterForElection, getAllVotesForElection} = require('../models/voteModel');
-
+const emitLiveResults = require('../utils/emitLiveResults');
 
 // Cast a Vote
 const submitVote = async (req, res) => {
-  console.log("submitVote req.body:", req.body);
-  console.log("Authenticated user:", req.user);
-
   try {
     const { election, position, candidate } = req.body;
     const student = req.user.userId;
 
-    console.log("studentID:", student);
     if (!election || !position || !candidate || !student) {
       return res.status(400).json({ message: "Missing required vote fields." });
     }
@@ -35,12 +31,15 @@ const submitVote = async (req, res) => {
       await voteDoc.save();
     } else {
       // Step 3b: Create a new vote document
-      console.log("Before saveVote, student ID is:", student);
       await saveVote(election, student, position, candidate);
 
       // Step 4: Mark user as having voted
       await updateUserVote(student);
     }
+    const io = req.app.get('io');
+    await emitLiveResults(io, election);
+
+    console.log("Live results emitted for election", election);
 
     return res.status(201).json({ message: "Vote submitted successfully." });
   } catch (error) {

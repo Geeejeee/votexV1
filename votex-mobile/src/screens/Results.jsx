@@ -11,6 +11,7 @@ import Constants from 'expo-constants';
 
 
 
+
 const BACKEND_URL =
   Constants?.expoConfig?.extra?.API_BASE_URL ||
   Constants?.manifest?.extra?.API_BASE_URL ||
@@ -181,6 +182,7 @@ useEffect(() => {
   const closeElectionDetails = () => {
     setDetailModalVisible(false);
 
+
   };
 
   return (
@@ -215,6 +217,5 @@ useEffect(() => {
     </SafeAreaView>
   );
 };
-
 
 export default ElectionResultsApp;
