@@ -6,24 +6,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   header: {
-    backgroundColor: "#002F6C",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 40,
-    paddingHorizontal: 16,
-    zIndex: 99,
-  },
+  backgroundColor: "#002F6C",
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  height: 100, // enough space including status bar
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  paddingHorizontal: 16,
+  zIndex: 99,
+},
+
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 150,
-    paddingBottom: 60,
-  },
+  paddingHorizontal: 20,
+  paddingTop: 120,
+  paddingBottom: 60,
+},
+
   logo: {
     height: 90,
     width: 90,
@@ -104,6 +105,43 @@ const styles = StyleSheet.create({
   footerText: {
     color: "#777",
     fontSize: 12,
+  },
+  profileImage: {
+  width: 120,
+  height: 120,
+  borderRadius: 60,
+  backgroundColor: "#4CAF50",
+  alignSelf: 'center',
+  marginBottom: 20,
+},
+
+  profileImagePlaceholder: {
+    width: 120,
+    height: 120,
+    marginTop: '40%',
+    borderRadius: 60,
+    backgroundColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+  },
+  saveBtn: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  saveText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

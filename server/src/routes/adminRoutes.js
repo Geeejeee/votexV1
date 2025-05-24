@@ -12,7 +12,7 @@ const { collegeSchema, departmentSchema } = require('../validator/adminValidatio
 const { registerSchema } = require('../validator/authValidator');
 const upload = require("../utils/upload")
 const {candidateSchema} = require('../validator/candidateValidation');
-const { getPositionsByElectionId } = require('../models/positionModel');
+
 
 
 

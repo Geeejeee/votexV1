@@ -62,6 +62,13 @@ const hashedPassword = await hashPassword(password);
       .select("-password");               
   };
 
+  const updateUser = async (userId, updateData) => {
+    return await User.findByIdAndUpdate(
+    userId,
+    { $set: updateData },
+    { new: true }
+  ).populate('college department');
+}
 
 module.exports = {
   createUser,
@@ -70,5 +77,6 @@ module.exports = {
   findUserByIdNumber,
   findAdminByUsername,
   findAllStudentsWithVoteStatus,
-  getProfile
+  getProfile,
+  updateUser
 };
