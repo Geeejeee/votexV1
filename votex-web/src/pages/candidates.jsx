@@ -54,7 +54,7 @@ const ElectionCandidatesView = () => {
                 setPositionsList(candidatesRes.data.positions);
 
                 // 2. Get full election details
-                const electionRes = await axios.get(`/api/admin/elections/${electionId}`, {
+                const electionRes = await axios.get(`${API_BASE}/admin/elections/${electionId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setElection(electionRes.data.election);
