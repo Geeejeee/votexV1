@@ -28,13 +28,12 @@ const ElectionResultsView = () => {
       setElectionLogo(election?.logo || '');
       setPositions(fetchedPositions || []);
 
-      if (fetchedPositions && fetchedPositions.length > 0) {
+      if (fetchedPositions && fetchedPositions.length > 0 && !selectedPositionId) {
         setSelectedPositionId(fetchedPositions[0].positionId);
         setSelectedPositionName(fetchedPositions[0].positionName);
       }
 
       socket.emit('joinElectionRoom', `election_${electionId}`);
-
     } catch (err) {
       console.error('Failed to fetch election results:', err);
     }
@@ -42,6 +41,12 @@ const ElectionResultsView = () => {
 
   fetchResults();
 
+  return () => {
+    socket.emit('leaveElectionRoom', `election_${electionId}`);
+  };
+}, [electionId]);
+
+useEffect(() => {
   const onVoteUpdate = (data) => {
     console.log('Received vote update:', data);
 
@@ -53,9 +58,11 @@ const ElectionResultsView = () => {
         setElectionLogo(data.election.logo || '');
       }
 
+      // Only reset selected position if the current one was removed
       const stillHasSelected = data.positions.some(
         (pos) => pos.positionId === selectedPositionId
       );
+
       if (!stillHasSelected && data.positions.length > 0) {
         setSelectedPositionId(data.positions[0].positionId);
         setSelectedPositionName(data.positions[0].positionName);
@@ -66,7 +73,6 @@ const ElectionResultsView = () => {
   socket.on('voteUpdate', onVoteUpdate);
 
   return () => {
-    socket.emit('leaveElectionRoom', `election_${electionId}`);
     socket.off('voteUpdate', onVoteUpdate);
   };
 }, [electionId, selectedPositionId]);
