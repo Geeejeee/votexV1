@@ -15,7 +15,7 @@ import votexmlogo from "../assets/votexmlogo.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 
-const BACKEND_URL =
+const API_BASE_URL =
   Constants?.expoConfig?.extra?.API_BASE_URL ||
   Constants?.manifest?.extra?.API_BASE_URL ||
   "http://127.0.0.1:5000";
@@ -30,7 +30,7 @@ const VoteNowScreen = () => {
   const fetchElectionData = async () => {
     const token = await AsyncStorage.getItem("token");
     try {
-      const electionRes = await axios.get(`${BACKEND_URL}/api/student/get-elections`, {
+      const electionRes = await axios.get(`${API_BASE_URL}/api/student/get-elections`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

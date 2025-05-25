@@ -1,7 +1,8 @@
-const {  findUserByIdNumber, updateUserVote, getProfile } = require('../models/userModel');
+const {  updateUser, updateUserVote, getProfile } = require('../models/userModel');
 const {checkVoteForPosition, getVoteStatus, checkStudentVotedInElection, saveVote,
   findVoterForElection, getAllVotesForElection} = require('../models/voteModel');
 const emitLiveResults = require('../utils/emitLiveResults');
+const cloudinary = require('../utils/cloudinary');
 
 // Cast a Vote
 const submitVote = async (req, res) => {
@@ -58,6 +59,42 @@ const getVote = async (req, res, next) => {
     next(err);
   }
 };
+
+const updateStudentProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId; // From verifyToken middleware
+     console.log('userId:', userId);
+    const { firstname, lastname, yearLevel, section } = req.body;
+
+    const updateData = {
+      firstname,
+      lastname,
+      yearLevel,
+      section,
+    };
+
+    if (req.file) {
+      // Upload to Cloudinary
+      const uploadResult = await cloudinary.uploader.upload(req.file.path);
+      updateData.profilePicture = uploadResult.secure_url; // Save Cloudinary URL to DB
+    }
+
+    const updatedStudent = await updateUser(userId, updateData);
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      updatedStudent,
+    });
+  } catch (error) {
+    console.error('Error updating student profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 const getStudentProfile = async (req, res) => {
   try {
@@ -177,4 +214,6 @@ const getElectionFullResults = async (req, res) => {
     res.status(500).json({ message: "Server error while fetching full election results." });
   }
 };
-module.exports = {submitVote, getVote, getStudentProfile, getVotesByElection, getElectionFullResults};
+module.exports = {submitVote, getVote, getStudentProfile, getVotesByElection, getElectionFullResults,
+  updateStudentProfile
+};

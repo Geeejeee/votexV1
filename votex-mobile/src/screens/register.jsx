@@ -22,6 +22,7 @@ const API_BASE_URL =
   Constants?.manifest?.extra?.API_BASE_URL ||
   "http://127.0.0.1:5000"; // optional fallback
 
+
 const RegisterScreen = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -32,8 +33,7 @@ const RegisterScreen = ({ navigation }) => {
     useEffect(() => {
         const fetchColleges = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/auth/get-college`);
-                
+                const res = await axios.get(`${API_BASE_URL}/api/auth/get-college`);                
                 if (Array.isArray(res.data.colleges)) {
                     setColleges(res.data.colleges);
                     console.log("Fetched colleges:", res.data.colleges);

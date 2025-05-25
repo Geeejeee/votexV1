@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  profilePicture: { 
+    type: String, 
+    default: '' 
+  },
   hasVoted: { 
     type: Boolean, 
     default: false 

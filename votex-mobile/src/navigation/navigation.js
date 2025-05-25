@@ -8,6 +8,7 @@ import VoteElectionScreen from "../screens/VoteElectionScreen.jsx";
 import ProfileScreen from "../screens/ProfileScreen.jsx";
 import CandidateProfileModal from "../screens/CandidateProfile.jsx";
 import ElectionResultsApp from "../screens/Results.jsx";
+import EditProfileScreen from "../screens/editProfileScreen.jsx";
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
@@ -24,6 +25,7 @@ const Navigation = () => {
       <Stack.Screen name="Results" component={ElectionResultsApp} />
       <Stack.Screen name="Candidates" component={CandidateProfileModal} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
     </Stack.Navigator>
   );
 };
