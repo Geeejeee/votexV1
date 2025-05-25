@@ -23,7 +23,7 @@ const ElectionResultsView = () => {
   const fetchResults = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${API_BASE}/api/admin/elections/${electionId}/results`, {
+      const res = await axios.get(`${API_BASE}/admin/elections/${electionId}/results`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

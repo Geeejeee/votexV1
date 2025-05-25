@@ -40,7 +40,7 @@ const VotersPage = () => {
 
         // Fetch voters for the specific election and position
         const res = await axios.get(
-          `${API_BASE}/api/admin/elections/${electionId}/positions/${positionId}/voters`,
+          `${API_BASE}/admin/elections/${electionId}/positions/${positionId}/voters`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

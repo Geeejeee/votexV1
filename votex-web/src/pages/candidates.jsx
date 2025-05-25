@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import '../styles/candidates.css';
@@ -36,32 +36,36 @@ const ElectionCandidatesView = () => {
     const [editingCandidate, setEditingCandidate] = useState(null);
     const [election, setElection] = useState(null);
 
-useEffect(() => {
-  async function fetchData() {
-    try {
-      const token = localStorage.getItem('token');
+    const API_BASE = import.meta.env.PROD
+        ? "https://votexv1-backend.onrender.com/api"
+        : "/api";
 
-      // 1. Get positions with candidates (or empty candidate arrays)
-      const candidatesRes = await axios.get(`/api/admin/elections/${electionId}/candidates`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const token = localStorage.getItem('token');
 
-      console.log('Fetched positions:', candidatesRes.data.positions); 
-      setPositionsList(candidatesRes.data.positions); 
+                // 1. Get positions with candidates (or empty candidate arrays)
+                const candidatesRes = await axios.get(`${API_BASE}/admin/elections/${electionId}/candidates`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
 
-      // 2. Get full election details
-      const electionRes = await axios.get(`/api/admin/elections/${electionId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setElection(electionRes.data.election);
+                console.log('Fetched positions:', candidatesRes.data.positions);
+                setPositionsList(candidatesRes.data.positions);
 
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-  }
+                // 2. Get full election details
+                const electionRes = await axios.get(`/api/admin/elections/${electionId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setElection(electionRes.data.election);
 
-  fetchData();
-}, [electionId]);
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+            }
+        }
+
+        fetchData();
+    }, [electionId]);
 
 
 
@@ -81,224 +85,221 @@ useEffect(() => {
     };
 
     // Function to handle candidate removal
- const handleRemoveCandidate = async (positionId, candidateId) => {
-  const confirmed = window.confirm('Do you want to archive this candidate?');
-  if (!confirmed) return;
+    const handleRemoveCandidate = async (positionId, candidateId) => {
+        const confirmed = window.confirm('Do you want to archive this candidate?');
+        if (!confirmed) return;
 
-  const API_BASE = import.meta.env.PROD
-      ? "https://votexv1-backend.onrender.com/api"
-      : "/api";
 
-  try {
-    const token = localStorage.getItem('token');
-    // Call backend to archive candidate
-    await axios.patch(
-      `${API_BASE}/api/admin/candidates/${candidateId}/archive`,
-      { isArchived: true },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+        try {
+            const token = localStorage.getItem('token');
+            // Call backend to archive candidate
+            await axios.patch(
+                `${API_BASE}/admin/candidates/${candidateId}/archive`,
+                { isArchived: true },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-    // Remove candidate locally after successful archive
-    setPositionsList(prevPositions =>
-      prevPositions.map(position => {
-        if (position.id === positionId) {
-          return {
-            ...position,
-            candidates: position.candidates.filter(candidate => candidate.id !== candidateId)
-          };
+            // Remove candidate locally after successful archive
+            setPositionsList(prevPositions =>
+                prevPositions.map(position => {
+                    if (position.id === positionId) {
+                        return {
+                            ...position,
+                            candidates: position.candidates.filter(candidate => candidate.id !== candidateId)
+                        };
+                    }
+                    return position;
+                })
+            );
+        } catch (error) {
+            console.error('Failed to archive candidate:', error);
+            alert('Failed to archive candidate, please try again.');
         }
-        return position;
-      })
-    );
-  } catch (error) {
-    console.error('Failed to archive candidate:', error);
-    alert('Failed to archive candidate, please try again.');
-  }
-};
+    };
 
 
 
     const navigate = useNavigate();
     const handleViewVoters = (electionId, position) => {
-        navigate(`/elections/${electionId}/positions/${position.id}/voters`, {state: { election,position}});
-        };
+        navigate(`/elections/${electionId}/positions/${position.id}/voters`, { state: { election, position } });
+    };
 
     return (
         !election ? (
             <DashboardLayout><div color='red'>Loading Election Data...</div></DashboardLayout>
         ) : (
-        <DashboardLayout>
-            <div className="ec-container">
-                {/* Breadcrumb */}
-                <nav className="ec-breadcrumb">
-                    <Link to="/dashboard" className="ec-home-icon">
-                        <Home size={16} />
-                    </Link>
-                    <span> › <Link to="/elections">Elections</Link> › {election.title}</span>
-                </nav>
+            <DashboardLayout>
+                <div className="ec-container">
+                    {/* Breadcrumb */}
+                    <nav className="ec-breadcrumb">
+                        <Link to="/dashboard" className="ec-home-icon">
+                            <Home size={16} />
+                        </Link>
+                        <span> › <Link to="/elections">Elections</Link> › {election.title}</span>
+                    </nav>
 
-                {/* Header */}
+                    {/* Header */}
                     <div className="ec-header">
-                    <div className="ec-org-info">
-                        <div className="ec-org-logo">
-                        <img src={election.logo} alt={`${election.title} Logo`} className="ec-usg-logo" />
+                        <div className="ec-org-info">
+                            <div className="ec-org-logo">
+                                <img src={election.logo} alt={`${election.title} Logo`} className="ec-usg-logo" />
+                            </div>
+                            <div className="ec-org-title">
+                                <h1>{election.title}</h1>
+                                <p>{election.description}</p>
+                                <p>
+                                    {new Date(election.startDate).toLocaleDateString()} –{' '}
+                                    {new Date(election.endDate).toLocaleDateString()}
+                                </p>
+                                <p>
+                                    {election.college?.name} {election.department ? `| ${election.department.name}` : ''}
+                                </p>
+                            </div>
                         </div>
-                        <div className="ec-org-title">
-                            <h1>{election.title}</h1>
-                            <p>{election.description}</p>
-                            <p>
-                                {new Date(election.startDate).toLocaleDateString()} –{' '}
-                                {new Date(election.endDate).toLocaleDateString()}
-                            </p>
-                            <p>
-                                {election.college?.name} {election.department ? `| ${election.department.name}` : ''}
-                            </p>
+                        <div className="ec-actions">
+                            <button className="ec-btn-create" onClick={() => setShowCreateModal(true)}>
+                                Create New Position
+                            </button>
+                            <button className="ec-btn-delete" onClick={() => setShowDeleteModal(true)}>
+                                Delete Position
+                            </button>
                         </div>
                     </div>
-                    <div className="ec-actions">
-                        <button className="ec-btn-create" onClick={() => setShowCreateModal(true)}>
-                            Create New Position
-                        </button>
-                        <button className="ec-btn-delete" onClick={() => setShowDeleteModal(true)}>
-                            Delete Position
-                        </button>
-                    </div>
-                </div>
 
-        
 
-                {/* Positions and Candidates */}
-               {positionsList.filter(position => !position.isArchived).map((position) => (
-                    <div key={position.id} className="ec-position-section">
-                        <div className="ec-position-header">
-                        <h2>FOR {position.name ?position.name.toUpperCase() : 'UNNAMED POSITION'} :</h2>
-                        <button className="ec-btn-view-voters" onClick={() => handleViewVoters(electionId, position)}>
-                            View Voters
-                        </button>
-                        </div>
-                        <div className="ec-candidates-row">
-                        {position.candidates.map((candidate) => (
-                            console.log(`Rendering candidate for ${position.name}:`, candidate),
-                            <div key={candidate.id} className="ec-candidate-card" 
+
+                    {/* Positions and Candidates */}
+                    {positionsList.filter(position => !position.isArchived).map((position) => (
+                        <div key={position.id} className="ec-position-section">
+                            <div className="ec-position-header">
+                                <h2>FOR {position.name ? position.name.toUpperCase() : 'UNNAMED POSITION'} :</h2>
+                                <button className="ec-btn-view-voters" onClick={() => handleViewVoters(electionId, position)}>
+                                    View Voters
+                                </button>
+                            </div>
+                            <div className="ec-candidates-row">
+                                {position.candidates.map((candidate) => (
+                                    console.log(`Rendering candidate for ${position.name}:`, candidate),
+                                    <div key={candidate.id} className="ec-candidate-card"
+                                        onClick={() => {
+                                            setEditingCandidate({
+                                                positionId: position.id,
+                                                candidateId: candidate.id,
+                                                name: candidate.name,
+                                                party: candidate.party,
+                                                position: candidate.position || position.name,
+                                                course: candidate.course || '',
+                                                yearLevel: candidate.yearLevel || '',
+                                                motto: candidate.motto || '',
+                                                affiliations: candidate.affiliations || '',
+                                                advocacies: candidate.advocacies || '',
+                                                photo: candidate.photo,
+                                            });
+                                            setShowEditModal(true);
+                                        }}
+                                    >
+                                        <div className="ec-candidate-photo">
+                                            <div className="ec-remove-badge" onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleRemoveCandidate(position.id, candidate.id);
+                                            }}>
+                                                <X size={12} />
+                                            </div>
+                                            {candidate.photo ? (
+                                                <img src={candidate.photo} alt={candidate.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ) : (
+                                                <span style={{ color: 'white' }}>No Photo</span>
+                                            )}
+                                        </div>
+
+                                        <div className="ec-candidate-info">
+                                            <h3>{candidate.name}</h3>
+                                            <p>{candidate.party}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div
+                                    className="ec-add-candidate-card"
                                     onClick={() => {
-                                        setEditingCandidate({
-                                            positionId: position.id,
-                                            candidateId: candidate.id,
-                                            name: candidate.name,
-                                            party: candidate.party,
-                                            position: candidate.position || position.name,
-                                            course: candidate.course || '',
-                                            yearLevel: candidate.yearLevel || '',
-                                            motto: candidate.motto || '',
-                                            affiliations: candidate.affiliations || '',
-                                            advocacies: candidate.advocacies || '',
-                                            photo: candidate.photo,
-                                        });
-                                        setShowEditModal(true);
+                                        setSelectedPositionId(position.id);
+                                        setCandidatePosition(position.name);
+                                        setShowAddCandidateModal(true);
+                                        resetFormFields();
                                     }}
                                 >
-                                    <div className="ec-candidate-photo">
-                                        <div className="ec-remove-badge" onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleRemoveCandidate(position.id, candidate.id);
-                                        }}>
-                                            <X size={12} />
-                                        </div>
-                                        {candidate.photo ? (
-                                            <img src={candidate.photo} alt={candidate.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        ) : (
-                                            <span style={{ color: 'white' }}>No Photo</span>
-                                        )}
+                                    <div className="ec-add-icon">
+                                        <Plus size={24} />
                                     </div>
-
-                                    <div className="ec-candidate-info">
-                                        <h3>{candidate.name}</h3>
-                                        <p>{candidate.party}</p>
-                                    </div>
-                                </div>
-                            ))}
-                            <div
-                                className="ec-add-candidate-card"
-                                onClick={() => {
-                                    setSelectedPositionId(position.id);
-                                    setCandidatePosition(position.name);
-                                    setShowAddCandidateModal(true);
-                                    resetFormFields();
-                                }}
-                            >
-                                <div className="ec-add-icon">
-                                    <Plus size={24} />
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
 
-                <CreatePositionModal
-                    showCreateModal={showCreateModal}
-                    setShowCreateModal={setShowCreateModal}
-                    newPositionTitle={newPositionTitle}
-                    setNewPositionTitle={setNewPositionTitle}
-                    positionsList={positionsList}
-                    setPositionsList={setPositionsList}
-                    electionId={electionId}
-                />  
-
-
-                <DeletePositionModal
-                    showDeleteModal={showDeleteModal}
-                    setShowDeleteModal={setShowDeleteModal}
-                    positionToDelete={positionToDelete}
-                    setPositionToDelete={setPositionToDelete}
-                    positionsList={positionsList}
-                    setPositionsList={setPositionsList}
-                    electionPositions={positionsList.map(pos => pos.id)}
-                />
-
-                <AddCandidateModal
-                    showAddCandidateModal={showAddCandidateModal}
-                    setShowAddCandidateModal={setShowAddCandidateModal}
-                    candidateName={candidateName}
-                    setCandidateName={setCandidateName}
-                    candidateParty={candidateParty}
-                    setCandidateParty={setCandidateParty}
-                    candidatePosition={candidatePosition}
-                    candidateCourse={candidateCourse}
-                    setCandidateCourse={setCandidateCourse}
-                    candidateYearLevel={candidateYearLevel}
-                    setCandidateYearLevel={setCandidateYearLevel}
-                    candidatePhoto={candidatePhoto}
-                    setCandidatePhoto={setCandidatePhoto}
-                    candidateMotto={candidateMotto}
-                    setCandidateMotto={setCandidateMotto}
-                    candidateAffiliations={candidateAffiliations}
-                    setCandidateAffiliations={setCandidateAffiliations}
-                    candidateAdvocacies={candidateAdvocacies}
-                    setCandidateAdvocacies={setCandidateAdvocacies}
-                    positionsList={positionsList}
-                    setPositionsList={setPositionsList}
-                    selectedPositionId={selectedPositionId}
-                    errorMessage={errorMessage}
-                    setErrorMessage={setErrorMessage}
-                    resetFormFields={resetFormFields}
-                    electionId={electionId}
-                />
-
-                {showEditModal && editingCandidate && (
-                    <EditCandidateModal
-                        showEditModal={showEditModal}
-                        setShowEditModal={setShowEditModal}
-                        editingCandidate={editingCandidate}
-                        setEditingCandidate={setEditingCandidate}
-                        setPositionsList={setPositionsList}
+                    <CreatePositionModal
+                        showCreateModal={showCreateModal}
+                        setShowCreateModal={setShowCreateModal}
+                        newPositionTitle={newPositionTitle}
+                        setNewPositionTitle={setNewPositionTitle}
                         positionsList={positionsList}
-                        setErrorMessage={setErrorMessage}
-                        errorMessage={errorMessage}
+                        setPositionsList={setPositionsList}
+                        electionId={electionId}
                     />
-    )}
 
-            </div>
-        </DashboardLayout>
+
+                    <DeletePositionModal
+                        showDeleteModal={showDeleteModal}
+                        setShowDeleteModal={setShowDeleteModal}
+                        positionToDelete={positionToDelete}
+                        setPositionToDelete={setPositionToDelete}
+                        positionsList={positionsList}
+                        setPositionsList={setPositionsList}
+                        electionPositions={positionsList.map(pos => pos.id)}
+                    />
+
+                    <AddCandidateModal
+                        showAddCandidateModal={showAddCandidateModal}
+                        setShowAddCandidateModal={setShowAddCandidateModal}
+                        candidateName={candidateName}
+                        setCandidateName={setCandidateName}
+                        candidateParty={candidateParty}
+                        setCandidateParty={setCandidateParty}
+                        candidatePosition={candidatePosition}
+                        candidateCourse={candidateCourse}
+                        setCandidateCourse={setCandidateCourse}
+                        candidateYearLevel={candidateYearLevel}
+                        setCandidateYearLevel={setCandidateYearLevel}
+                        candidatePhoto={candidatePhoto}
+                        setCandidatePhoto={setCandidatePhoto}
+                        candidateMotto={candidateMotto}
+                        setCandidateMotto={setCandidateMotto}
+                        candidateAffiliations={candidateAffiliations}
+                        setCandidateAffiliations={setCandidateAffiliations}
+                        candidateAdvocacies={candidateAdvocacies}
+                        setCandidateAdvocacies={setCandidateAdvocacies}
+                        positionsList={positionsList}
+                        setPositionsList={setPositionsList}
+                        selectedPositionId={selectedPositionId}
+                        errorMessage={errorMessage}
+                        setErrorMessage={setErrorMessage}
+                        resetFormFields={resetFormFields}
+                        electionId={electionId}
+                    />
+
+                    {showEditModal && editingCandidate && (
+                        <EditCandidateModal
+                            showEditModal={showEditModal}
+                            setShowEditModal={setShowEditModal}
+                            editingCandidate={editingCandidate}
+                            setEditingCandidate={setEditingCandidate}
+                            setPositionsList={setPositionsList}
+                            positionsList={positionsList}
+                            setErrorMessage={setErrorMessage}
+                            errorMessage={errorMessage}
+                        />
+                    )}
+
+                </div>
+            </DashboardLayout>
         )
     );
 };

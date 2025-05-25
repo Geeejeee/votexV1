@@ -41,7 +41,7 @@ const VotersList = () => {
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/api/admin/get-college`,  {
+        const res = await axios.get(`${API_BASE}/admin/get-college`,  {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -69,7 +69,7 @@ const VotersList = () => {
   const fetchDepartments = async (collegeId) => {
     setLoadingDepartments(true);
     try {
-      const res = await axios.get(`${API_BASE}/api/admin/get-department/${collegeId}`,  {
+      const res = await axios.get(`${API_BASE}/admin/get-department/${collegeId}`,  {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -94,7 +94,7 @@ const VotersList = () => {
   useEffect(() => {
     const fetchVoters = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/admin/get-all-students-with-vote-status`, {
+        const res = await fetch(`${API_BASE}/admin/get-all-students-with-vote-status`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
