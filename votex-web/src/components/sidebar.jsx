@@ -26,19 +26,19 @@ const Sidebar = ( onToggle ) => {
       </button>
       
       <nav className="sidebar-nav">
-        <a href="https://votexv1-web.onrender.com/dashboard">
+        <a href="/dashboard">
           <LayoutDashboard size={18} className="nav-icon" />
           {isOpen && <span>Dashboard</span>}
         </a>
-        <a href="https://votexv1-web.onrender.com/elections">
+        <a href="/elections">
           <ClipboardList size={18} className="nav-icon" />
           {isOpen && <span>Elections</span>}
         </a>
-        <a href="https://votexv1-web.onrender.com/voters">
+        <a href="/voters">
           <Users size={18} className="nav-icon" />
           {isOpen && <span>Voters</span>}
         </a>
-        <a href="https://votexv1-web.onrender.com/resultsdb">
+        <a href="/resultsdb">
           <BarChart2 size={18} className="nav-icon" />
           {isOpen && <span>Results</span>}
         </a>
