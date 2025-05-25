@@ -54,7 +54,8 @@ const ElectionResultsApp = () => {
                 );
 
                 // TOP 1 candidate for summary
-                const topCandidate = resultRes.data.topCandidates?.[0];
+                const sortedCandidates = [...(resultRes.data.topCandidates ?? [])].sort((a, b) => b.votes - a.votes);
+                const topCandidate = sortedCandidates[0];
                 if (topCandidate) {
                   return {
                     title: pos.position.name,
@@ -108,7 +109,10 @@ const ElectionResultsApp = () => {
                 );
 
                 // TOP 3 candidates for detail modal
-                const topCandidates = resultRes.data.topCandidates?.slice(0, 3) ?? [];
+                const topCandidates = [...(resultRes.data.topCandidates ?? [])]
+                .sort((a, b) => b.votes - a.votes)
+                .slice(0, 3);
+
                 if (topCandidates.length > 0) {
                   return {
                     title: pos.position.name,
