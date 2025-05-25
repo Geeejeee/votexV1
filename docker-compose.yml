@@ -10,6 +10,8 @@ services:
       - ./server/.env
     environment:
       - MONGO_URI=mongodb://mongo:27017/votex
+    networks:
+      - votexnet
     depends_on:
       - mongo
 
@@ -22,6 +24,8 @@ services:
       - ./votex-web:/app
       - /app/node_modules
     command: npm run dev -- --host
+    networks:
+      - votexnet
     depends_on:
       - server
 
@@ -33,6 +37,12 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - votexnet
+      
+networks:
+  votexnet:
+    driver: bridge
 
 volumes:
   mongo-data:

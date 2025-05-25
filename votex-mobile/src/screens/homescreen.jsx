@@ -20,7 +20,7 @@ import { UserContext } from "../context/UserContext";
 
 
 
-const BACKEND_URL =
+const BACKEND_URL=
   Constants?.expoConfig?.extra?.API_BASE_URL ||
   Constants?.manifest?.extra?.API_BASE_URL ||
   "http://127.0.0.1:5000";
