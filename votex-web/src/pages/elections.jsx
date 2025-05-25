@@ -54,7 +54,7 @@ const token = localStorage.getItem('token');
     useEffect(() => {
         const fetchElections = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/api/admin/get-elections`, {
+                const res = await axios.get(`${API_BASE}/admin/get-elections`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -79,7 +79,7 @@ const token = localStorage.getItem('token');
     useEffect(() => {
         const fetchColleges = async () => {
           try {
-            const res = await axios.get("/api/admin/get-college",  {
+            const res = await axios.get(`${API_BASE}/admin/get-college`,  {
               headers: {
                 Authorization: `Bearer ${token}`
               }
@@ -110,7 +110,7 @@ const token = localStorage.getItem('token');
         }
         setLoadingDepartments(true);
         try {
-            const res = await axios.get(`/api/admin/get-department/${collegeId}`, {
+            const res = await axios.get(`${API_BASE}/admin/get-department/${collegeId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -235,7 +235,7 @@ const token = localStorage.getItem('token');
         formData.append('logo', newElection.logo);  // Append the file here
       
         try {
-          const response = await axios.post('/api/admin/elections', formData, {
+          const response = await axios.post(`${API_BASE}/admin/elections`, formData, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'multipart/form-data',
@@ -302,7 +302,7 @@ const token = localStorage.getItem('token');
         }
     
         try {
-            const response = await axios.put(`/api/admin/update-election/${editElection._id}`, formData, {
+            const response = await axios.put(`${API_BASE}/admin/update-election/${editElection._id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -356,7 +356,7 @@ const token = localStorage.getItem('token');
     // Function to confirm and execute deletion
     const confirmDelete = async () => {
         try {
-            await axios.delete(`/api/admin/delete-elections/${electionToDelete}`, {
+            await axios.delete(`${API_BASE}/admin/delete-elections/${electionToDelete}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

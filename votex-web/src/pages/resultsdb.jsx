@@ -23,7 +23,7 @@ const ElectionsDashboard = () => {
     const fetchElections = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE}/api/admin/get-elections`, {
+        const res = await axios.get(`${API_BASE}/admin/get-elections`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setElections(res.data.elections);
