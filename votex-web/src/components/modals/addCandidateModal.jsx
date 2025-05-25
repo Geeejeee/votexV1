@@ -3,6 +3,9 @@ import { X } from 'lucide-react';
 import "../../styles/candidates.css";
 import axios from 'axios';
 
+const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
 
 
 const AddCandidateModal = ({
@@ -94,7 +97,7 @@ const token = localStorage.getItem('token');
   try {
     
 
-    const res = await axios.post(`/api/admin/candidates/${electionId}/positions/${selectedPositionId}`,
+    const res = await axios.post(`${API_BASE}/admin/candidates/${electionId}/positions/${selectedPositionId}`,
       formData,
       {
         headers: {
