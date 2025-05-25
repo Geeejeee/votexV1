@@ -26,26 +26,26 @@ const Sidebar = ( onToggle ) => {
       </button>
       
       <nav className="sidebar-nav">
-        <a href="/dashboard">
+        <Link to="/dashboard">
           <LayoutDashboard size={18} className="nav-icon" />
           {isOpen && <span>Dashboard</span>}
-        </a>
-        <a href="/elections">
+        </Link>
+        <Link to="/elections">
           <ClipboardList size={18} className="nav-icon" />
           {isOpen && <span>Elections</span>}
-        </a>
-        <a href="/voters">
+        </Link>
+        <Link to="/voters">
           <Users size={18} className="nav-icon" />
           {isOpen && <span>Voters</span>}
-        </a>
-        <a href="/resultsdb">
+        </Link>
+        <Link to="/resultsdb">
           <BarChart2 size={18} className="nav-icon" />
           {isOpen && <span>Results</span>}
-        </a>
-        <a href="#">
+        </Link>
+        <Link to="#">
           <HelpCircle size={18} className="nav-icon" />
           {isOpen && <span>Help</span>}
-        </a>
+        </Link>
       </nav>
     </div>
   );
