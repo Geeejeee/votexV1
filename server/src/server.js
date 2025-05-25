@@ -19,7 +19,10 @@ const io = initSocket(server); // <<== initialize socket.io
 app.set("io", io); // make io available to controllers via req.app.get("io")
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://votexv1-web.onrender.com', 'http://localhost:5173'],
+  credentials: true, // if you use cookies
+}));
 app.use(morgan("dev"));
 app.use(express.json());
 
