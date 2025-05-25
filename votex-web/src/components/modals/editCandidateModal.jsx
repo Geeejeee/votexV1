@@ -3,6 +3,10 @@ import { useState } from 'react';
 import axios from 'axios';
 import "../../styles/candidates.css";
 
+const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
 
 export default function EditCandidateModal({
   showEditModal,
@@ -83,7 +87,7 @@ export default function EditCandidateModal({
       // Make PUT or PATCH request to your API to update candidate
       // Adjust the endpoint URL to your actual backend route
       const res = await axios.put(
-        `/api/admin/candidates/${candidateId}`, 
+        `${API_BASE}/admin/candidates/${candidateId}`, 
         formData, 
         {
           headers: {

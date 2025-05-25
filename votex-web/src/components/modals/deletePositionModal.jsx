@@ -1,6 +1,10 @@
 import "../../styles/candidates.css";
 import axios from "axios";
 
+const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
 const DeletePositionModal = ({
   showDeleteModal,
   setShowDeleteModal,
@@ -14,7 +18,7 @@ const DeletePositionModal = ({
 
   const handleArchive = async () => {
   try {
-    await axios.delete(`/api/position/election-positions/${positionToDelete}`);
+    await axios.delete(`${API_BASE}/position/election-positions/${positionToDelete}`);
     setPositionsList(prev => prev.filter(p => p.id !== positionToDelete));
     setShowDeleteModal(false);
     setPositionToDelete(null);

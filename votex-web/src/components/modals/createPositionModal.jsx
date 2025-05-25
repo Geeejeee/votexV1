@@ -2,6 +2,11 @@ import "../../styles/candidates.css";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
+const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
+
 const CreatePositionModal = ({
   showCreateModal,
   setShowCreateModal,
@@ -17,7 +22,7 @@ const CreatePositionModal = ({
 
     const fetchPositions = async () => {
       try {
-        const res = await axios.get('/api/position/get-position', {
+        const res = await axios.get(`${API_BASE}/position/get-position`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -39,7 +44,7 @@ const CreatePositionModal = ({
 
     try {
       const res = await axios.post(
-        `/api/position/${electionId}/positions`,
+        `${API_BASE}/position/${electionId}/positions`,
         { positionId: selectedPositionId },
         {
           headers: {
