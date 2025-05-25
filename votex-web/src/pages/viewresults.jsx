@@ -14,11 +14,16 @@ const ElectionResultsView = () => {
   const [electionTitle, setElectionTitle] = useState('');
   const [electionLogo, setElectionLogo] = useState('');
 
+  const API_BASE = import.meta.env.PROD
+  ? "https://votexv1-backend.onrender.com/api"
+  : "/api";
+
+
   useEffect(() => {
   const fetchResults = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`/api/admin/elections/${electionId}/results`, {
+      const res = await axios.get(`${API_BASE}/api/admin/elections/${electionId}/results`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

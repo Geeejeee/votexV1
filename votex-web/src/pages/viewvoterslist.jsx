@@ -27,6 +27,10 @@ const VotersPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
   useEffect(() => {
     async function fetchVoters() {
       try {
@@ -36,7 +40,7 @@ const VotersPage = () => {
 
         // Fetch voters for the specific election and position
         const res = await axios.get(
-          `/api/admin/elections/${electionId}/positions/${positionId}/voters`,
+          `${API_BASE}/api/admin/elections/${electionId}/positions/${positionId}/voters`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
