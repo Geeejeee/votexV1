@@ -85,11 +85,15 @@ useEffect(() => {
   const confirmed = window.confirm('Do you want to archive this candidate?');
   if (!confirmed) return;
 
+  const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
   try {
     const token = localStorage.getItem('token');
     // Call backend to archive candidate
     await axios.patch(
-      `/api/admin/candidates/${candidateId}/archive`,
+      `${API_BASE}/api/admin/candidates/${candidateId}/archive`,
       { isArchived: true },
       { headers: { Authorization: `Bearer ${token}` } }
     );

@@ -45,11 +45,16 @@ const token = localStorage.getItem('token');
     const [showEditModal, setShowEditModal] = useState(false);
     const [editElection, setEditElection] = useState(null);
     const [editFileName, setEditFileName] = useState('No file chosen');
+
+    const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
     
     useEffect(() => {
         const fetchElections = async () => {
             try {
-                const res = await axios.get('/api/admin/get-elections', {
+                const res = await axios.get(`${API_BASE}/api/admin/get-elections`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

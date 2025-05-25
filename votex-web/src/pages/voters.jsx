@@ -33,12 +33,15 @@ const VotersList = () => {
   const token = localStorage.getItem('token'); // or whatever key you used to store the JWT
 
   
-  
+  const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
 
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const res = await axios.get("/api/admin/get-college",  {
+        const res = await axios.get(`${API_BASE}/api/admin/get-college`,  {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -66,7 +69,7 @@ const VotersList = () => {
   const fetchDepartments = async (collegeId) => {
     setLoadingDepartments(true);
     try {
-      const res = await axios.get(`/api/admin/get-department/${collegeId}`,  {
+      const res = await axios.get(`${API_BASE}/api/admin/get-department/${collegeId}`,  {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -91,7 +94,7 @@ const VotersList = () => {
   useEffect(() => {
     const fetchVoters = async () => {
       try {
-        const res = await fetch('/api/admin/get-all-students-with-vote-status', {
+        const res = await fetch(`${API_BASE}/api/admin/get-all-students-with-vote-status`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -175,7 +178,7 @@ if (!newVoter.department) validationErrors.department = 'Department is required'
     // Send the college and department ID to the backend
     
 const res = await axios.post(
-  "/api/admin/add-voter",
+  `${API_BASE}/api/admin/add-voter`,
   {
     idNumber: newVoter.idNumber,
     firstname: newVoter.firstname,

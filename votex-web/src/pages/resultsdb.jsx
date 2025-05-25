@@ -14,11 +14,16 @@ const ElectionsDashboard = () => {
 
   const token = localStorage.getItem('token'); // Assuming you need token for auth
 
+  const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
+
   useEffect(() => {
     const fetchElections = async () => {
       try {
         setLoading(true);
-        const res = await axios.get('/api/admin/get-elections', {
+        const res = await axios.get(`${API_BASE}/api/admin/get-elections`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setElections(res.data.elections);
