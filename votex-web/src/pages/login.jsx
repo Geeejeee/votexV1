@@ -24,10 +24,14 @@ const Login = () => {
     // Log form data before sending the request
     console.log("Form data before submit:", form);
 
+    const API_BASE = import.meta.env.PROD
+      ? "https://votexv1-backend.onrender.com/api"
+      : "/api";
+
     try {
       // Send login data to backend
-      const response = await axios.post("/api/auth/web-login", form);
-
+      const response = await axios.post(`${API_BASE}/auth/web-login`, form);
+      
       console.log("Response data:", response.data); // Log response from backend
 
       // If login is successful

@@ -1,13 +1,16 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: process.env.VITE_BASE_PATH || "/votexV1",
+  base: '/',
   server: {
     proxy: {
-      '/api': 'http://votex-server:5000',
+      '/api': {
+        target: 'http://votex-server:5000', // used in development
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
-})
+});
