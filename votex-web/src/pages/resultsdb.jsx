@@ -45,9 +45,9 @@ const ElectionsDashboard = () => {
   return (
     <DashboardLayout>
       <nav className="breadcrumb">
-      <Link to ="/dashboard" className="home-icon">
+        <a href="/dashboard" className="home-icon">
           <i className="fa fa-home"></i>
-        </Link>
+        </a>
         <span> › Results</span>
       </nav>
 
