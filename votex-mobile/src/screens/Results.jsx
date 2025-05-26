@@ -12,10 +12,7 @@ import Constants from 'expo-constants';
 
 
 
-const BACKEND_URL=
-  Constants?.expoConfig?.extra?.API_BASE_URL ||
-  Constants?.manifest?.extra?.API_BASE_URL ||
-  "http://127.0.0.1:5000";
+const BACKEND_URL = Constants.expoConfig.extra.apiBaseUrl;
 
 const ElectionResultsApp = () => {
   const [electionsData, setElectionsData] = useState([]); // top 1 candidates for summary

@@ -12,10 +12,7 @@ import { UserContext } from "../context/UserContext";
 
 
 
-const API_BASE_URL =
-  Constants?.expoConfig?.extra?.API_BASE_URL ||
-  Constants?.manifest?.extra?.API_BASE_URL ||
-  "http://127.0.0.1:5000"; // optional fallback
+const API_BASE_URL = Constants.expoConfig.extra.apiBaseUrl;
 
 
 const LoginScreen = ({ navigation }) => {

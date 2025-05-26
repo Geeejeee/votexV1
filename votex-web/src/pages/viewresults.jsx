@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
@@ -106,12 +106,12 @@ useEffect(() => {
   return (
     <DashboardLayout>
       <nav className="breadcrumb">
-        <a href="/dashboard" className="home-icon">
+        <Link to ="/dashboard" className="home-icon">
           <i className="fa fa-home"></i>
-        </a>
-        <a href="/resultsdb" className="home-icon">
+        </Link>
+        <Link to ="/resultsdb" className="home-icon">
           <span> › Results › {electionTitle.toUpperCase()} </span>
-        </a>
+        </Link>
       </nav>
 
       <div className="org-header">
