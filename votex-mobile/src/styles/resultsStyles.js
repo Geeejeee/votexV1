@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 80, // adjust as needed
+    height: 60, // adjust as needed
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     position: 'absolute',
     right: 12,
-    top: 12,
+    top: 7,
   },
   citcLogo: {
     width: 40,
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   detailLogoContainer: {
     position: 'absolute',
     right: 15,
-    top: -5,
+    top: -10,
   },
   detailOrgLogo: {
     width: 45,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   detailCandidateAvatar: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -290,16 +290,20 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 14,
+    marginLeft: 8,
   },
   detailCandidateParty: {
     color: '#CCC',
     fontSize: 12,
+    marginLeft: 8,
   },
   detailVoteBarContainer: {
     height: 8,
+    width: 250,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: 4,
     marginBottom: 4,
+    marginLeft: 8,
     overflow: 'hidden',
   },
   detailVoteBar: {
@@ -314,6 +318,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     color: 'white',
+    marginLeft: 8,
   },
   detailVoteCount: {
     fontSize: 12,

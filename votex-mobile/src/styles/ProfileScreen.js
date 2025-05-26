@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   top: 0,
   left: 0,
   right: 0,
-  height: 100, // enough space including status bar
+  height: 80, // enough space including status bar
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   profileContent: {
     flex: 1,
     alignItems: "center",
-    paddingTop: 30,
+    paddingTop: 0,
   },
   profileImageContainer: {
     width: 120,
@@ -107,18 +107,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   profileImage: {
+  marginTop: 120,
   width: 120,
   height: 120,
   borderRadius: 60,
   backgroundColor: "#4CAF50",
   alignSelf: 'center',
-  marginBottom: 20,
+  marginBottom: 40,
 },
 
   profileImagePlaceholder: {
     width: 120,
     height: 120,
-    marginTop: '40%',
     borderRadius: 60,
     backgroundColor: '#ccc',
     justifyContent: 'center',
@@ -132,12 +132,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
+    width: "90%",
+    alignSelf: "center",
   },
   saveBtn: {
     backgroundColor: '#007bff',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+    width: "90%",
+    alignSelf: "center",
   },
   saveText: {
     color: '#fff',

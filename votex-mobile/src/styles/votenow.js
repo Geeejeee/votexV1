@@ -36,11 +36,12 @@ export default StyleSheet.create({
     color: "#fff",
   },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginTop: 20,
+    fontSize: 28,
+    fontWeight: 900,
+    marginTop: 10,
     marginBottom: 20,
     textAlign: "center",
+    color: "#002F6C",
   },
   labelRow: {
     flexDirection: "row",
@@ -89,7 +90,7 @@ export default StyleSheet.create({
     color: "#333",
   },
   card: {
-    borderWidth: 4,
+    borderWidth: 5,
     borderColor: "#002F6C",
     borderRadius: 10,
     padding: 15,
@@ -101,11 +102,11 @@ export default StyleSheet.create({
   },
   cardTitle: {
     width: "75%",
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "bold",
   },
   cardLogo: {
-    width: 80,
+    width: 60,
     height: 80,
     resizeMode: "contain",
   },

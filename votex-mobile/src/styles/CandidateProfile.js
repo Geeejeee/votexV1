@@ -50,7 +50,7 @@ export const cardStyles = StyleSheet.create({
     paddingRight: 10,
   },
   itemTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "bold",
     color: "#000",
   },
@@ -118,6 +118,8 @@ export const styles = StyleSheet.create({
   width: 160,           // fixed width for carousel card
   height: 140,          // a bit taller for better spacing
   borderRadius: 10,
+  borderWidth: 5,
+  borderColor: "#002F6C",
   alignItems: "center",
   justifyContent: "center",
   marginHorizontal: 8,  // space between cards
@@ -125,7 +127,6 @@ export const styles = StyleSheet.create({
   shadowColor: "#000",
   shadowOpacity: 0.1,
   shadowRadius: 6,
-  elevation: 4,
 },
   selectedCard: {
     borderWidth: 2,
@@ -134,12 +135,12 @@ export const styles = StyleSheet.create({
   },
   candidateInfoBox: {
   backgroundColor: "#002F6C",
-  paddingVertical: 8,
-  borderRadius: 6,
+  paddingVertical: 5,
+  borderRadius: 5,
   alignItems: "center",
   justifyContent: "center",
   width: "100%",
-  height: "60%",
+  height: "50%",
 },
   candidateAvatar: {
   width: 50,       // slightly bigger avatar for better presence
@@ -191,15 +192,15 @@ export const styles = StyleSheet.create({
   },
   electionTitleTop: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 900,
     textAlign: "left",
     color: "#000",
     paddingTop: 20,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   electionTitleBottom: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 400,
     textAlign: "center",
     color: "#000",
     marginBottom: 8,
@@ -208,7 +209,7 @@ export const styles = StyleSheet.create({
     width: 80,
     height: 80,
     resizeMode: "contain",
-    marginLeft: -60,
+    marginLeft: -80,
   },
   modalOverlay: {
     flex: 1,

@@ -10,7 +10,7 @@ import styles from '../styles/ProfileScreen';
 import axios from 'axios';
 import votexmlogo from "../assets/votexmlogo.png";
 
-const API_BASE_URL = Constants?.expoConfig?.extra?.API_BASE_URL || "http://127.0.0.1:5000";
+const API_BASE_URL = Constants.expoConfig.extra.apiBaseUrl;
 
 const EditProfileScreen = ({ navigation }) => {
   const { user, setUser } = useContext(UserContext);
