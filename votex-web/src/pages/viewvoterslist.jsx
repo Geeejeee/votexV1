@@ -61,9 +61,9 @@ const VotersPage = () => {
     <DashboardLayout>
       <div className="voters-container">
         <nav className="breadcrumbs">
-        <Link to ="/dashboard" className="home-icon">
-          <i className="fa fa-home"></i>
-        </Link>
+          <a href="/dashboard" className="home-icon">
+            <i className="fa fa-home"></i>
+          </a>
           <span> › Elections › {election?.title || "Election"} › Voters</span>
         </nav>
 
